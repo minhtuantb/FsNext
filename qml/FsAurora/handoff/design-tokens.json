@@ -1,0 +1,152 @@
+{
+  "$schema": "https://raw.githubusercontent.com/design-tokens/community-group/main/schema.json",
+  "color": {
+    "brand": {
+      "accent":    { "value": "#FF5B2E", "description": "Primary — orange, dùng cho button chính, link, highlight" },
+      "accent-2":  { "value": "#FFAF1D", "description": "Accent vàng — VIP, chart segment" },
+      "accent-3":  { "value": "#FF3D7F", "description": "Accent hồng — gradient, ribbon" },
+      "gradient":  { "value": "linear-gradient(135deg, #FF5B2E 0%, #FF3D7F 60%, #FFAF1D 100%)" },
+      "gradient-soft": { "value": "linear-gradient(135deg, rgba(255,91,46,.08) 0%, rgba(255,61,127,.08) 60%, rgba(255,175,29,.08) 100%)" }
+    },
+    "ink": {
+      "light": {
+        "1": { "value": "#0E0E12", "description": "Text body" },
+        "2": { "value": "#2A2A32", "description": "Secondary text" },
+        "3": { "value": "#5C5C66", "description": "Tertiary / helper" },
+        "4": { "value": "#8A8A94", "description": "Placeholder / caption" }
+      },
+      "dark": {
+        "1": { "value": "#F5F4F1" },
+        "2": { "value": "#D8D6D0" },
+        "3": { "value": "#A0A0AC" },
+        "4": { "value": "#6F6F7A" }
+      }
+    },
+    "surface": {
+      "light": {
+        "bg":           { "value": "#F5F4F1" },
+        "panel":        { "value": "#FFFFFF" },
+        "sidebar":      { "value": "#0E0E12" },
+        "border":       { "value": "#E6E3DC" },
+        "border-strong":{ "value": "#C8C3B8" }
+      },
+      "dark": {
+        "bg":           { "value": "#0E0E12" },
+        "panel":        { "value": "#17171E" },
+        "sidebar":      { "value": "#0A0A0E" },
+        "border":       { "value": "#25252E" },
+        "border-strong":{ "value": "#3A3A45" }
+      }
+    },
+    "semantic": {
+      "success":      { "value": "#0A8A5C" },
+      "success-soft": { "value": "rgba(10,138,92,.1)" },
+      "warn":         { "value": "#C96A00" },
+      "warn-soft":    { "value": "rgba(201,106,0,.1)" },
+      "danger":       { "value": "#D53030" },
+      "danger-soft":  { "value": "rgba(213,48,48,.1)" },
+      "info":         { "value": "#2566E5" },
+      "info-soft":    { "value": "rgba(37,102,229,.1)" }
+    }
+  },
+
+  "font": {
+    "family": {
+      "sans":   { "value": "'Geist', 'Be Vietnam Pro', system-ui, sans-serif" },
+      "mono":   { "value": "'Geist Mono', ui-monospace, monospace" },
+      "serif":  { "value": "'Instrument Serif', Georgia, serif" }
+    },
+    "weight": {
+      "regular":  { "value": 400 },
+      "medium":   { "value": 500 },
+      "semibold": { "value": 600 },
+      "bold":     { "value": 700 },
+      "extrabold":{ "value": 800 }
+    },
+    "size": {
+      "xs":   { "value": "10.5px" },
+      "sm":   { "value": "11.5px" },
+      "base": { "value": "13px" },
+      "md":   { "value": "14px" },
+      "lg":   { "value": "17px" },
+      "xl":   { "value": "22px" },
+      "2xl":  { "value": "28px" },
+      "3xl":  { "value": "36px" },
+      "4xl":  { "value": "48px" },
+      "5xl":  { "value": "56px" }
+    },
+    "letter-spacing": {
+      "tight-2":  { "value": "-0.03em" },
+      "tight":    { "value": "-0.02em" },
+      "normal":   { "value": "0" },
+      "wide":     { "value": "0.06em" },
+      "wider":    { "value": "0.14em" }
+    },
+    "line-height": {
+      "tight": { "value": 1.1 },
+      "snug":  { "value": 1.3 },
+      "base":  { "value": 1.55 }
+    }
+  },
+
+  "space": {
+    "0":  { "value": "0" },
+    "1":  { "value": "4px" },
+    "2":  { "value": "8px" },
+    "3":  { "value": "12px" },
+    "4":  { "value": "16px" },
+    "5":  { "value": "20px" },
+    "6":  { "value": "24px" },
+    "8":  { "value": "32px" },
+    "10": { "value": "40px" },
+    "12": { "value": "48px" },
+    "16": { "value": "64px" }
+  },
+
+  "radius": {
+    "sm":   { "value": "6px" },
+    "md":   { "value": "10px" },
+    "lg":   { "value": "14px" },
+    "xl":   { "value": "20px" },
+    "pill": { "value": "999px" }
+  },
+
+  "shadow": {
+    "sm": { "value": "0 1px 2px rgba(0,0,0,.04), 0 1px 3px rgba(0,0,0,.06)" },
+    "md": { "value": "0 4px 14px rgba(255,91,46,.3)" },
+    "lg": { "value": "0 20px 50px -10px rgba(0,0,0,.25), 0 0 0 1px rgba(230,227,220,1)" },
+    "xl": { "value": "0 40px 80px -20px rgba(0,0,0,.25), 0 0 0 1px rgba(230,227,220,1)" },
+    "focus-ring": { "value": "0 0 0 3px rgba(255,91,46,.22)" }
+  },
+
+  "motion": {
+    "duration": {
+      "fast": { "value": "140ms" },
+      "base": { "value": "220ms" },
+      "slow": { "value": "360ms" }
+    },
+    "easing": {
+      "standard":   { "value": "cubic-bezier(.2, 0, 0, 1)" },
+      "emphasized": { "value": "cubic-bezier(.3, 0, 0, 1)" },
+      "entrance":   { "value": "cubic-bezier(0, 0, .2, 1)" },
+      "exit":       { "value": "cubic-bezier(.4, 0, 1, 1)" }
+    }
+  },
+
+  "z-index": {
+    "sidebar":       { "value": 10 },
+    "header":        { "value": 20 },
+    "dropdown":      { "value": 100 },
+    "modal-overlay": { "value": 200 },
+    "modal":         { "value": 210 },
+    "toast":         { "value": 300 },
+    "tooltip":       { "value": 400 }
+  },
+
+  "breakpoint": {
+    "sm": { "value": "640px" },
+    "md": { "value": "960px" },
+    "lg": { "value": "1280px" },
+    "xl": { "value": "1440px", "description": "Target desktop layout" }
+  }
+}

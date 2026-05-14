@@ -1,0 +1,9 @@
+{
+  "name": "com.fshare.tool",
+  "description": "Fshare Tool — native messaging host for the Chrome extension",
+  "path": "fsharenativeapp.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://__EXTENSION_ID__/"
+  ]
+}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    StreamIX TV — Application manifest
+    Reference: 04 rev3 §4.2.2 Permissions; 13 §3 Network
+    Compatibility: minSdk 21 (Android 5.0) — phủ TV box VN từ 2015
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Network: bắt buộc cho mọi API call + stream -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- Wake lock: cho ExoPlayer giữ CPU khi phát video -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Foreground service: cho MediaSessionService (player background audio nếu cần) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        tools:ignore="HighSamplingRateSensors" />
+
+    <!-- TV-specific features: bắt buộc khai báo cho Android TV launcher -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.gamepad"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <!-- Hỗ trợ multi-screen size: 720p / 1080p / 4K -->
+    <supports-screens
+        android:smallScreens="false"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:anyDensity="true" />
+
+    <application
+        android:name=".StreamIXApp"
+        android:allowBackup="false"
+        android:banner="@drawable/ic_banner"
+        android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="false"
+        android:theme="@style/Theme.StreamIXTV"
+        android:usesCleartextTraffic="false"
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="33">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode|locale|fontScale|density"
+            android:resizeableActivity="false"
+            android:theme="@style/Theme.StreamIXTV.Splash">
+
+            <!-- Android TV launcher entry (LEANBACK_LAUNCHER) -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
+            <!-- Phone/tablet fallback (ít dùng nhưng giữ cho QA test trên emulator) -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

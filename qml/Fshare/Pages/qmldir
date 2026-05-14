@@ -1,0 +1,9 @@
+module Fshare.Pages
+DownloadPage 1.0 DownloadPage.qml
+UploadPage 1.0 UploadPage.qml
+FileManagerPage 1.0 FileManagerPage.qml
+FavoritesPage 1.0 FavoritesPage.qml
+UserInfoPage 1.0 UserInfoPage.qml
+SettingsPage 1.0 SettingsPage.qml
+ShowcasePage 1.0 ShowcasePage.qml
+SyncPage 1.0 SyncPage.qml

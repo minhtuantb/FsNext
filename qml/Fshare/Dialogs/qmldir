@@ -1,0 +1,6 @@
+module Fshare.Dialogs
+AddWatchFolderDialog 1.0 AddWatchFolderDialog.qml
+WatchFolderSettingsDialog 1.0 WatchFolderSettingsDialog.qml
+RemoveWatchDialog 1.0 RemoveWatchDialog.qml
+FolderBrowserDialog 1.0 FolderBrowserDialog.qml
+FileDetailSheet 1.0 FileDetailSheet.qml

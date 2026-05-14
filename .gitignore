@@ -1,0 +1,89 @@
+# ── Build artefacts ─────────────────────────────────────────────────────────
+build/
+build-*/
+out/
+output/
+dist/
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.user
+*.user.*
+*.autosave
+*.qmlc
+*.jsc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+
+# ── CMake ──────────────────────────────────────────────────────────────────
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+CMakeUserPresets.json
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+*.cmake.in
+
+# ── Qt Creator / IDE ───────────────────────────────────────────────────────
+.qtc_clangd/
+.idea/
+.vs/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# ── Logs / test outputs ────────────────────────────────────────────────────
+*.log
+*.tmp
+*.bak
+*.bak-*
+runtime.log
+vcvars-init.log
+summary.txt
+build-log.txt
+build-out.log
+
+# ── Python (scripts/) ──────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# ── OS metadata ────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ── Claude / tooling state ─────────────────────────────────────────────────
+.claude/
+
+# ── User-specific config (keep templates, ignore filled copies) ────────────
+*.local
+*.private
+.env
+.env.local
+
+# ── OAuth secrets (real values live locally / in CI store) ─────────────────
+# OAuthSecrets.h.example IS committed (template); the populated copy is not.
+src/core/api/OAuthSecrets.h
+
+# ── Deployment / release ───────────────────────────────────────────────────
+*.exe.installer
+FsNext-Setup-*.exe

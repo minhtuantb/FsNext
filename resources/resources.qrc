@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="data/search_bad_words.json">data/search_bad_words.json</file>
+    </qresource>
+</RCC>

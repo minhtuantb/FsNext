@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- StreamIX TV — All shared strings (vi default)
+     Đặt ở :core:ui module để mọi feature module access qua vn.streamix.tv.core.ui.R.
+     Reason: gradle.properties có nonTransitiveRClass=true. -->
+<resources>
+    <!-- App -->
+    <string name="app_name">StreamIX TV</string>
+    <string name="app_tagline">Phát mọi định dạng từ Fshare</string>
+
+    <!-- Splash -->
+    <string name="splash_loading">Đang khởi động…</string>
+
+    <!-- Login -->
+    <string name="login_hub_title">Đăng nhập StreamIX</string>
+    <string name="login_hub_subtitle">Mở khoá thư viện cá nhân của bạn</string>
+    <string name="login_email_field">Email</string>
+    <string name="login_password_field">Mật khẩu</string>
+    <string name="login_button_submit">Đăng nhập</string>
+    <string name="login_show_password">Hiện mật khẩu</string>
+    <string name="login_hide_password">Ẩn mật khẩu</string>
+    <string name="login_session_caption">Phiên giữ trong 7 ngày</string>
+    <string name="login_help_link">Cần trợ giúp?</string>
+    <string name="login_error_invalid_credentials">Email hoặc mật khẩu không đúng</string>
+    <string name="login_error_locked">Tài khoản tạm khoá. Liên hệ hỗ trợ.</string>
+    <string name="login_error_throttle">Quá nhiều lần thử. Vui lòng đợi 15 phút.</string>
+    <string name="login_error_network">Không có kết nối. Kiểm tra mạng.</string>
+
+    <!-- Login split layout (mockup S1) -->
+    <string name="login_hero_title">Cloud của bạn,\ntrên màn hình lớn.</string>
+    <string name="login_hero_subtitle">Đăng nhập bằng tài khoản Fshare để xem ngay video lưu trữ trên cloud — không copy file, không cài thêm.</string>
+    <string name="login_hero_footer">FSHARE.VN — ACCOUNT</string>
+    <string name="login_form_eyebrow">ĐĂNG NHẬP</string>
+    <string name="login_form_title">Tài khoản Fshare</string>
+    <string name="login_email_label">EMAIL</string>
+    <string name="login_email_placeholder">name@example.com</string>
+    <string name="login_password_label">MẬT KHẨU</string>
+    <string name="login_password_placeholder">Nhập mật khẩu</string>
+    <string name="login_show_password_text">Hiện</string>
+    <string name="login_hide_password_text">Ẩn</string>
+    <string name="login_remember_me">Nhớ tôi 30 ngày</string>
+    <string name="login_forgot_password">Quên mật khẩu? Truy cập fshare.vn trên điện thoại để khôi phục.</string>
+
+    <!-- Home -->
+    <string name="home_greeting_morning">Chào buổi sáng</string>
+    <string name="home_greeting_afternoon">Chào buổi chiều</string>
+    <string name="home_greeting_evening">Chào buổi tối</string>
+    <string name="home_section_continue">Tiếp tục xem</string>
+    <string name="home_section_recent">File gần đây</string>
+    <string name="home_section_folders">Thư mục</string>
+    <string name="home_section_suggested">Gợi ý</string>
+    <string name="home_section_trending">Xu hướng</string>
+    <string name="home_view_all">Xem tất cả</string>
+    <string name="home_topbar_search_hint">Tìm kiếm</string>
+    <string name="home_topbar_account">Tài khoản</string>
+    <string name="home_topbar_settings">Cài đặt</string>
+    <string name="home_empty_title">Thư viện trống</string>
+    <string name="home_empty_body">Tải file lên Fshare từ điện thoại hoặc máy tính để bắt đầu xem.</string>
+    <string name="home_progress_label">%1$d%% đã xem</string>
+    <string name="home_back_confirm_title">Thoát StreamIX TV?</string>
+    <string name="home_back_confirm_body">Bạn có muốn đóng ứng dụng?</string>
+
+    <!-- Home (V1.1 mockup) -->
+    <string name="home_search_placeholder">Tìm phim, tên file, hoặc bộ phim…</string>
+    <string name="home_search_hint">OK · TÌM KIẾM</string>
+    <string name="home_continue_count">Tiếp tục xem · %1$d mục</string>
+    <string name="home_progress_short">%1$d%% đã xem</string>
+    <string name="home_hero_suggested_title">Gợi Ý</string>
+    <string name="home_hero_suggested_subtitle">%1$d mục · cá nhân hoá</string>
+    <string name="home_hero_trending_title">Xu Hướng</string>
+    <string name="home_hero_trending_subtitle">%1$d mục · 7 ngày qua</string>
+    <string name="home_hero_top_title">Top</string>
+    <string name="home_hero_top_subtitle">%1$d phim hàng đầu</string>
+    <string name="home_hero_top_subtitle_default">100 phim hàng đầu</string>
+    <string name="home_hero_loading">Đang tải…</string>
+
+    <!-- Search (V1.1 mockup) -->
+    <string name="search_title">Tìm kiếm</string>
+    <string name="search_input_placeholder">Tìm phim, tên file, hoặc bộ phim…</string>
+    <string name="search_results_count">%1$d KẾT QUẢ</string>
+    <string name="search_keyboard_label">Bàn phím</string>
+    <string name="search_suggestions_label">Gợi ý cho bạn</string>
+    <string name="search_min_chars_hint">Nhập tối thiểu 2 ký tự để tìm kiếm.</string>
+    <string name="search_filter_all">Tất cả</string>
+    <string name="search_filter_movie">Phim</string>
+    <string name="search_filter_series">Series</string>
+    <string name="search_filter_folder">Folder</string>
+    <string name="search_no_results_title">Không tìm thấy kết quả</string>
+    <string name="search_no_results_body">Thử với từ khoá khác hoặc kiểm tra chính tả.</string>
+    <string name="search_filter_empty_title">Không có kết quả ở mục này</string>
+    <string name="search_filter_empty_body">Thử chọn mục khác hoặc đổi từ khoá.</string>
+    <string name="search_error_title">Không tìm được</string>
+    <string name="search_error_try">Thử các gợi ý:</string>
+    <string name="search_error_network">Không có kết nối mạng</string>
+    <string name="search_error_throttled">Quá nhiều yêu cầu, thử lại sau</string>
+    <string name="search_error_auth_expired">Phiên hết hạn — vui lòng đăng nhập lại</string>
+
+    <!-- Top page (mockup S2c) -->
+    <string name="top_eyebrow">BẢNG XẾP HẠNG</string>
+    <string name="top_title">Top</string>
+    <string name="top_subtitle">100 phim hàng đầu mọi thời đại</string>
+    <string name="top_filter_imdb">IMDB</string>
+    <string name="top_filter_rt">RT</string>
+    <string name="top_filter_fshare">FSHARE</string>
+    <string name="top_empty_title">Bảng xếp hạng đang trống</string>
+    <string name="top_empty_body">Đội biên tập đang cập nhật. Quay lại sau ít phút.</string>
+    <string name="top_error_title">Không tải được</string>
+
+    <!-- Catalog (Suggested + Trending detail) -->
+    <string name="catalog_suggested_title">Gợi Ý</string>
+    <string name="catalog_suggested_eyebrow">ĐỀ XUẤT CHO BẠN</string>
+    <string name="catalog_suggested_subtitle">%1$d mục · cá nhân hoá</string>
+    <string name="catalog_trending_title">Xu Hướng</string>
+    <string name="catalog_trending_eyebrow">BẢNG XẾP HẠNG NHANH</string>
+    <string name="catalog_trending_subtitle">%1$d mục · %2$s qua</string>
+    <string name="catalog_period_today">Hôm nay</string>
+    <string name="catalog_period_week">7 ngày</string>
+    <string name="catalog_period_month">30 ngày</string>
+    <string name="catalog_sort_label">Sắp xếp</string>
+    <string name="catalog_sort_newest">Mới nhất</string>
+    <string name="catalog_sort_all">Tất cả</string>
+    <string name="catalog_empty_title">Chưa có mục nào</string>
+    <string name="catalog_empty_body">Đội biên tập đang cập nhật. Quay lại sau.</string>
+    <string name="catalog_folder_subtitle">Thư mục</string>
+
+    <!-- Player password required -->
+    <string name="player_password_title">File yêu cầu mật khẩu</string>
+    <string name="player_password_title_retry">Mật khẩu không đúng</string>
+    <string name="player_password_default_body">Nhập mật khẩu để xem video.</string>
+    <string name="player_password_placeholder">Nhập mật khẩu</string>
+    <string name="player_password_action_play">Phát video</string>
+    <string name="player_password_action_cancel">Quay lại</string>
+
+    <!-- Common -->
+    <string name="common_loading">Đang tải…</string>
+    <string name="common_retry">Thử lại</string>
+    <string name="common_cancel">Hủy</string>
+    <string name="common_back">Quay lại</string>
+    <string name="common_no_network">Không có kết nối mạng</string>
+    <string name="common_session_expired">Phiên hết hạn</string>
+    <string name="common_rate_limited">Quá nhiều yêu cầu, thử lại sau</string>
+    <string name="common_unknown_error">Lỗi không xác định</string>
+
+    <!-- Browse -->
+    <string name="browse_loading">Đang tải…</string>
+    <string name="browse_empty_title">Thư mục trống</string>
+    <string name="browse_empty_body">Thư mục này không có file nào.</string>
+    <string name="browse_error_title">Không tải được</string>
+    <string name="browse_error_action_retry">Thử lại</string>
+
+    <!-- File detail -->
+    <string name="detail_button_play">Phát ngay</string>
+    <string name="detail_button_favorite">Yêu thích</string>
+    <string name="detail_meta_size">Kích thước</string>
+    <string name="detail_meta_duration">Thời lượng</string>
+    <string name="detail_meta_format">Định dạng</string>
+    <string name="detail_password_required_title">File có mật khẩu</string>
+    <string name="detail_password_required_body">Nhập mật khẩu để xem.</string>
+    <string name="detail_password_field">Mật khẩu</string>
+    <string name="detail_error_file_corrupted">File hỏng, không xem được.</string>
+    <string name="detail_error_not_playable">Định dạng không hỗ trợ phát trực tiếp.</string>
+
+    <!-- Player -->
+    <string name="player_loading">Đang tải video…</string>
+    <string name="player_buffering">Đang đệm…</string>
+    <string name="player_error_codec_body">Định dạng video không hỗ trợ.</string>
+    <string name="player_error_network_body">Mất kết nối. Vui lòng thử lại.</string>
+    <string name="player_error_url_expired_body">Phiên xem hết hạn. Tải lại để tiếp tục.</string>
+    <string name="player_error_not_found_body">Link không tồn tại hoặc đã bị xoá.</string>
+    <string name="player_error_too_many_sessions_body">Quá nhiều phiên tải đang hoạt động. Hãy vào fshare.vn → Bảo mật → Xoá phiên.</string>
+    <string name="player_error_auth_body">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="player_error_action_retry">Thử lại</string>
+    <string name="player_error_action_back">Quay lại</string>
+    <string name="player_back_confirm_title">Tắt phim?</string>
+    <string name="player_back_confirm_body">Vị trí xem sẽ được lưu.</string>
+
+    <!-- Resume prompt -->
+    <string name="resume_prompt_title">Tiếp tục từ %1$s?</string>
+    <string name="resume_prompt_action_resume">Tiếp tục</string>
+    <string name="resume_prompt_action_restart">Bắt đầu lại</string>
+
+    <!-- Track selection -->
+    <string name="track_select_subtitle_title">Chọn phụ đề</string>
+    <string name="track_select_audio_title">Chọn audio</string>
+    <string name="track_select_subtitle_off">Tắt phụ đề</string>
+
+    <!-- Settings -->
+    <string name="settings_hub_title">Cài đặt</string>
+    <string name="settings_section_account">Tài khoản</string>
+    <string name="settings_section_playback">Phát video</string>
+    <string name="settings_section_network">Mạng</string>
+    <string name="settings_section_about">Giới thiệu</string>
+
+    <!-- Settings Account -->
+    <string name="account_title">Tài khoản</string>
+    <string name="account_label_vip">Gói VIP</string>
+    <string name="account_label_vip_expire">Hết hạn</string>
+    <string name="account_label_webspace">Dung lượng</string>
+    <string name="account_button_logout">Đăng xuất</string>
+    <string name="account_logout_action_cancel">Hủy</string>
+    <string name="account_vip_active">VIP</string>
+    <string name="account_vip_inactive">Free</string>
+
+    <!-- Settings Playback -->
+    <string name="playback_title">Phát video</string>
+    <string name="playback_engine_label">Engine phát</string>
+    <string name="playback_engine_exo">ExoPlayer (mặc định)</string>
+    <string name="playback_engine_vlc">libVLC</string>
+    <string name="playback_audio_passthrough">Audio passthrough HDMI</string>
+    <string name="playback_auto_next">Tự động phát file kế tiếp</string>
+    <string name="playback_save_position">Lưu vị trí xem dở</string>
+    <string name="playback_subtitle_size">Cỡ phụ đề</string>
+    <string name="playback_subtitle_size_small">Nhỏ</string>
+    <string name="playback_subtitle_size_medium">Vừa</string>
+    <string name="playback_subtitle_size_large">Lớn</string>
+    <string name="playback_subtitle_size_xlarge">Rất lớn</string>
+    <string name="playback_subtitle_color">Màu phụ đề</string>
+    <string name="playback_subtitle_color_white">Trắng</string>
+    <string name="playback_subtitle_color_yellow">Vàng</string>
+    <string name="playback_subtitle_color_orange">Cam</string>
+    <string name="playback_subtitle_outline">Viền phụ đề</string>
+
+    <!-- Settings Network -->
+    <string name="network_title">Mạng</string>
+    <string name="network_status_wifi">Wi-Fi</string>
+    <string name="network_status_ssid">Tên mạng</string>
+    <string name="network_status_ip">Địa chỉ IP</string>
+    <string name="network_status_link_speed">Tốc độ link</string>
+    <string name="network_action_open_system_settings">Mở Cài đặt mạng hệ thống</string>
+
+    <!-- Settings About -->
+    <string name="about_title">Giới thiệu</string>
+    <string name="about_version_label">Phiên bản</string>
+    <string name="about_section_update">Cập nhật</string>
+    <string name="about_update_show_qr">Cách cập nhật</string>
+    <string name="about_update_qr_body">Quét mã QR bên dưới hoặc truy cập tv.streamix.vn trên điện thoại để tải bản mới.</string>
+    <string name="about_section_device">Thiết bị</string>
+    <string name="about_label_model">Model</string>
+    <string name="about_label_android">Android</string>
+    <string name="about_label_freespace">Còn trống</string>
+    <string name="about_contact_caption">Liên hệ: tv-support\@fshare.vn</string>
+
+    <!-- Search -->
+    <string name="search_field_hint">Tìm tên file…</string>
+    <string name="search_recent_label">Tìm kiếm gần đây</string>
+    <string name="search_clear">Xóa</string>
+    <string name="search_no_results_title">Không tìm thấy</string>
+    <string name="search_no_results_body">Thử từ khoá khác hoặc kiểm tra chính tả.</string>
+    <string name="search_min_chars">Nhập tối thiểu %1$d ký tự</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_step1_title">Điều khiển bằng remote</string>
+    <string name="onboarding_step1_body">Dùng phím lên/xuống/trái/phải để chọn, OK để xác nhận, Back để quay lại.</string>
+    <string name="onboarding_step2_title">Tiếp tục xem dở</string>
+    <string name="onboarding_step2_body">Mỗi video bạn xem được lưu vị trí — quay lại bất cứ lúc nào.</string>
+    <string name="onboarding_action_next">Tiếp</string>
+    <string name="onboarding_action_start">Bắt đầu</string>
+    <string name="onboarding_action_skip">Bỏ qua</string>
+
+    <!-- Global overlays / errors -->
+    <string name="error_no_network_title">Không có kết nối</string>
+    <string name="error_no_network_body">Vui lòng kiểm tra mạng và thử lại.</string>
+    <string name="error_no_network_action_settings">Cài đặt mạng</string>
+    <string name="error_no_network_action_retry">Thử lại</string>
+    <string name="error_server_title">Máy chủ tạm ngưng</string>
+    <string name="error_server_body">Vui lòng thử lại sau ít phút.</string>
+    <string name="error_init_title">Khởi động thất bại</string>
+    <string name="error_init_action_retry">Thử lại</string>
+    <string name="session_expired_title">Phiên hết hạn</string>
+    <string name="session_expired_body">Vui lòng đăng nhập lại để tiếp tục.</string>
+    <string name="session_expired_action">Đăng nhập lại</string>
+
+    <!-- Common actions (existing in core/ui — keep) -->
+    <string name="action_yes">Có</string>
+    <string name="action_no">Không</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="action_close">Đóng</string>
+    <string name="action_back">Quay lại</string>
+
+    <!-- Dialogs (existing) -->
+    <string name="dialog_exit_app_title">Thoát StreamIX TV?</string>
+    <string name="dialog_exit_app_body">Bạn có muốn đóng ứng dụng?</string>
+    <string name="dialog_stop_playback_title">Tắt phim?</string>
+    <string name="dialog_stop_playback_body">Vị trí xem sẽ được lưu.</string>
+    <string name="dialog_logout_title">Đăng xuất?</string>
+    <string name="dialog_logout_body">Lịch sử xem dở local sẽ giữ lại.</string>
+    <string name="dialog_logout_action_confirm">Đăng xuất</string>
+    <string name="dialog_file_password_title">File có mật khẩu</string>
+    <string name="dialog_file_password_body">Nhập mật khẩu để xem.</string>
+    <string name="dialog_file_password_field">Mật khẩu</string>
+    <string name="dialog_update_guide_title">Cách cập nhật</string>
+    <string name="dialog_update_guide_body">Quét QR bên dưới hoặc truy cập tv.streamix.vn trên điện thoại để tải bản mới.</string>
+    <string name="dialog_session_expired_title">Phiên hết hạn</string>
+    <string name="dialog_session_expired_body">Vui lòng đăng nhập lại để tiếp tục.</string>
+    <string name="dialog_session_expired_action">Đăng nhập lại</string>
+
+    <!-- Toast / Snackbar -->
+    <string name="toast_logout_success">Đã đăng xuất</string>
+    <string name="toast_network_weak">Mạng yếu — đang dùng cache</string>
+    <string name="toast_rate_limited">Quá nhiều yêu cầu, vui lòng thử lại sau</string>
+    <string name="toast_file_not_found">File không còn tồn tại</string>
+    <string name="toast_session_expired">Phiên hết hạn, vui lòng đăng nhập lại</string>
+    <string name="toast_favorite_added">Đã thêm vào Yêu thích</string>
+    <string name="toast_favorite_removed">Đã xóa khỏi Yêu thích</string>
+    <string name="toast_settings_saved">Đã lưu cài đặt</string>
+    <string name="toast_search_min_chars">Nhập tối thiểu 2 ký tự</string>
+    <string name="toast_wifi_reconnected">Đã kết nối lại</string>
+</resources>

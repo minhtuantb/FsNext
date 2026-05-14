@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fshare Tool</title>
+  <style>
+    :root {
+      --fs-accent: #FF5B2E;
+      --fs-ink:    #0E0E12;
+      --fs-ink-3:  #5C5C66;
+      --fs-bg:     #F5F4F1;
+      --fs-panel:  #FFFFFF;
+      --fs-border: #E6E3DC;
+      font-family: 'Geist', 'Be Vietnam Pro', system-ui, sans-serif;
+    }
+    body { width: 280px; margin: 0; background: var(--fs-bg); color: var(--fs-ink); }
+    .card { background: var(--fs-panel); padding: 16px; border-radius: 14px;
+            margin: 12px; border: 1px solid var(--fs-border); }
+    h1 { font-size: 13px; margin: 0 0 6px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--fs-ink-3); }
+    p  { font-size: 12px; margin: 0 0 12px; color: var(--fs-ink-3); }
+    button { width: 100%; padding: 10px 12px; border: 0; border-radius: 999px;
+             background: var(--fs-accent); color: #fff; font-weight: 600; cursor: pointer;
+             font-size: 13px; }
+    button:disabled { opacity: .4; cursor: default; }
+    #status { font-size: 11px; margin-top: 8px; color: var(--fs-ink-3); min-height: 14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>━━ Fshare Tool</h1>
+    <p>Gửi tab hiện tại đến Fshare Tool đang chạy.</p>
+    <button id="send">Gửi đến Fshare Tool</button>
+    <div id="status"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

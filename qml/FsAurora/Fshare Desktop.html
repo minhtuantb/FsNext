@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fshare Desktop — Design Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#f0eee9; font-family: 'Be Vietnam Pro','Geist',system-ui,sans-serif; }
+  * { box-sizing: border-box; }
+</style>
+<template id="__bundler_thumbnail" data-bg-color="#F5F4F1">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FF5B2E"/>
+        <stop offset="60%" stop-color="#FF3D7F"/>
+        <stop offset="100%" stop-color="#FFAF1D"/>
+      </linearGradient>
+    </defs>
+    <rect x="360" y="200" width="480" height="400" rx="60" fill="url(#g)"/>
+    <text x="600" y="440" font-family="Georgia,serif" font-size="170" font-weight="400" fill="#fff" text-anchor="middle" letter-spacing="-6">Fs</text>
+    <text x="600" y="690" font-family="system-ui,sans-serif" font-size="28" font-weight="500" fill="#0E0E12" text-anchor="middle" letter-spacing="2">FSHARE · DESIGN SYSTEM</text>
+  </svg>
+</template>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="src/tokens.jsx"></script>
+<script type="text/babel" src="src/icons.jsx"></script>
+<script type="text/babel" src="src/ds-cards.jsx"></script>
+<script type="text/babel" src="src/ds-foundations.jsx"></script>
+<script type="text/babel" src="src/ds-components-1.jsx"></script>
+<script type="text/babel" src="src/ds-components-2.jsx"></script>
+<script type="text/babel" src="src/ds-components-3.jsx"></script>
+<script type="text/babel" src="src/ds-icon-library.jsx"></script>
+<script type="text/babel" src="src/ds-table.jsx"></script>
+<script type="text/babel" src="src/ds-guidelines.jsx"></script>
+<script type="text/babel" src="src/variant-aurora.jsx"></script>
+<script type="text/babel" src="src/aurora-auth.jsx"></script>
+<script type="text/babel" src="src/aurora-screens.jsx"></script>
+<script type="text/babel" src="src/aurora-upload-modal.jsx"></script>
+<script type="text/babel" src="src/aurora-sync-auto.jsx"></script>
+<script type="text/babel" src="src/variant-aurora-files.jsx"></script>
+<script type="text/babel" src="src/variant-aurora-files-v2.jsx"></script>
+<script type="text/babel" src="src/app.jsx"></script>
+
+</body>
+</html>

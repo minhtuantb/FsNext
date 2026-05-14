@@ -1,0 +1,92 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "msvc2022",
+      "displayName": "MSVC 2022 Release (vcpkg static)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "environment": {
+        "INCLUDE": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/include;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/ucrt;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/shared;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/winrt",
+        "LIB": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/lib/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/ucrt/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x64",
+        "PATH": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64;C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64;C:/Qt/6.8.3/msvc2022_64/bin;$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe",
+        "CMAKE_CXX_COMPILER": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_INSTALLED_DIR": "D:/DevTools/vcpkg-inst",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.3/msvc2022_64",
+        "FSNEXT_ENABLE_DEV_BUILD": "ON"
+      }
+    },
+    {
+      "name": "msvc2022-debug",
+      "displayName": "MSVC 2022 Debug (vcpkg static)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-debug",
+      "inherits": "msvc2022",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "msvc2022-production",
+      "displayName": "MSVC 2022 Production Release (dev features OFF)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-production",
+      "inherits": "msvc2022",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "FSNEXT_ENABLE_DEV_BUILD": "OFF"
+      }
+    },
+    {
+      "name": "mingw",
+      "displayName": "MinGW 13 Release (Qt-bundled)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-mingw",
+      "environment": {
+        "PATH": "C:/Qt/Tools/mingw1310_64/bin;C:/Qt/Tools/CMake_64/bin;C:/Qt/Tools/Ninja;C:/Qt/6.8.3/mingw_64/bin;$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "C:/Qt/Tools/mingw1310_64/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "C:/Qt/Tools/mingw1310_64/bin/g++.exe",
+        "CMAKE_MAKE_PROGRAM": "C:/Qt/Tools/Ninja/ninja.exe",
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.3/mingw_64",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic",
+        "FSNEXT_ENABLE_DEV_BUILD": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "release",
+      "configurePreset": "msvc2022",
+      "configuration": "Release",
+      "jobs": 8
+    },
+    {
+      "name": "debug",
+      "configurePreset": "msvc2022-debug",
+      "configuration": "Debug",
+      "jobs": 8
+    },
+    {
+      "name": "production",
+      "configurePreset": "msvc2022-production",
+      "configuration": "Release",
+      "jobs": 8
+    },
+    {
+      "name": "mingw-release",
+      "configurePreset": "mingw",
+      "configuration": "Release",
+      "jobs": 8
+    }
+  ]
+}

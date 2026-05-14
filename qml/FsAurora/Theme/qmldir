@@ -1,0 +1,3 @@
+module FsAurora.Theme
+singleton AuroraColors 1.0 AuroraColors.qml
+singleton AuroraTheme 1.0 AuroraTheme.qml

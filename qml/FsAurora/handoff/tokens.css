@@ -1,0 +1,177 @@
+/* ─────────────────────────────────────────────────────────────
+   Fshare Desktop · Design Tokens (CSS)
+   Dán vào stylesheet global. Dùng với var(--fs-*).
+   Có dark mode qua [data-theme="dark"] trên <html> hoặc <body>.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --fs-accent:        #FF5B2E;
+  --fs-accent-2:      #FFAF1D;
+  --fs-accent-3:      #FF3D7F;
+  --fs-grad:          linear-gradient(135deg, #FF5B2E 0%, #FF3D7F 60%, #FFAF1D 100%);
+  --fs-grad-soft:     linear-gradient(135deg, rgba(255,91,46,.08) 0%, rgba(255,61,127,.08) 60%, rgba(255,175,29,.08) 100%);
+
+  /* Ink (text) · light */
+  --fs-ink:           #0E0E12;
+  --fs-ink-2:         #2A2A32;
+  --fs-ink-3:         #5C5C66;
+  --fs-ink-4:         #8A8A94;
+
+  /* Surface · light */
+  --fs-bg:            #F5F4F1;
+  --fs-panel:         #FFFFFF;
+  --fs-sidebar:       #0E0E12;
+  --fs-border:        #E6E3DC;
+  --fs-border-strong: #C8C3B8;
+
+  /* Semantic */
+  --fs-success:       #0A8A5C;
+  --fs-success-soft:  rgba(10,138,92,.1);
+  --fs-warn:          #C96A00;
+  --fs-warn-soft:     rgba(201,106,0,.1);
+  --fs-danger:        #D53030;
+  --fs-danger-soft:   rgba(213,48,48,.1);
+  --fs-info:          #2566E5;
+  --fs-info-soft:     rgba(37,102,229,.1);
+
+  /* Type */
+  --fs-font-sans:     'Geist', 'Be Vietnam Pro', system-ui, sans-serif;
+  --fs-font-mono:     'Geist Mono', ui-monospace, monospace;
+  --fs-font-serif:    'Instrument Serif', Georgia, serif;
+
+  /* Space scale (multiples of 4) */
+  --fs-space-1:  4px;
+  --fs-space-2:  8px;
+  --fs-space-3:  12px;
+  --fs-space-4:  16px;
+  --fs-space-5:  20px;
+  --fs-space-6:  24px;
+  --fs-space-8:  32px;
+  --fs-space-10: 40px;
+  --fs-space-12: 48px;
+  --fs-space-16: 64px;
+
+  /* Radius */
+  --fs-radius-sm:   6px;
+  --fs-radius-md:   10px;
+  --fs-radius-lg:   14px;
+  --fs-radius-xl:   20px;
+  --fs-radius-pill: 999px;
+
+  /* Shadow */
+  --fs-shadow-sm:   0 1px 2px rgba(0,0,0,.04), 0 1px 3px rgba(0,0,0,.06);
+  --fs-shadow-md:   0 4px 14px rgba(255,91,46,.3);
+  --fs-shadow-lg:   0 20px 50px -10px rgba(0,0,0,.25), 0 0 0 1px var(--fs-border);
+  --fs-shadow-xl:   0 40px 80px -20px rgba(0,0,0,.25), 0 0 0 1px var(--fs-border);
+  --fs-focus-ring:  0 0 0 3px rgba(255,91,46,.22);
+
+  /* Motion */
+  --fs-dur-fast:      140ms;
+  --fs-dur-base:      220ms;
+  --fs-dur-slow:      360ms;
+  --fs-ease-std:      cubic-bezier(.2, 0, 0, 1);
+  --fs-ease-emph:     cubic-bezier(.3, 0, 0, 1);
+  --fs-ease-entrance: cubic-bezier(0, 0, .2, 1);
+  --fs-ease-exit:     cubic-bezier(.4, 0, 1, 1);
+  --fs-motion-base:   var(--fs-dur-base) var(--fs-ease-std);
+
+  /* z-index */
+  --fs-z-sidebar:       10;
+  --fs-z-header:        20;
+  --fs-z-dropdown:      100;
+  --fs-z-modal-overlay: 200;
+  --fs-z-modal:         210;
+  --fs-z-toast:         300;
+  --fs-z-tooltip:       400;
+}
+
+[data-theme="dark"] {
+  --fs-ink:           #F5F4F1;
+  --fs-ink-2:         #D8D6D0;
+  --fs-ink-3:         #A0A0AC;
+  --fs-ink-4:         #6F6F7A;
+
+  --fs-bg:            #0E0E12;
+  --fs-panel:         #17171E;
+  --fs-sidebar:       #0A0A0E;
+  --fs-border:        #25252E;
+  --fs-border-strong: #3A3A45;
+
+  --fs-shadow-lg:     0 20px 50px -10px rgba(0,0,0,.6), 0 0 0 1px var(--fs-border);
+  --fs-shadow-xl:     0 40px 80px -20px rgba(0,0,0,.7), 0 0 0 1px var(--fs-border);
+}
+
+/* Utility: focus ring */
+.fs-focus:focus-visible {
+  outline: none;
+  box-shadow: var(--fs-focus-ring);
+}
+
+/* Utility: typography scale */
+.fs-h1   { font-family: var(--fs-font-sans); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.fs-h2   { font-family: var(--fs-font-sans); font-size: 22px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+.fs-hero { font-family: var(--fs-font-serif); font-size: 48px; font-weight: 400; letter-spacing: -0.03em; line-height: 1; }
+.fs-body { font-family: var(--fs-font-sans); font-size: 13px; font-weight: 400; line-height: 1.55; color: var(--fs-ink-2); }
+.fs-mono { font-family: var(--fs-font-mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0; }
+.fs-label{ font-family: var(--fs-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fs-ink-4); }
+
+/* Utility: buttons */
+.fs-btn {
+  padding: 10px 18px;
+  border-radius: var(--fs-radius-md);
+  font-family: var(--fs-font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--fs-motion-base);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+}
+.fs-btn-primary {
+  background: var(--fs-grad);
+  color: #fff;
+  box-shadow: var(--fs-shadow-md);
+}
+.fs-btn-primary:hover   { transform: translateY(-1px); }
+.fs-btn-primary:active  { transform: translateY(0); }
+.fs-btn-primary:disabled{ opacity: .45; cursor: not-allowed; transform: none; }
+
+.fs-btn-secondary {
+  background: var(--fs-panel);
+  color: var(--fs-ink);
+  border: 1.5px solid var(--fs-border-strong);
+}
+.fs-btn-ghost {
+  background: transparent;
+  color: var(--fs-ink-2);
+  border: 1px solid var(--fs-border);
+}
+
+/* Utility: card */
+.fs-card {
+  background: var(--fs-panel);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-lg);
+  padding: var(--fs-space-5);
+}
+
+/* Utility: input */
+.fs-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--fs-bg);
+  border: 1.5px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  font-family: var(--fs-font-sans);
+  font-size: 13px;
+  color: var(--fs-ink);
+  transition: all var(--fs-dur-fast) var(--fs-ease-std);
+}
+.fs-input:focus {
+  outline: none;
+  border-color: var(--fs-accent);
+  box-shadow: var(--fs-focus-ring);
+}

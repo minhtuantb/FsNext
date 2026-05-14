@@ -1,0 +1,8 @@
+module Fshare.Pages.FileManager
+FileRenameDialog    1.0 FileRenameDialog.qml
+FileDeleteDialog    1.0 FileDeleteDialog.qml
+FileMoveCopyDialog  1.0 FileMoveCopyDialog.qml
+FilePasswordDialog  1.0 FilePasswordDialog.qml
+FileManagerHeader   1.0 FileManagerHeader.qml
+FileManagerToolbar    1.0 FileManagerToolbar.qml
+FileManagerBreadcrumb 1.0 FileManagerBreadcrumb.qml

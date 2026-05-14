@@ -1,0 +1,4 @@
+module FsAurora.Pages
+LoginView 1.0 LoginView.qml
+ShowcasePage 1.0 ShowcasePage.qml
+HomePage 1.0 HomePage.qml
