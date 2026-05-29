@@ -1,5 +1,6 @@
 #pragma once
 #include "core/models/SyncFolder.h"
+#include "core/services/SyncScanner.h"
 #include "core/transfer/TransferPriority.h"
 #include <QFileSystemWatcher>
 #include <QObject>
@@ -188,14 +189,25 @@ private:
     // (add folder, click "sync now", file-watcher fire) pass Normal.
     void scanFolderInternal(const SyncFolder &folder,
                             TransferPriority prio = TransferPriority::Background);
-    // System-only skip-list check (used by the watcher and dir walker where
-    // user patterns don't apply because we don't yet know which folder owns
-    // the path).  File-level scan uses the overload below to merge user
-    // patterns from the owning SyncFolder.
-    bool shouldSkipFile(const QString &fileName) const;
-    bool shouldSkipFile(const QString &fileName,
-                        const QStringList &userPatterns) const;
-    bool shouldSkipDir(const QString &dirName) const;
+
+    // ── M18: async scan (walk off-main, apply on-main) ─────────────────────
+    // scanFolderInternal snapshots the folder, runs scanFilesystem() (in
+    // SyncScanner) on a QtConcurrent worker, then marshals the ScanResult back
+    // here so applyScanResult() can do the diff + persist + enqueue on the
+    // main thread.  m_files / m_repo / m_createdSubdirs / the watcher / every
+    // emit stay main-thread-only.
+    static ScanSnapshot makeScanSnapshot(const SyncFolder &folder);
+    void applyScanResult(const QString &folderId, TransferPriority prio,
+                         const ScanResult &result);
+
+    // Per-folder reentrancy guard.  markScanInFlight returns false (and sets a
+    // "dirty" flag) when a walk for that folder is already running, so watcher
+    // / timer fires coalesce into exactly one follow-up rescan instead of
+    // stacking N overlapping walks.  Both touch m_scanInFlight/m_scanDirty on
+    // the main thread only — no mutex needed.
+    bool markScanInFlight(const QString &folderId);
+    void clearScanInFlight(const QString &folderId);
+
     SyncFolder *findFolder(const QString &folderId);
     const SyncFolder *findFolderConst(const QString &folderId) const;
 
@@ -245,6 +257,13 @@ private:
     // Fshare this session. Avoids redundant createFolderInPath calls.
     // Sentinel "" (empty string) tracks the sync ROOT folder specifically.
     QHash<QString, QSet<QString>> m_createdSubdirs;
+
+    // ── M18 reentrancy guard ───────────────────────────────────────────────
+    // m_scanInFlight: folderIds whose background walk is running right now.
+    // m_scanDirty:    folderIds that asked for a rescan while in-flight — they
+    // get exactly one coalesced follow-up walk when the current one settles.
+    QSet<QString>             m_scanInFlight;
+    QSet<QString>             m_scanDirty;
 
     QString                   m_userId;
 

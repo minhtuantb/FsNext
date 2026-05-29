@@ -103,6 +103,7 @@ set(FSNEXT_SOURCES
     src/core/services/BatchFileResolver.cpp
     src/core/services/SettingsService.cpp
     src/core/services/SyncService.cpp
+    src/core/services/SyncScanner.cpp
 
     # Core - Net (OAuth loopback server for RFC 8252 flow)
     src/core/net/LoopbackServer.cpp
@@ -193,6 +194,7 @@ set(FSNEXT_HEADERS
     src/core/services/BatchFileResolver.h
     src/core/services/SettingsService.h
     src/core/services/SyncService.h
+    src/core/services/SyncScanner.h
 
     # Core - Net
     src/core/net/LoopbackServer.h

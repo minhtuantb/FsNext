@@ -11,42 +11,15 @@
 #include <QFileSystemWatcher>
 #include <QThread>
 #include <QPointer>
-#include <QRegularExpression>
 #include <QUuid>
 #include <QtConcurrent>
 
 namespace fsnext {
 
-// ── Skip-list patterns ───────────────────────────────────────────────────────
-// Match against the bare filename (not path). Case-insensitive.
-static bool matchesAnyPattern(const QString &name, const QStringList &patterns)
-{
-    for (const QString &pat : patterns) {
-        QRegularExpression re(QRegularExpression::wildcardToRegularExpression(pat),
-                              QRegularExpression::CaseInsensitiveOption);
-        if (re.match(name).hasMatch()) return true;
-    }
-    return false;
-}
-
-// Splits "*.psd, *.iso, *.RAW" → ["*.psd", "*.iso", "*.RAW"], trimming
-// whitespace and dropping empty entries.  Comma is the documented separator
-// in WatchFolderSettingsDialog's hint text; we don't try to be clever with
-// alternatives.  Hoisted to the top of the file so both scanFolderInternal
-// and previewScan (and any future callers) see it without needing a
-// forward declaration.
-static QStringList parseIgnorePatterns(const QString &raw)
-{
-    if (raw.trimmed().isEmpty()) return {};
-    QStringList out;
-    const QStringList parts = raw.split(QLatin1Char(','), Qt::SkipEmptyParts);
-    out.reserve(parts.size());
-    for (const QString &p : parts) {
-        const QString trimmed = p.trimmed();
-        if (!trimmed.isEmpty()) out.append(trimmed);
-    }
-    return out;
-}
+// The pure walk, skip-list predicates, and ignore-pattern parser now live in
+// SyncScanner.{h,cpp} so they can run off-main and be unit-tested without the
+// FshareApi/TransferService/SQLite dependency graph.  This file owns only the
+// stateful, main-thread half of the scan (diff + persist + enqueue).
 
 SyncService::SyncService(TransferService *transfer, FshareApi *api,
                          SyncRepository *repo, QObject *parent)
@@ -407,40 +380,21 @@ SyncService::PreviewResult SyncService::previewScan(const QString &localPath,
         return out;
     }
 
-    // Mirror scanFolderInternal's traversal — same skip rules, same cycle
-    // guard, same sub-tree pruning.  Crucial that the two stay in lock-step
-    // or the preview would lie to the user.
-    const QStringList userIgnore = parseIgnorePatterns(ignorePatterns);
+    // Share the exact walk the live scan uses (SyncScanner::scanFilesystem) so
+    // the two can't drift — a divergence here would make the preview lie to
+    // the user.  Oversized files come back flagged; the preview excludes them
+    // (UX-wise they're "won't upload" so they shouldn't inflate the estimate),
+    // matching the historical behaviour where the scan logged them as Failed.
+    ScanSnapshot snap;
+    snap.localPath       = localPath;
+    snap.watchSubfolders = watchSubfolders;
+    snap.ignorePatterns  = ignorePatterns;
 
-    QStringList pendingDirs;
-    pendingDirs.append(rootFi.absoluteFilePath());
-    QSet<QString> visitedDirs;
-
-    while (!pendingDirs.isEmpty()) {
-        const QString dirAbs = pendingDirs.takeLast();
-        QDir dir(dirAbs);
-        if (!dir.exists()) continue;
-
-        const QString canon = QFileInfo(dirAbs).canonicalFilePath();
-        if (canon.isEmpty() || visitedDirs.contains(canon)) continue;
-        visitedDirs.insert(canon);
-
-        const QFileInfoList entries = dir.entryInfoList(
-            QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-        for (const QFileInfo &fi : entries) {
-            const QString name = fi.fileName();
-            if (fi.isDir()) {
-                if (!watchSubfolders) continue;
-                if (shouldSkipDir(name)) continue;
-                pendingDirs.append(fi.absoluteFilePath());
-                continue;
-            }
-            if (shouldSkipFile(name, userIgnore)) continue;
-            if (fi.size() == 0) continue;
-            if (fi.size() > kMaxFileSize) continue;     // counted in scan as Failed, but UX-wise excluded from preview
-            ++out.fileCount;
-            out.totalBytes += fi.size();
-        }
+    const ScanResult r = scanFilesystem(snap, kMaxFileSize);
+    for (const ScannedFile &sf : r.files) {
+        if (sf.oversized) continue;
+        ++out.fileCount;
+        out.totalBytes += sf.size;
     }
     return out;
 }
@@ -448,54 +402,10 @@ SyncService::PreviewResult SyncService::previewScan(const QString &localPath,
 // ─────────────────────────────────────────────────────────────────────────────
 // Scanning
 // ─────────────────────────────────────────────────────────────────────────────
-
-// System-level skip-list — applied to every file regardless of folder.
-// User-supplied patterns are MERGED on top (see overload below); we never
-// let the user un-skip junk that the legacy client never uploaded.
-static const QStringList kSystemFileSkip = {
-    QStringLiteral(".*"),           // dotfiles
-    QStringLiteral("*.tmp"),
-    QStringLiteral("*.part"),        // partial browser downloads
-    QStringLiteral("*.crdownload"),
-    QStringLiteral("Thumbs.db"),
-    QStringLiteral("desktop.ini"),
-    QStringLiteral("~$*"),           // Office lock file
-};
-
-bool SyncService::shouldSkipFile(const QString &fileName) const
-{
-    return matchesAnyPattern(fileName, kSystemFileSkip);
-}
-
-bool SyncService::shouldSkipFile(const QString &fileName,
-                                  const QStringList &userPatterns) const
-{
-    if (matchesAnyPattern(fileName, kSystemFileSkip)) return true;
-    if (userPatterns.isEmpty()) return false;
-    return matchesAnyPattern(fileName, userPatterns);
-}
-
-// (parseIgnorePatterns is defined near the top of this file to satisfy both
-// scanFolderInternal and previewScan without forward declarations.)
-
-bool SyncService::shouldSkipDir(const QString &dirName) const
-{
-    // Noisy / tool-managed directories we never want to mirror.
-    static const QStringList kSkip = {
-        QStringLiteral(".*"),           // .git, .venv, .idea, .vs, .gradle, …
-        QStringLiteral("node_modules"),
-        QStringLiteral("__pycache__"),
-        QStringLiteral("build"),
-        QStringLiteral("dist"),
-        QStringLiteral("target"),       // Rust/Java
-        QStringLiteral("out"),
-        QStringLiteral("bin"),
-        QStringLiteral("obj"),
-        QStringLiteral("$RECYCLE.BIN"),
-        QStringLiteral("System Volume Information"),
-    };
-    return matchesAnyPattern(dirName, kSkip);
-}
+//
+// The skip-list predicates (scanShouldSkipFile/scanShouldSkipDir) and the pure
+// BFS (scanFilesystem) live in SyncScanner.cpp.  See scanFolderInternal /
+// applyScanResult below for the stateful main-thread half.
 
 QVector<SyncActivityEntry> SyncService::loadActivity() const
 {
@@ -595,14 +505,99 @@ void SyncService::setAutoSyncEnabled(bool enabled)
     }
 }
 
+// ── M18 reentrancy guard ──────────────────────────────────────────────────
+// All access on the main thread (markScanInFlight at the top of
+// scanFolderInternal, clear at the tail of applyScanResult) → no mutex.
+
+bool SyncService::markScanInFlight(const QString &folderId)
+{
+    if (m_scanInFlight.contains(folderId)) {
+        // A walk for this folder is already running off-main.  Remember the
+        // request so it isn't lost — clearScanInFlight will fire exactly one
+        // coalesced rescan once the in-flight walk settles (watcher/timer
+        // storms collapse to a single follow-up instead of stacking N walks).
+        m_scanDirty.insert(folderId);
+        return false;
+    }
+    m_scanInFlight.insert(folderId);
+    return true;
+}
+
+void SyncService::clearScanInFlight(const QString &folderId)
+{
+    m_scanInFlight.remove(folderId);
+    if (m_scanDirty.remove(folderId)) {
+        // Coalesced follow-up: run at Background priority — the original
+        // priority belonged to whatever triggered the now-finished walk, and a
+        // dirty re-scan is a catch-up, not a fresh user action.
+        if (const SyncFolder *f = findFolderConst(folderId))
+            scanFolderInternal(*f, TransferPriority::Background);
+    }
+}
+
+ScanSnapshot SyncService::makeScanSnapshot(const SyncFolder &folder)
+{
+    // Copy ONLY the fields the pure walk reads.  Snapshotting here (main
+    // thread, before the worker starts) means a concurrent config edit can't
+    // tear the inputs mid-walk; the edit's own setter fires a fresh scan that
+    // picks up the new config — same value-snapshot contract as TransferTask.
+    ScanSnapshot snap;
+    snap.localPath       = folder.localPath;
+    snap.watchSubfolders = folder.watchSubfolders;
+    snap.ignorePatterns  = folder.ignorePatterns;
+    return snap;
+}
+
 void SyncService::scanFolderInternal(const SyncFolder &folder, TransferPriority prio)
 {
     if (!m_autoSyncEnabled) return;                    // master pause beats per-folder
     if (!folder.enabled) return;
 
-    QDir rootDir(folder.localPath);
-    if (!rootDir.exists()) {
+    // Guard against overlapping walks of the SAME folder (watcher + timer +
+    // user click can all fire near-simultaneously now that the walk is async).
+    if (!markScanInFlight(folder.id)) return;          // coalesced → dirty flag set
+
+    // Snapshot the walk inputs, then run the BLOCKING filesystem traversal on a
+    // worker so a slow network mount can't freeze the UI.  The result is
+    // marshalled back to the main thread, where applyScanResult does the diff +
+    // persist + enqueue against m_files/m_repo/m_createdSubdirs (all main-only).
+    const ScanSnapshot snap = makeScanSnapshot(folder);
+    const QString      folderId = folder.id;
+    const qint64       maxFileSize = kMaxFileSize;
+    QPointer<SyncService> guard(this);
+
+    QtConcurrent::run([guard, snap, folderId, prio, maxFileSize]() {
+        ScanResult r = scanFilesystem(snap, maxFileSize);
+        if (!guard) return;                            // service gone mid-walk
+        QMetaObject::invokeMethod(guard.data(),
+            [guard, folderId, prio, r]() {
+                if (auto *self = guard.data())
+                    self->applyScanResult(folderId, prio, r);
+            },
+            Qt::QueuedConnection);
+    });
+}
+
+void SyncService::applyScanResult(const QString &folderId, TransferPriority prio,
+                                  const ScanResult &result)
+{
+    Q_ASSERT(QThread::currentThread() == this->thread());
+
+    // Re-validate: the world may have moved while the walk ran on a worker —
+    // user logged out, folder removed, auto-sync paused, or this folder
+    // disabled.  Any of those → drop the result and release the guard.
+    const SyncFolder *fConst = findFolderConst(folderId);
+    if (m_userId.isEmpty() || !fConst || !m_autoSyncEnabled || !fConst->enabled) {
+        clearScanInFlight(folderId);
+        return;
+    }
+    const SyncFolder folder = *fConst;        // value copy: safe across the emits below
+
+    // Root vanished between snapshot and walk → surface the same toast the
+    // old synchronous path emitted, then bail.
+    if (!result.rootExists) {
         emit folderMissing(folder.id, folder.localPath);
+        clearScanInFlight(folderId);
         return;
     }
 
@@ -610,117 +605,58 @@ void SyncService::scanFolderInternal(const SyncFolder &folder, TransferPriority 
     auto &map   = m_files[folder.id];
     auto &cache = m_createdSubdirs[folder.id];
 
-    // Parse the per-folder user ignore patterns once before the walk so the
-    // hot inner loop's shouldSkipFile() call doesn't re-tokenise on every
-    // file.  Empty result = no user-level filter, only the system skip-list.
-    const QStringList userIgnore = parseIgnorePatterns(folder.ignorePatterns);
-
-    // Walk strategy: when watchSubfolders is true we run a manual BFS that
-    // prunes skipped subtrees (matches what v5 did); when false we only
-    // enumerate the root and never push children onto pendingDirs, so the
-    // user gets a "flat sync" of just the root contents — useful for big
-    // folders like Downloads where subdirs are noise.
-    //
-    // Visited-set uses canonicalPath to break cycles introduced by symlinks
-    // or NTFS junction points — without this a junction pointing back at an
-    // ancestor would make the walk run forever.
-    QStringList pendingDirs;
-    pendingDirs.append(folder.localPath);
-    QSet<QString>          visitedDirs;
-    QHash<QString, bool>   seen;
     QVector<PendingUpload> pending;          // to enqueue AFTER subdirs exist
     QSet<QString>          newRelDirs;       // relDirs not yet in cache
 
-    while (!pendingDirs.isEmpty()) {
-        const QString dirAbs = pendingDirs.takeLast();
-        QDir dir(dirAbs);
-        if (!dir.exists()) continue;
+    // Diff the walked files against our tracked state — identical logic to the
+    // old in-walk version, just driven by ScannedFile instead of QFileInfo.
+    for (const ScannedFile &sf : result.files) {
+        if (sf.oversized) {
+            SyncFileEntry oversized;
+            oversized.folderId     = folder.id;
+            oversized.relPath      = sf.relPath;
+            oversized.size         = sf.size;
+            oversized.mtime        = sf.mtime;
+            oversized.state        = SyncFileState::Failed;
+            oversized.errorMessage = QObject::tr("File vượt quá giới hạn 1 GB");
+            map[sf.relPath] = oversized;
+            if (m_repo) m_repo->saveFile(oversized);
+            continue;
+        }
 
-        const QString canon = QFileInfo(dirAbs).canonicalFilePath();
-        if (canon.isEmpty()) continue;               // symlink target gone
-        if (visitedDirs.contains(canon)) continue;   // cycle guard
-        visitedDirs.insert(canon);
+        SyncFileEntry prev = map.value(sf.relPath);
+        const bool hasPrev = !prev.relPath.isEmpty();
 
-        const QFileInfoList entries = dir.entryInfoList(
-            QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        if (hasPrev && prev.state == SyncFileState::Synced &&
+            prev.size == sf.size && prev.mtime == sf.mtime) {
+            continue;
+        }
+        if (hasPrev && prev.state == SyncFileState::Uploading)
+            continue;
 
-        for (const QFileInfo &fi : entries) {
-            const QString name = fi.fileName();
+        SyncFileEntry e;
+        e.folderId = folder.id;
+        e.relPath  = sf.relPath;
+        e.size     = sf.size;
+        e.mtime    = sf.mtime;
+        e.state    = SyncFileState::Uploading;
+        map[sf.relPath] = e;
+        if (m_repo) m_repo->saveFile(e);
 
-            if (fi.isDir()) {
-                // watchSubfolders=false → never descend.  We still process
-                // sibling FILES via this same outer loop iteration; only
-                // the recursive push is gated.
-                if (!folder.watchSubfolders) continue;
-                if (shouldSkipDir(name)) continue;
-                pendingDirs.append(fi.absoluteFilePath());
-                continue;
-            }
+        PendingUpload pu;
+        pu.absPath = sf.absPath;
+        pu.relPath = sf.relPath;
+        pu.relDir  = sf.relDir;
+        pending.append(pu);
 
-            if (shouldSkipFile(name, userIgnore)) continue;
-            if (fi.size() == 0) continue;
-
-            // relPath is forward-slash, relative to folder.localPath.
-            QString relPath = rootDir.relativeFilePath(fi.absoluteFilePath());
-            relPath.replace(QLatin1Char('\\'), QLatin1Char('/'));
-
-            // relDir = containing subfolder, "" for files at the sync root.
-            QString relDir;
-            const int slash = relPath.lastIndexOf(QLatin1Char('/'));
-            if (slash > 0) relDir = relPath.left(slash);
-
-            seen[relPath] = true;
-
-            const int64_t size  = fi.size();
-            const qint64  mtime = fi.lastModified().toSecsSinceEpoch();
-
-            if (size > kMaxFileSize) {
-                SyncFileEntry oversized;
-                oversized.folderId     = folder.id;
-                oversized.relPath      = relPath;
-                oversized.size         = size;
-                oversized.mtime        = mtime;
-                oversized.state        = SyncFileState::Failed;
-                oversized.errorMessage = QObject::tr("File vượt quá giới hạn 1 GB");
-                map[relPath] = oversized;
-                if (m_repo) m_repo->saveFile(oversized);
-                continue;
-            }
-
-            SyncFileEntry prev = map.value(relPath);
-            const bool hasPrev = !prev.relPath.isEmpty();
-
-            if (hasPrev && prev.state == SyncFileState::Synced &&
-                prev.size == size && prev.mtime == mtime) {
-                continue;
-            }
-            if (hasPrev && prev.state == SyncFileState::Uploading)
-                continue;
-
-            SyncFileEntry e;
-            e.folderId = folder.id;
-            e.relPath  = relPath;
-            e.size     = size;
-            e.mtime    = mtime;
-            e.state    = SyncFileState::Uploading;
-            map[relPath] = e;
-            if (m_repo) m_repo->saveFile(e);
-
-            PendingUpload pu;
-            pu.absPath = fi.absoluteFilePath();
-            pu.relPath = relPath;
-            pu.relDir  = relDir;
-            pending.append(pu);
-
-            // Track any ancestor paths of relDir that aren't cached yet so we
-            // can create them on Fshare parent→child in a single worker.
-            if (!relDir.isEmpty() && !cache.contains(relDir)) {
-                QString accum;
-                const QStringList segs = relDir.split(QLatin1Char('/'), Qt::SkipEmptyParts);
-                for (const QString &seg : segs) {
-                    accum = accum.isEmpty() ? seg : (accum + QLatin1Char('/') + seg);
-                    if (!cache.contains(accum)) newRelDirs.insert(accum);
-                }
+        // Track any ancestor paths of relDir that aren't cached yet so we
+        // can create them on Fshare parent→child in a single worker.
+        if (!sf.relDir.isEmpty() && !cache.contains(sf.relDir)) {
+            QString accum;
+            const QStringList segs = sf.relDir.split(QLatin1Char('/'), Qt::SkipEmptyParts);
+            for (const QString &seg : segs) {
+                accum = accum.isEmpty() ? seg : (accum + QLatin1Char('/') + seg);
+                if (!cache.contains(accum)) newRelDirs.insert(accum);
             }
         }
     }
@@ -728,7 +664,7 @@ void SyncService::scanFolderInternal(const SyncFolder &folder, TransferPriority 
     // Mark previously-tracked files that have vanished from disk as Missing
     // (but keep the linkcode — the Fshare copy is still good).
     for (auto it = map.begin(); it != map.end(); ++it) {
-        if (seen.contains(it.key())) continue;
+        if (result.seenRel.contains(it.key())) continue;
         if (it->state != SyncFileState::Missing) {
             it->state = SyncFileState::Missing;
             if (m_repo) m_repo->saveFile(*it);
@@ -747,6 +683,7 @@ void SyncService::scanFolderInternal(const SyncFolder &folder, TransferPriority 
 
     if (pending.isEmpty()) {
         emit folderSynced(folder.id, 0);
+        clearScanInFlight(folderId);
         return;
     }
 
@@ -765,6 +702,11 @@ void SyncService::scanFolderInternal(const SyncFolder &folder, TransferPriority 
     // createUploadSession would race against (nonexistent) root.
     const bool needsRoot = !cache.contains(QString());
     ensureSubdirsThenEnqueue(folder, newDirsList, pending, needsRoot, prio);
+
+    // Release the per-folder guard last.  ensureSubdirsThenEnqueue is itself
+    // fire-and-forget async, so a coalesced dirty rescan kicked here can run
+    // concurrently with the subdir-creation worker without conflict.
+    clearScanInFlight(folderId);
 }
 
 void SyncService::ensureSubdirsThenEnqueue(const SyncFolder &folder,
@@ -921,7 +863,7 @@ void SyncService::rebuildWatcher()
             const QFileInfoList subs = QDir(dirAbs).entryInfoList(
                 QDir::Dirs | QDir::NoDotAndDotDot);
             for (const QFileInfo &sub : subs) {
-                if (shouldSkipDir(sub.fileName())) continue;
+                if (scanShouldSkipDir(sub.fileName())) continue;
                 const QString path = sub.absoluteFilePath();
                 fresh.append(path);
                 queue.append(path);
