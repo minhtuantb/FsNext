@@ -11,8 +11,8 @@
     chỉ shell/HUD/utility.
   - ✅ Cleanup #2 (2026-05-29): chuyển `FsGradientRect` → `Fshare.Components`; atom lib không còn import
     `FsAurora.Components` (phụ thuộc ngược đã cắt — chỉ còn phụ thuộc `FsAurora.Theme`).
-  - ⬜ Cleanup #1 (không gấp): bỏ `import FsAurora.Components as Aurora` thừa ở Pages/Dialogs không còn dùng
-    `Aurora.X`; dọn artifact thiết kế trong `qml/FsAurora/` (*.html, design-canvas.jsx, handoff/, uploads/).
+  - ✅ Cleanup #1 (2026-05-29): gỡ import `FsAurora.Components as Aurora` thừa ở 16 Pages/Dialogs; chuyển design
+    handoff sang `design/handoff/`, xóa rác (uploads) + bản trùng (src/, root html/jsx). `qml/FsAurora/` chỉ còn QML.
 - ⬜ **Đóng crash audit**: đối chiếu từng finding trong `docs/CRASH_AUDIT.md` + `docs/FILE_MANAGER_CRASH_AUDIT.md`
   với code hiện tại, đánh dấu Fixed/Won't-fix/Open. Ưu tiên race click-nhanh + `FolderTreeModel` đệ quy không cap depth.
 

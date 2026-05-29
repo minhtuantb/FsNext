@@ -20,7 +20,6 @@ import QtQuick.Layouts
 import Fshare.Components 1.0
 import Fshare.Utils 1.0
 import FsAurora.Theme 1.0
-import FsAurora.Components 1.0 as Aurora
 
 Item {
     id: root

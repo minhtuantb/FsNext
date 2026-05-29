@@ -45,9 +45,11 @@ Sparkline, FsMiniHud.
 `FsAurora.Theme`. (FsButton/FsProgressBar dùng `FsGradientRect` same-module; FsSidebar/LoginView/ShowcasePage dùng
 `Fsh.FsGradientRect`.)
 
-**Còn lại (cleanup #1, không gấp):** bỏ `import FsAurora.Components 1.0 as Aurora` thừa ở các Pages/Dialogs không
-còn dùng `Aurora.X` (sót sau Stage 2); dọn artifact thiết kế trong `qml/FsAurora/` (*.html, design-canvas.jsx,
-handoff/, uploads/).
+**✅ Cleanup #1 (2026-05-29):** đã gỡ `import FsAurora.Components 1.0 as Aurora` **thừa** ở 16 Pages/Dialogs
+(các file còn dùng hợp lệ `Aurora.FsPageHeader/FsScrollPage/Sparkline/FsSidebar/...` thì giữ). Design handoff
+(jsx/tokens/html/README) đã chuyển khỏi cây runtime `qml/` sang **`design/handoff/`**; xóa rác (`uploads/`
+screenshots) + bản trùng (`qml/FsAurora/src/` = dup của handoff/src, root `*.html`/`design-canvas.jsx`).
+`qml/FsAurora/` giờ chỉ còn `.qml` + `qmldir`.
 
 ## Verify khi đụng atom
 
