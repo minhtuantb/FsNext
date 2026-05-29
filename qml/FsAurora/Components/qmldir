@@ -1,5 +1,4 @@
 module FsAurora.Components
-FsGradientRect 1.0 FsGradientRect.qml
 FsSidebar 1.0 FsSidebar.qml
 FsFontLoader 1.0 FsFontLoader.qml
 FsPageHeader 1.0 FsPageHeader.qml

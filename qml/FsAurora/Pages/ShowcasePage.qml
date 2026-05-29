@@ -60,7 +60,7 @@ ScrollView {
         Item {
             Layout.preferredWidth: 320
             Layout.preferredHeight: 120
-            FsGradientRect {
+            Fsh.FsGradientRect {
                 anchors.fill: parent
                 radius: AuroraTheme.radiusLg
             }

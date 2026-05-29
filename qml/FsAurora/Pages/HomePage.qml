@@ -391,7 +391,7 @@ Item {
             }
 
             // Upload CTA (gradient pill)
-            Aurora.FsGradientRect {
+            FsGradientRect {
                 Layout.preferredWidth: uploadLbl.implicitWidth + 42
                 Layout.preferredHeight: AuroraTheme.heightInput
                 radius: AuroraTheme.radiusPill

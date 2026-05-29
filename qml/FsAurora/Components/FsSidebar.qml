@@ -100,7 +100,7 @@ Rectangle {
 
             // 28×28 gradient square with italic "Fs" — the only place in
             // the shell where the brand serif appears.
-            FsGradientRect {
+            Fsh.FsGradientRect {
                 id: brandMark
                 Layout.preferredWidth: 28
                 Layout.preferredHeight: 28
@@ -314,7 +314,7 @@ Rectangle {
                     Layout.topMargin: 1
                 }
 
-                FsGradientRect {
+                Fsh.FsGradientRect {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 28
                     Layout.topMargin: 10
@@ -355,7 +355,7 @@ Rectangle {
 
         // Rail-mode avatar — initials circle centred. Single click → emit
         // navClicked(account) so the user lands on their account page.
-        FsGradientRect {
+        Fsh.FsGradientRect {
             visible: root.collapsed
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredWidth: 36
@@ -575,7 +575,7 @@ Rectangle {
                 spacing: 10
 
                 // Initials avatar
-                FsGradientRect {
+                Fsh.FsGradientRect {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
                     radius: 13

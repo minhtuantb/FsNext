@@ -406,7 +406,7 @@ Aurora.FsScrollPage {
                     Item {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
-                        Aurora.FsGradientRect { anchors.fill: parent; radius: AuroraTheme.radiusMd }
+                        FsGradientRect { anchors.fill: parent; radius: AuroraTheme.radiusMd }
                         Text {
                             anchors.centerIn: parent
                             text: "F"

@@ -1,4 +1,5 @@
 module Fshare.Components
+FsGradientRect 1.0 FsGradientRect.qml
 FsButton 1.0 FsButton.qml
 FsCard 1.0 FsCard.qml
 FsTextField 1.0 FsTextField.qml

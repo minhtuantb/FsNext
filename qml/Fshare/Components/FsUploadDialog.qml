@@ -5,7 +5,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import FsAurora.Theme 1.0
-import FsAurora.Components 1.0 as Aurora
 FsDialog {
     id: root
 

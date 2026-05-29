@@ -386,7 +386,7 @@ Aurora.FsScrollPage {
                                 Layout.preferredWidth: 64
                                 Layout.preferredHeight: 64
 
-                                Aurora.FsGradientRect {
+                                FsGradientRect {
                                     anchors.fill: parent
                                     radius: 20
                                     visible: !avatarRow.hasAvatar

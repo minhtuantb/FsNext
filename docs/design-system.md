@@ -36,13 +36,18 @@ module từng có atom trùng tên, quy tắc:
 | FsSwitch | ✅ Stage 2 | Fshare | Fshare a11y/keyboard/focus-ring + thêm `label` optional (Aurora) |
 | FsProgressBar | ✅ Stage 2 | Fshare | Union: `value`/`indeterminate`/`trackHeight` (Aurora gradient) + `status`/`barHeight` (Fshare semantic); gradient khi status="default", solid khi status set |
 
-**✅ Cả 7 atom đã ở `Fshare.Components`** (2026-05-29). `FsAurora.Components` giờ chỉ còn shell/HUD/utility:
-FsGradientRect, FsSidebar, FsFontLoader, FsPageHeader, FsScrollPage, FsToastHost, HomeSearchOverlay,
-TransferHudPanel, Sparkline, FsMiniHud.
+**✅ Cả 7 atom đã ở `Fshare.Components`** (2026-05-29). `FsAurora.Components` giờ chỉ còn shell/HUD:
+FsSidebar, FsFontLoader, FsPageHeader, FsScrollPage, FsToastHost, HomeSearchOverlay, TransferHudPanel,
+Sparkline, FsMiniHud.
 
-**Còn lại (cleanup, không gấp):** (1) bỏ alias `Aurora.` cho atom ở các file không còn dùng atom Aurora (giữ
-alias chỉ cho shell `Aurora.FsGradientRect`/`FsSidebar`...); (2) cân nhắc chuyển `FsGradientRect` sang
-`Fshare.Components` để cắt phụ thuộc ngược Fshare→FsAurora; (3) dọn artifact thiết kế trong `qml/FsAurora/`.
+**✅ Phụ thuộc ngược đã cắt** (cleanup #2, 2026-05-29): `FsGradientRect` đã chuyển sang `Fshare.Components`;
+`qml/Fshare/Components/` (atom lib) **không còn file nào import `FsAurora.Components`** → atom lib chỉ phụ thuộc
+`FsAurora.Theme`. (FsButton/FsProgressBar dùng `FsGradientRect` same-module; FsSidebar/LoginView/ShowcasePage dùng
+`Fsh.FsGradientRect`.)
+
+**Còn lại (cleanup #1, không gấp):** bỏ `import FsAurora.Components 1.0 as Aurora` thừa ở các Pages/Dialogs không
+còn dùng `Aurora.X` (sót sau Stage 2); dọn artifact thiết kế trong `qml/FsAurora/` (*.html, design-canvas.jsx,
+handoff/, uploads/).
 
 ## Verify khi đụng atom
 

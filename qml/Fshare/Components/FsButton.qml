@@ -17,7 +17,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import FsAurora.Theme 1.0
-import FsAurora.Components 1.0 as Aurora   // FsGradientRect (Aurora shell utility)
 
 Item {
     id: root
@@ -72,7 +71,7 @@ Item {
     opacity: enabled ? 1.0 : 0.45
 
     // ── Gradient primary / danger ────────────────────────
-    Aurora.FsGradientRect {
+    FsGradientRect {
         id: gradBg
         anchors.fill: parent
         radius: root._radius

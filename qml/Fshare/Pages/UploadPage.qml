@@ -537,7 +537,7 @@ Item {
                 Item {
                     Layout.preferredWidth: 64
                     Layout.preferredHeight: 64
-                    Aurora.FsGradientRect { anchors.fill: parent; radius: AuroraTheme.radiusLg }
+                    FsGradientRect { anchors.fill: parent; radius: AuroraTheme.radiusLg }
                     FsIcon {
                         anchors.centerIn: parent
                         name: "upload"

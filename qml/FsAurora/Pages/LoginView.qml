@@ -122,7 +122,7 @@ Item {
                 spacing: 12
                 Item {
                     width: 36; height: 36
-                    FsGradientRect { anchors.fill: parent; radius: 10 }
+                    Fsh.FsGradientRect { anchors.fill: parent; radius: 10 }
                     Text {
                         anchors.centerIn: parent
                         text: "F"
@@ -442,7 +442,7 @@ Item {
                         Layout.preferredHeight: 16
                         radius: 4
                         color: "transparent"
-                        FsGradientRect {
+                        Fsh.FsGradientRect {
                             anchors.fill: parent
                             radius: 4
                             visible: root.authVm ? root.authVm.rememberMe : false

@@ -14,7 +14,6 @@
 
 import QtQuick
 import FsAurora.Theme 1.0
-import FsAurora.Components 1.0 as Aurora   // FsGradientRect
 
 Item {
     id: root
@@ -61,7 +60,7 @@ Item {
     }
 
     // Gradient fill (default look)
-    Aurora.FsGradientRect {
+    FsGradientRect {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -73,7 +72,7 @@ Item {
     }
 
     // Indeterminate — bounce a fixed-width gradient pill across the track
-    Aurora.FsGradientRect {
+    FsGradientRect {
         id: ind
         height: parent.height
         radius: height / 2

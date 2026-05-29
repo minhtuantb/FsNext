@@ -9,9 +9,10 @@
   - ✅ Stage 1 + 2 (2026-05-29): **cả 7 atom** (FsIcon/FsTextField/FsCard/FsButton/FsBadge/FsSwitch/FsProgressBar)
     đã về Fshare (gộp visual Aurora + a11y Fshare, repoint hết, build+runtime verified). FsAurora.Components còn lại
     chỉ shell/HUD/utility.
-  - ⬜ Cleanup (không gấp): bỏ alias `Aurora.` thừa ở file không còn dùng atom Aurora; chuyển `FsGradientRect` sang
-    `Fshare.Components` để cắt phụ thuộc ngược Fshare→FsAurora; dọn artifact thiết kế trong `qml/FsAurora/` (*.html,
-    design-canvas.jsx, handoff/, uploads/) khỏi cây source runtime.
+  - ✅ Cleanup #2 (2026-05-29): chuyển `FsGradientRect` → `Fshare.Components`; atom lib không còn import
+    `FsAurora.Components` (phụ thuộc ngược đã cắt — chỉ còn phụ thuộc `FsAurora.Theme`).
+  - ⬜ Cleanup #1 (không gấp): bỏ `import FsAurora.Components as Aurora` thừa ở Pages/Dialogs không còn dùng
+    `Aurora.X`; dọn artifact thiết kế trong `qml/FsAurora/` (*.html, design-canvas.jsx, handoff/, uploads/).
 - ⬜ **Đóng crash audit**: đối chiếu từng finding trong `docs/CRASH_AUDIT.md` + `docs/FILE_MANAGER_CRASH_AUDIT.md`
   với code hiện tại, đánh dấu Fixed/Won't-fix/Open. Ưu tiên race click-nhanh + `FolderTreeModel` đệ quy không cap depth.
 
