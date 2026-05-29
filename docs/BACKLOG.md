@@ -18,8 +18,14 @@
 
 ### P2
 - ⬜ **Thiết kế lại session/cookie trong `HttpClient`** (đang vá mutex band-aid) khi có dịp refactor.
-- ⬜ **Test phần lõi**: `TransferOrchestrator` dispatch dưới tải, `RefreshTokenCoordinator` single-flight + 7-day,
-  `FileCacheService` write-through rollback. (Liên quan tech-debt `IFshareApi` bên dưới.)
+- 🔄 **Test phần lõi**:
+  - ✅ `TransferOrchestrator` (2026-05-29): `test_transfer_orchestrator` — dispatch theo slot cap, release→next,
+    cancel-before-dispatch, ưu tiên priority, duplicate enqueue no-op.
+  - ✅ `RefreshTokenCoordinator` non-network (2026-05-29): `test_refresh_coordinator` — session ownership
+    (login/logout), ensureFreshToken no-op, 7-day persisted window.
+  - ✅ `FileCacheService` write-through/refresh-on-fail: đã phủ sẵn ở `test_file_cache_service`.
+  - ⬜ Còn lại: `RefreshTokenCoordinator` **single-flight concurrency** + hard/soft classification — cần seam
+    mock HttpClient/`IFshareApi` (xem tech-debt bên dưới) để giả lập 401 đồng thời mà không gọi mạng thật.
 - ⬜ **i18n**: chạy `lupdate`, audit chuỗi hardcode trong `qml/`, quyết định danh sách ngôn ngữ.
 
 ### P3

@@ -171,3 +171,59 @@ if(WIN32)
     target_link_libraries(test_resolve_proxy_url PRIVATE advapi32 shell32 user32)
 endif()
 add_test(NAME ResolveProxyUrl COMMAND test_resolve_proxy_url)
+
+# ── test_transfer_orchestrator ────────────────────────────
+# Async dispatch loop: enqueue → dispatchReady (on the orchestrator's own
+# thread) → release, plus cancel-before-dispatch and priority ordering.
+# Pure logic + QThread — no network, no DB.
+qt_add_executable(test_transfer_orchestrator
+    test_transfer_orchestrator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferPriority.h
+)
+target_include_directories(test_transfer_orchestrator PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_transfer_orchestrator PRIVATE Qt6::Core Qt6::Test)
+add_test(NAME TransferOrchestrator COMMAND test_transfer_orchestrator)
+
+# ── test_refresh_coordinator ──────────────────────────────
+# Non-network paths of the silent re-auth gate: session ownership, the no-op
+# ensureFreshToken cases, and the 7-day persisted window. Constructed with
+# http=nullptr so no HTTP runs — but RefreshTokenCoordinator.cpp references
+# HttpClient symbols (setCookie/post) so the real HttpClient + libcurl/OpenSSL
+# must be linked, same as test_file_cache_service.
+qt_add_executable(test_refresh_coordinator
+    test_refresh_coordinator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.h
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.cpp
+)
+target_include_directories(test_refresh_coordinator PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/lib/cppcodec
+)
+target_link_libraries(test_refresh_coordinator PRIVATE
+    Qt6::Core
+    Qt6::Test
+    CURL::libcurl
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    jsoncpp
+)
+if(WIN32)
+    target_link_libraries(test_refresh_coordinator PRIVATE
+        ws2_32 crypt32 wldap32 normaliz secur32 advapi32
+        user32 bcrypt iphlpapi shell32
+    )
+    target_compile_definitions(test_refresh_coordinator PRIVATE
+        CURL_STATICLIB WIN32_LEAN_AND_MEAN
+    )
+endif()
+add_test(NAME RefreshCoordinator COMMAND test_refresh_coordinator)
