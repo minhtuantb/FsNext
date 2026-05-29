@@ -6,7 +6,7 @@
 
 namespace fsnext {
 
-class FshareApi;
+class IFshareApi;
 class SettingsRepository;
 class OAuthService;
 class RefreshTokenCoordinator;
@@ -20,7 +20,7 @@ class AuthService : public QObject
     Q_PROPERTY(bool isLoggedIn READ isLoggedIn NOTIFY isLoggedInChanged)
 
 public:
-    explicit AuthService(FshareApi *api, SettingsRepository *settings,
+    explicit AuthService(IFshareApi *api, SettingsRepository *settings,
                          OAuthService *oauth = nullptr, QObject *parent = nullptr);
     ~AuthService() override = default;
 
@@ -90,7 +90,7 @@ private:
     void onOAuthSucceeded(const OAuthResult &result);
     void onOAuthFailed(const QString &message);
 
-    FshareApi               *m_api      = nullptr;
+    IFshareApi              *m_api      = nullptr;
     SettingsRepository      *m_settings = nullptr;
     OAuthService            *m_oauth    = nullptr;
     // Owned by AppContext; nullptr until setRefreshCoordinator() runs.

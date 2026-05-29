@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HttpClient.h"
+#include "IFshareApi.h"
 #include "core/models/ApiResponse.h"
 #include "core/models/FileItem.h"
 #include "core/models/User.h"
@@ -16,7 +17,7 @@ namespace fsnext {
 
 class RefreshTokenCoordinator;
 
-class FshareApi {
+class FshareApi : public IFshareApi {
 public:
     explicit FshareApi(HttpClient *http);
 
@@ -31,16 +32,16 @@ public:
     void setRefreshCoordinator(RefreshTokenCoordinator *coord);
 
     // Auth
-    ApiResponse<Session>            login(const QString &email, const QString &password);
+    ApiResponse<Session>            login(const QString &email, const QString &password) override;
     // Social login (Google/Facebook/FPT ID). `service` must be one of the
     // Fshare-recognised strings: "google", "facebook", "fpt-id". The caller
     // already completed the provider-side OAuth flow and passes the provider's
     // access_token + the user's email here.
     ApiResponse<Session>            loginOauth(const QString &service,
                                                const QString &accessToken,
-                                               const QString &email);
-    ApiResponse<void>               logout();
-    ApiResponse<User>               getUserInfo();
+                                               const QString &email) override;
+    ApiResponse<void>               logout() override;
+    ApiResponse<User>               getUserInfo() override;
 
     // File listing & search
     ApiResponse<QVector<FileItem>>  listFiles(const QString &folderUrl, int page, int pageSize);

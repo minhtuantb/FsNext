@@ -20,7 +20,7 @@ static OAuthConfig configForService(const QString &service)
     return {};
 }
 
-AuthService::AuthService(FshareApi *api, SettingsRepository *settings,
+AuthService::AuthService(IFshareApi *api, SettingsRepository *settings,
                           OAuthService *oauth, QObject *parent)
     : QObject(parent)
     , m_api(api)

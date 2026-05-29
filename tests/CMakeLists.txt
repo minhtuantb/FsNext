@@ -227,3 +227,55 @@ if(WIN32)
     )
 endif()
 add_test(NAME RefreshCoordinator COMMAND test_refresh_coordinator)
+
+# ── test_auth_service ─────────────────────────────────────
+# AuthService login/logout state machine against a FakeFshareApi (IFshareApi).
+# AuthService ODR-references OAuthService + RefreshTokenCoordinator symbols
+# (signal connects in the ctor) even though both are null here, so those .cpp
+# files — and their transitive deps (HttpClient/curl, LoopbackServer/Network,
+# Pkce, SecureStore) — must be linked. FshareApi.cpp is NOT needed: the fake
+# provides the IFshareApi surface.
+qt_add_executable(test_auth_service
+    test_auth_service.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/AuthService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/AuthService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/OAuthService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/OAuthService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/Pkce.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/Pkce.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/net/LoopbackServer.h
+    ${CMAKE_SOURCE_DIR}/src/core/net/LoopbackServer.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.h
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.cpp
+)
+target_include_directories(test_auth_service PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/lib/cppcodec
+)
+target_link_libraries(test_auth_service PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Network
+    Qt6::Concurrent
+    Qt6::Test
+    CURL::libcurl
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    jsoncpp
+)
+if(WIN32)
+    target_link_libraries(test_auth_service PRIVATE
+        ws2_32 crypt32 wldap32 normaliz secur32 advapi32
+        user32 bcrypt iphlpapi shell32
+    )
+    target_compile_definitions(test_auth_service PRIVATE
+        CURL_STATICLIB WIN32_LEAN_AND_MEAN
+    )
+endif()
+add_test(NAME AuthService COMMAND test_auth_service)

@@ -201,14 +201,13 @@ verified locally (against a mock server) — useful as preparation work.
 
 ## Technical Debt
 
-### 2026-04-28 — `IFshareApi` interface for mockable AuthService tests
-**Why**: `AuthService::login` and `AuthService::tryRefreshSession` cannot be unit-
-tested today because they hold a concrete `FshareApi*` pointer and `FshareApi`
-has no virtual methods.  Stubbing the network response requires either a fake
-HttpClient or — cleaner — an `IFshareApi` abstract base extracted from the 20+
-methods on `FshareApi`.
-**Effort**: ~1 day. Mostly mechanical (mark each public method virtual, derive
-`FshareApi : public IFshareApi`, swap callers from `FshareApi*` to `IFshareApi*`).
-**Pay-off**: enables `test_auth_service.cpp` covering login happy / 405 wrong
-password / `tryRefreshSession` single-flight with concurrent callers /
-session-expired propagation.
+### 2026-04-28 — `IFshareApi` interface for mockable AuthService tests  →  ✅ DONE (2026-05-29)
+**Done**: extracted `src/core/api/IFshareApi.h` (the 4 methods AuthService uses:
+login / loginOauth / logout / getUserInfo) as a pure-virtual interface; `FshareApi`
+now derives from it (`override`); `AuthService` takes `IFshareApi*`. Other callers
+keep `FshareApi*` unchanged (upcast). `test_auth_service.cpp` covers login success,
+405 wrong-password, logout, and "remember-me off doesn't persist token" via a
+`FakeFshareApi`.
+**Còn lại (P3, không gấp)**: widen IFshareApi if/when other services (TransferService,
+FileService) gain unit tests; `AuthService::tryRefreshSession` single-flight is now
+mostly covered indirectly by the RefreshTokenCoordinator single-flight test.
