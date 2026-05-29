@@ -22,7 +22,11 @@ struct HttpResponse {
 class HttpClient {
 public:
     HttpClient();
-    ~HttpClient();
+    // Virtual so tests can subclass with a FakeHttpClient that returns canned
+    // HttpResponses (e.g. RefreshTokenCoordinator single-flight tests) without
+    // a real network round-trip. Production callers hold HttpClient* and are
+    // unaffected by the extra vtable indirection.
+    virtual ~HttpClient();
 
     // Configuration
     void setProxy(const QString &host, int port);
@@ -35,13 +39,13 @@ public:
     void setDefaultHeader(const QString &key, const QString &value);
     void removeDefaultHeader(const QString &key);
 
-    // Synchronous requests
-    HttpResponse get(const QString &url, const QMap<QString, QString> &headers = {});
-    HttpResponse post(const QString &url, const QByteArray &body,
-                      const QMap<QString, QString> &headers = {});
+    // Synchronous requests (virtual — see ~HttpClient note; tests override).
+    virtual HttpResponse get(const QString &url, const QMap<QString, QString> &headers = {});
+    virtual HttpResponse post(const QString &url, const QByteArray &body,
+                              const QMap<QString, QString> &headers = {});
 
     // Cookie management
-    void setCookie(const QString &cookie);
+    virtual void setCookie(const QString &cookie);
     QString cookie() const;
 
 private:

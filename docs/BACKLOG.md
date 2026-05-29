@@ -24,8 +24,9 @@
   - ✅ `RefreshTokenCoordinator` non-network (2026-05-29): `test_refresh_coordinator` — session ownership
     (login/logout), ensureFreshToken no-op, 7-day persisted window.
   - ✅ `FileCacheService` write-through/refresh-on-fail: đã phủ sẵn ở `test_file_cache_service`.
-  - ⬜ Còn lại: `RefreshTokenCoordinator` **single-flight concurrency** + hard/soft classification — cần seam
-    mock HttpClient/`IFshareApi` (xem tech-debt bên dưới) để giả lập 401 đồng thời mà không gọi mạng thật.
+  - ✅ `RefreshTokenCoordinator` **single-flight + hard/soft classification** (2026-05-29): virtual hóa
+    `HttpClient::post/setCookie` → `FakeHttpClient` (canned response + semaphore gate). Test: success rotate token,
+    hard-fail wipe session, soft-fail keep token, single-flight collapse 7 caller đồng thời → đúng 1 network call.
 - ⬜ **i18n**: chạy `lupdate`, audit chuỗi hardcode trong `qml/`, quyết định danh sách ngôn ngữ.
 
 ### P3
