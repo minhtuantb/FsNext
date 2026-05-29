@@ -96,6 +96,20 @@ endif()
 
 add_test(NAME FileCacheService COMMAND test_file_cache_service)
 
+# ── test_sync_scan ────────────────────────────────────────
+# M18: the pure filesystem-walk half of the sync scan (SyncScanner). Builds a
+# real tree under QTemporaryDir and asserts the ScanResult. Deliberately links
+# ONLY SyncScanner.cpp + Qt6::Core/Test — the walk has no FshareApi /
+# TransferService / SQLite / QObject dependency, so no curl/moc is dragged in.
+qt_add_executable(test_sync_scan
+    test_sync_scan.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncScanner.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncScanner.cpp
+)
+target_include_directories(test_sync_scan PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_sync_scan PRIVATE Qt6::Core Qt6::Test)
+add_test(NAME SyncScan COMMAND test_sync_scan)
+
 # ── test_budget_manager ───────────────────────────────────
 # Pure logic — slot caps, floor quotas, global cap.  No event loop.
 qt_add_executable(test_budget_manager
