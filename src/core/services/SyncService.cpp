@@ -85,6 +85,12 @@ void SyncService::setUserId(const QString &userId)
     m_taskToFolder.clear();
     m_folderToTasks.clear();
     m_taskProgress.clear();
+    // Reset the M18 scan guard too: a folderId left in-flight from the previous
+    // session must not block the new session's first scan of a same-id folder.
+    // (Any in-flight worker still self-heals via applyScanResult's re-validate,
+    // but clearing here keeps the invariant "session boundary = clean slate".)
+    m_scanInFlight.clear();
+    m_scanDirty.clear();
     rebuildWatcher();
     m_rescanTimer.stop();
 
