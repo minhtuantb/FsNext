@@ -38,6 +38,15 @@ public:
     // Convenience for tests / future override file support.
     bool loadFromFile(const QString &filePath);
 
+    // Apply a runtime override file from %APPDATA%/FsNext/. Format:
+    //   { "add":    ["word1", "word2_with_underscore"],
+    //     "remove": ["word_to_unblock"] }
+    // Both keys optional. Words are normalised the same way as the
+    // bundled dictionary (lowercase + spaces→'_'); diacritic variants
+    // get auto-added to the stripped set. Missing file is not an error.
+    // Returns the number of words actually added + removed.
+    int applyOverridesFromAppData();
+
     // Classify a single user keyword. Returns Result + the offending word
     // (only meaningful for Blocked). URLs are NEVER passed through here —
     // the caller is expected to short-circuit on fshare.vn URLs before
@@ -46,6 +55,18 @@ public:
 
     // QML-friendly variant: returns the hit word ("" when clean).
     Q_INVOKABLE QString checkHit(const QString &keyword) const;
+
+    // Exact-phrase variant of check(): the whole phrase is normalised once
+    // (lower + spaces→'_' + diacritic-strip) and looked up as a SINGLE key.
+    // No tokenisation, no n-gram expansion — used by the homepage search
+    // "quoted mode" where the user wraps the keyword in "…" to opt out of
+    // substring-style splitting that might wrongly reject legitimate words
+    // sharing a stem with a dictionary entry (e.g. searching "lồng tiếng"
+    // when the dictionary contains "lồn"). A quoted phrase that EXACTLY
+    // matches a bad-word entry is still rejected — quoting is a precision
+    // flag, not a bypass.
+    Q_INVOKABLE int checkExactPhrase(const QString &phrase,
+                                     QString *hitWord = nullptr) const;
 
     // Diagnostics
     int entryCount() const { return m_raw.size() + m_stripped.size(); }

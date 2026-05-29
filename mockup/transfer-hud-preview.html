@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>FsNext — Transfer HUD Design Mockup</title>
+<style>
+  /* ── Aurora tokens (mirror qml/FsAurora/Theme/AuroraColors.qml) ────── */
+  :root[data-theme="light"] {
+    --bg:            #F5F4F1;
+    --panel:         #FFFFFF;
+    --panelElevated: #FFFFFF;
+    --border:        #E6E3DC;
+    --borderStrong:  #C8C3B8;
+    --divider:       rgba(0,0,0,0.05);
+    --ink1:          #0E0E12;
+    --ink2:          #2A2A32;
+    --ink3:          #5C5C66;
+    --ink4:          #8A8A94;
+    --shadow:        0 12px 32px rgba(14,14,18,0.10), 0 2px 6px rgba(14,14,18,0.04);
+    --hover:         rgba(14,14,18,0.04);
+    --sidebar:       #1E1F2C;
+  }
+  :root[data-theme="dark"] {
+    --bg:            #0E0E12;
+    --panel:         #17171E;
+    --panelElevated: #1C1C24;
+    --border:        #25252E;
+    --borderStrong:  #3A3A45;
+    --divider:       rgba(255,255,255,0.05);
+    --ink1:          #F5F4F1;
+    --ink2:          #D8D6D0;
+    --ink3:          #A0A0AC;
+    --ink4:          #8A8A98;
+    --shadow:        0 12px 32px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.20);
+    --hover:         rgba(255,255,255,0.05);
+    --sidebar:       #1E1F2C;
+  }
+  /* Brand — same in both themes */
+  :root {
+    --accent:       #FF5B2E;
+    --accent2:      #FFAF1D;
+    --accent3:      #FF3D7F;
+    --accentHover:  #FF7550;
+    --accentSoft:   rgba(255,91,46,0.08);
+    --accentTint:   rgba(255,91,46,0.15);
+    --success:      #0A8A5C;
+    --successSoft:  rgba(10,138,92,0.10);
+    --warn:         #C96A00;
+    --danger:       #D53030;
+    --dangerSoft:   rgba(213,48,48,0.10);
+    --info:         #2566E5;
+
+    --font-sans:    'Geist', 'Be Vietnam Pro', -apple-system, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, Consolas, 'Cascadia Code', monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink1);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background 220ms cubic-bezier(.2,0,0,1), color 220ms cubic-bezier(.2,0,0,1);
+    padding: 32px 40px 80px;
+  }
+
+  /* ── Page header ─────────────────────────────────────────────── */
+  .page-header {
+    max-width: 1240px;
+    margin: 0 auto 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin: 0;
+  }
+  .page-header .subtitle {
+    color: var(--ink3);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--ink2);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 140ms ease, border-color 140ms ease;
+  }
+  .theme-toggle:hover { background: var(--hover); border-color: var(--borderStrong); }
+
+  /* ── Section ─────────────────────────────────────────────────── */
+  section {
+    max-width: 1240px;
+    margin: 0 auto 56px;
+  }
+  section > h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.2px;
+  }
+  section > .section-desc {
+    color: var(--ink3);
+    font-size: 13px;
+    margin: 0 0 20px;
+  }
+
+  /* ── Card grid (showcase) ────────────────────────────────────── */
+  .mockup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 28px;
+  }
+  .mockup-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .mockup-cell-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--ink3);
+    text-transform: uppercase;
+  }
+  .mockup-cell-desc {
+    font-size: 12px;
+    color: var(--ink4);
+    margin-top: -8px;
+    text-align: center;
+    max-width: 360px;
+  }
+
+  /* "Desktop" simulated wallpaper backdrop so floating window has context */
+  .desktop-stage {
+    width: 100%;
+    max-width: 420px;
+    height: 380px;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,91,46,0.10), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(255,175,29,0.08), transparent 50%),
+      linear-gradient(135deg, #2A2A38 0%, #1A1A24 100%);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Mini window ─────────────────────────────────────────────── */
+  .mini-window {
+    width: 360px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+    color: var(--ink1);
+    user-select: none;
+    transition: background 220ms, border-color 220ms;
+  }
+  .mw-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+  }
+  .mw-brand {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink3);
+    letter-spacing: 0.2px;
+  }
+  .mw-speed {
+    flex: 1;
+    text-align: right;
+    font-size: 13px;
+    color: var(--ink1);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-weight: 500;
+  }
+  .mw-speed .arrow-dl { color: var(--info); font-weight: 600; }
+  .mw-speed .arrow-ul { color: var(--accent); font-weight: 600; }
+  .mw-speed .sep { color: var(--ink4); margin: 0 2px; }
+  .mw-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .mw-pill.paused { background: var(--accentSoft); color: var(--accent); }
+  .mw-pill.error  { background: var(--dangerSoft); color: var(--danger); }
+
+  .mw-btn {
+    width: 28px;
+    height: 28px;
+    border: 0;
+    background: transparent;
+    color: var(--ink3);
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: background 140ms, color 140ms;
+  }
+  .mw-btn:hover { background: var(--hover); color: var(--ink1); }
+  .mw-btn.danger:hover { color: var(--danger); }
+
+  .mw-sparkline {
+    margin: 14px 0 12px;
+    height: 32px;
+    width: 100%;
+    display: block;
+  }
+  .mw-sparkline path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .mw-sparkline path.fill {
+    fill: url(#sparklineGradient);
+    stroke: none;
+    opacity: 0.18;
+  }
+
+  .mw-divider {
+    height: 1px;
+    background: var(--divider);
+    margin: 4px 0;
+  }
+
+  .mw-row {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    grid-template-rows: 18px 6px 13px;
+    column-gap: 10px;
+    row-gap: 2px;
+    padding: 10px 4px;
+    border-radius: 8px;
+    transition: background 140ms;
+    cursor: pointer;
+  }
+  .mw-row:hover { background: var(--hover); }
+  .mw-row.queued { opacity: 0.55; cursor: default; }
+  .mw-row.failed {
+    background: var(--dangerSoft);
+    border-left: 3px solid var(--danger);
+    padding-left: 8px;
+  }
+
+  .mw-row-icon {
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .mw-row-icon.dl   { background: rgba(37,102,229,0.10);  color: var(--info); }
+  .mw-row-icon.ul   { background: rgba(255,91,46,0.10);   color: var(--accent); }
+  .mw-row-icon.sync { background: rgba(10,138,92,0.10);   color: var(--success); }
+  .mw-row-icon.err  { background: rgba(213,48,48,0.15);   color: var(--danger); }
+
+  .mw-row-name {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mw-row-meta {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 12px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .mw-row-meta .pct { color: var(--ink2); font-weight: 600; margin-right: 6px; }
+  .mw-row-meta .speed { color: var(--accent); font-weight: 500; }
+  .mw-row-meta .err { color: var(--danger); font-weight: 600; }
+  .mw-row-meta .retry {
+    margin-left: 8px;
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .mw-row-meta .retry:hover { text-decoration: underline; }
+
+  .mw-row-bar {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    height: 4px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 2px;
+  }
+  .mw-row-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent3) 100%);
+    transition: width 360ms cubic-bezier(.2,0,0,1);
+  }
+  .mw-row.failed .mw-row-bar-fill { background: var(--danger); }
+  .mw-row.queued .mw-row-bar-fill { background: var(--ink4); }
+  .mw-row.paused .mw-row-bar-fill { background: var(--ink4); opacity: 0.5; }
+
+  .mw-row-eta {
+    grid-column: 2 / -1;
+    grid-row: 3;
+    font-size: 11px;
+    color: var(--ink4);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mw-row-eta.err-text { color: var(--danger); }
+
+  .mw-overflow {
+    margin-top: 4px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--ink3);
+    background: var(--hover);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 140ms;
+  }
+  .mw-overflow:hover { background: var(--accentSoft); color: var(--accent); }
+  .mw-overflow .chev { color: var(--ink4); font-weight: 700; }
+
+  .mw-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink3);
+    padding: 8px 4px 0;
+    margin-top: 4px;
+  }
+  .mw-footer .sync-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink2);
+  }
+  .mw-footer .sync-info .sync-icon { color: var(--success); font-weight: 700; }
+  .mw-footer .budget {
+    font-family: var(--font-mono);
+    color: var(--ink4);
+    font-size: 11px;
+  }
+
+  /* ── Empty/login mini window ─────────────────────────────────── */
+  .mw-empty {
+    padding: 32px 16px 20px;
+    text-align: center;
+  }
+  .mw-empty-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--hover);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--ink3);
+    margin-bottom: 14px;
+  }
+  .mw-empty-title { font-size: 14px; font-weight: 600; color: var(--ink1); }
+  .mw-empty-desc  { font-size: 12px; color: var(--ink3); margin: 4px 0 18px; }
+  .mw-empty-cta {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: 0;
+    font-family: inherit;
+    transition: background 140ms;
+  }
+  .mw-empty-cta:hover { background: var(--accentHover); }
+
+  /* ── Tray icon section ───────────────────────────────────────── */
+  .tray-stage {
+    background: linear-gradient(180deg, #1E1F2C 0%, #14141C 100%);
+    border-radius: 12px;
+    padding: 40px 28px 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .tray-icons-row {
+    display: flex;
+    gap: 56px;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 24px;
+  }
+  .tray-icon-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .tray-icon-block .label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .tray-icon-block .label .hex {
+    color: rgba(255,255,255,0.45);
+    font-family: var(--font-mono);
+    margin-left: 6px;
+    font-size: 10px;
+  }
+  .tray-taskbar {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: rgba(255,255,255,0.85);
+    font-size: 12px;
+    margin: 0 -28px;
+  }
+  .tray-taskbar .spacer { flex: 1; }
+  .tray-taskbar .item {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .tray-taskbar .item:hover { background: rgba(255,255,255,0.10); }
+  .tray-taskbar .item.fshare { position: relative; }
+  .tray-taskbar .clock {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding-left: 4px;
+  }
+
+  /* Tooltip mock */
+  .tray-tooltip {
+    position: absolute;
+    background: #2D2D38;
+    color: #F5F4F1;
+    border: 1px solid rgba(255,255,255,0.10);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* Context menu */
+  .ctx-menu {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 6px 0;
+    width: 220px;
+    color: var(--ink1);
+    font-size: 13px;
+  }
+  .ctx-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ctx-menu-item:hover { background: var(--accentSoft); color: var(--accent); }
+  .ctx-menu-item .shortcut { color: var(--ink4); font-size: 11px; font-family: var(--font-mono); }
+  .ctx-menu-item.disabled { color: var(--ink4); cursor: not-allowed; }
+  .ctx-menu-item.disabled:hover { background: transparent; color: var(--ink4); }
+  .ctx-menu-divider { height: 1px; background: var(--divider); margin: 4px 0; }
+
+  /* Balloon */
+  .balloon {
+    width: 360px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 14px 16px 14px 14px;
+    display: grid;
+    grid-template-columns: 32px 1fr 24px;
+    gap: 12px;
+    align-items: start;
+  }
+  .balloon .b-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+  }
+  .balloon.success .b-icon { background: var(--accent); }
+  .balloon.error   .b-icon { background: var(--danger); }
+  .balloon.info    .b-icon { background: var(--info); }
+  .balloon .b-body { min-width: 0; }
+  .balloon .b-title { font-size: 12px; font-weight: 600; color: var(--ink3); }
+  .balloon .b-msg   { font-size: 13px; color: var(--ink1); margin-top: 2px; word-break: break-word; }
+  .balloon .b-detail { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+  .balloon .b-close {
+    background: transparent;
+    border: 0;
+    color: var(--ink4);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px;
+    border-radius: 4px;
+  }
+  .balloon .b-close:hover { background: var(--hover); color: var(--ink1); }
+
+  /* ── Tray popup (P1) ────────────────────────────────────────── */
+  .popup-stage {
+    background: linear-gradient(180deg, #1E1F2C 0%, #14141C 100%);
+    border-radius: 12px;
+    padding: 24px 24px 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 520px;
+  }
+  .popup-container {
+    position: absolute;
+    bottom: 60px;
+    right: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .tray-popup {
+    width: 320px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 14px;
+    color: var(--ink1);
+    position: relative;
+  }
+  /* Tail */
+  .tray-popup::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    right: 36px;
+    width: 16px;
+    height: 16px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transform: rotate(45deg);
+  }
+
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .tp-brand { font-size: 12px; font-weight: 700; color: var(--ink3); }
+  .tp-speed {
+    flex: 1;
+    text-align: right;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink1);
+    font-weight: 500;
+  }
+
+  .tp-row {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    grid-template-rows: 16px 4px 11px;
+    column-gap: 8px;
+    row-gap: 2px;
+    padding: 8px 4px;
+    border-radius: 6px;
+  }
+  .tp-row:hover { background: var(--hover); }
+
+  .tp-row-icon {
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tp-row-icon.dl   { background: rgba(37,102,229,0.10);  color: var(--info); }
+  .tp-row-icon.ul   { background: rgba(255,91,46,0.10);   color: var(--accent); }
+  .tp-row-icon.sync { background: rgba(10,138,92,0.10);   color: var(--success); }
+
+  .tp-row-name {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 12px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tp-row-meta {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 11px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .tp-row-meta .pct { color: var(--ink2); font-weight: 600; }
+  .tp-row-bar {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    height: 3px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .tp-row-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 999px;
+  }
+  .tp-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    padding: 8px 4px 0;
+    border-top: 1px solid var(--divider);
+    font-size: 11px;
+    color: var(--ink3);
+  }
+  .tp-footer .budget { font-family: var(--font-mono); color: var(--ink4); }
+
+  /* ── Comparison table ────────────────────────────────────────── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--panel);
+    font-size: 13px;
+  }
+  .compare-grid > div {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .compare-grid > div:nth-last-child(-n+3) { border-bottom: 0; }
+  .compare-grid .head {
+    font-weight: 700;
+    font-size: 12px;
+    background: var(--hover);
+    color: var(--ink2);
+  }
+  .compare-grid .row-label {
+    color: var(--ink3);
+    font-weight: 600;
+    border-right: 1px solid var(--divider);
+  }
+  .compare-grid .val { color: var(--ink1); }
+  .compare-grid .val.dim { color: var(--ink4); }
+  .compare-grid .col-2 { border-right: 1px solid var(--divider); }
+
+  /* ── Footnote / annotation chips ─────────────────────────────── */
+  .annotations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+  }
+  .annot {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--ink2);
+  }
+  .annot .annot-title {
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1.2px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  /* Progress bar pulsing for "active" feel */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+  .mw-row.active .mw-row-bar-fill { animation: pulse 2.4s ease-in-out infinite; }
+
+  /* Error row subtle blink */
+  @keyframes errPulse {
+    0%, 100% { box-shadow: inset 3px 0 0 var(--danger); }
+    50% { box-shadow: inset 3px 0 0 #FF6B6B; }
+  }
+  .mw-row.failed { animation: errPulse 2s ease-in-out infinite; }
+
+  /* Auto-hide demo */
+  .mw-fading {
+    animation: fadeAway 4s ease-in-out infinite;
+  }
+  @keyframes fadeAway {
+    0%, 50% { opacity: 1; transform: scale(1); }
+    85% { opacity: 0.3; transform: scale(0.98); }
+    100% { opacity: 0.05; transform: scale(0.96); }
+  }
+</style>
+</head>
+<body data-theme="light">
+
+<!-- Theme toggle is set on <html> -->
+<script>
+  // Default light. Toggle persists in localStorage so reopens stay where you left.
+  (function(){
+    const saved = localStorage.getItem("hud-theme") || "light";
+    document.body.setAttribute("data-theme", saved);
+    document.documentElement.setAttribute("data-theme", saved);
+  })();
+</script>
+
+<header class="page-header">
+  <div>
+    <h1>Transfer HUD — Design Mockup</h1>
+    <div class="subtitle">FsNext v6.x · Mini window + System tray · Aurora design system</div>
+  </div>
+  <button class="theme-toggle" id="themeToggle">
+    <span id="themeIcon">☾</span>
+    <span id="themeLabel">Dark mode</span>
+  </button>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Section 1 · MINI WINDOW                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>1 · Mini Window — Floating HUD</h2>
+  <p class="section-desc">
+    Frameless 360×auto · always-on-top · drag tự do · snap góc màn hình · auto-hide 30s idle.
+    Trigger: user đóng main window (X) khi <code>minimizeToTray=true</code> và có ≥1 transfer.
+  </p>
+
+  <div class="mockup-grid">
+
+    <!-- ── 1A · Active (chính, demo đầy đủ) ── -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">1A · Đang chuyển nhiều task</div>
+      <div class="desktop-stage">
+        <div class="mini-window">
+          <div class="mw-header">
+            <span class="mw-brand">Fshare</span>
+            <span class="mw-speed">
+              <span class="arrow-dl">↓ 12.4 MB/s</span>
+              <span class="sep">·</span>
+              <span class="arrow-ul">↑ 3.1 MB/s</span>
+            </span>
+            <button class="mw-btn" title="Tạm dừng tất cả">⏸</button>
+            <button class="mw-btn" title="Mở cửa sổ chính">⛶</button>
+            <button class="mw-btn danger" title="Đóng">✕</button>
+          </div>
+
+          <svg class="mw-sparkline" viewBox="0 0 320 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparklineGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%"   stop-color="#FF5B2E" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#FF5B2E" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path class="fill" d="M 0,24 L 12,20 L 24,22 L 36,14 L 48,18 L 60,10 L 72,16 L 84,8 L 96,12 L 108,18 L 120,14 L 132,6 L 144,12 L 156,16 L 168,10 L 180,14 L 192,20 L 204,12 L 216,8 L 228,16 L 240,10 L 252,14 L 264,18 L 276,12 L 288,8 L 300,14 L 320,10 L 320,32 L 0,32 Z"/>
+            <path d="M 0,24 L 12,20 L 24,22 L 36,14 L 48,18 L 60,10 L 72,16 L 84,8 L 96,12 L 108,18 L 120,14 L 132,6 L 144,12 L 156,16 L 168,10 L 180,14 L 192,20 L 204,12 L 216,8 L 228,16 L 240,10 L 252,14 L 264,18 L 276,12 L 288,8 L 300,14 L 320,10"/>
+          </svg>
+
+          <div class="mw-divider"></div>
+
+          <div class="mw-row active">
+            <span class="mw-row-icon dl">↓</span>
+            <span class="mw-row-name">setup-2024-installer.exe</span>
+            <span class="mw-row-meta"><span class="pct">42%</span><span class="speed">2.1 MB/s</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:42%"></div></div>
+            <span class="mw-row-eta">Còn 4 phút</span>
+          </div>
+
+          <div class="mw-row active">
+            <span class="mw-row-icon ul">↑</span>
+            <span class="mw-row-name">vacation-video-final.mp4</span>
+            <span class="mw-row-meta"><span class="pct">78%</span><span class="speed">3.1 MB/s</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:78%"></div></div>
+            <span class="mw-row-eta">Còn 1 phút</span>
+          </div>
+
+          <div class="mw-row active">
+            <span class="mw-row-icon sync">⟲</span>
+            <span class="mw-row-name">photos-2024-batch-7.zip</span>
+            <span class="mw-row-meta"><span class="pct">15%</span><span class="speed">640 KB/s</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:15%"></div></div>
+            <span class="mw-row-eta">Còn 12 phút · từ Sync</span>
+          </div>
+
+          <div class="mw-row queued">
+            <span class="mw-row-icon dl">↓</span>
+            <span class="mw-row-name">installer-package-large.dmg</span>
+            <span class="mw-row-meta">Đang chờ</span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:0%"></div></div>
+            <span class="mw-row-eta">Trong hàng đợi</span>
+          </div>
+
+          <div class="mw-overflow">
+            <span>+ 4 mục khác</span>
+            <span class="chev">›</span>
+          </div>
+
+          <div class="mw-footer">
+            <span class="sync-info">
+              <span class="sync-icon">⟲</span>
+              Đồng bộ: 12 file đang chờ
+            </span>
+            <span class="budget">DL 3/3 · UL 1/2</span>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">
+        State chính. Sparkline 60s · top-5 row · footer aggregate. Click row mở main + scroll to task.
+      </div>
+    </div>
+
+    <!-- ── 1B · Paused ── -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">1B · Tạm dừng toàn bộ</div>
+      <div class="desktop-stage">
+        <div class="mini-window">
+          <div class="mw-header">
+            <span class="mw-brand">Fshare</span>
+            <span class="mw-speed" style="text-align:right;">
+              <span class="mw-pill paused">⏸ Tạm dừng · 5 mục</span>
+            </span>
+            <button class="mw-btn" title="Tiếp tục" style="color: var(--success);">▶</button>
+            <button class="mw-btn" title="Mở cửa sổ chính">⛶</button>
+            <button class="mw-btn danger" title="Đóng">✕</button>
+          </div>
+
+          <svg class="mw-sparkline" viewBox="0 0 320 32" preserveAspectRatio="none">
+            <path style="stroke: var(--ink4); stroke-dasharray: 3,3; opacity: 0.5;" d="M 0,28 L 320,28"/>
+          </svg>
+
+          <div class="mw-divider"></div>
+
+          <div class="mw-row paused">
+            <span class="mw-row-icon dl">↓</span>
+            <span class="mw-row-name">setup-2024-installer.exe</span>
+            <span class="mw-row-meta"><span class="pct">42%</span><span style="color: var(--ink4);">tạm dừng</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:42%"></div></div>
+            <span class="mw-row-eta">—</span>
+          </div>
+
+          <div class="mw-row paused">
+            <span class="mw-row-icon ul">↑</span>
+            <span class="mw-row-name">vacation-video-final.mp4</span>
+            <span class="mw-row-meta"><span class="pct">78%</span><span style="color: var(--ink4);">tạm dừng</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:78%"></div></div>
+            <span class="mw-row-eta">—</span>
+          </div>
+
+          <div class="mw-row paused">
+            <span class="mw-row-icon sync">⟲</span>
+            <span class="mw-row-name">photos-2024-batch-7.zip</span>
+            <span class="mw-row-meta"><span class="pct">15%</span><span style="color: var(--ink4);">tạm dừng</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:15%"></div></div>
+            <span class="mw-row-eta">—</span>
+          </div>
+
+          <div class="mw-divider"></div>
+
+          <div class="mw-footer">
+            <span class="sync-info" style="color: var(--ink4);">
+              <span class="sync-icon" style="color: var(--ink4);">⟲</span>
+              Đồng bộ: tạm dừng
+            </span>
+            <span class="budget">0 / 3 chạy</span>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">
+        Tất cả progress bars opacity 0.5. Header pill thay tốc độ. Button ⏸→▶ xanh. Sparkline dashed.
+      </div>
+    </div>
+
+    <!-- ── 1C · Error ── -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">1C · Có task thất bại</div>
+      <div class="desktop-stage">
+        <div class="mini-window">
+          <div class="mw-header">
+            <span class="mw-brand">Fshare</span>
+            <span class="mw-speed">
+              <span class="arrow-dl">↓ 12.4 MB/s</span>
+              <span class="sep">·</span>
+              <span class="mw-pill error">⚠ 2 thất bại</span>
+            </span>
+            <button class="mw-btn" title="Tạm dừng tất cả">⏸</button>
+            <button class="mw-btn" title="Mở cửa sổ chính">⛶</button>
+            <button class="mw-btn danger" title="Đóng">✕</button>
+          </div>
+
+          <svg class="mw-sparkline" viewBox="0 0 320 32" preserveAspectRatio="none">
+            <path class="fill" d="M 0,24 L 12,20 L 24,22 L 36,14 L 48,18 L 60,10 L 72,16 L 84,8 L 96,12 L 108,18 L 120,14 L 132,6 L 144,12 L 156,16 L 168,10 L 180,14 L 192,20 L 204,12 L 216,8 L 228,16 L 240,10 L 252,14 L 264,18 L 276,12 L 288,8 L 300,14 L 320,10 L 320,32 L 0,32 Z"/>
+            <path d="M 0,24 L 12,20 L 24,22 L 36,14 L 48,18 L 60,10 L 72,16 L 84,8 L 96,12 L 108,18 L 120,14 L 132,6 L 144,12 L 156,16 L 168,10 L 180,14 L 192,20 L 204,12 L 216,8 L 228,16 L 240,10 L 252,14 L 264,18 L 276,12 L 288,8 L 300,14 L 320,10"/>
+          </svg>
+
+          <div class="mw-divider"></div>
+
+          <div class="mw-row failed">
+            <span class="mw-row-icon err">⚠</span>
+            <span class="mw-row-name">installer-large.dmg</span>
+            <span class="mw-row-meta"><span class="err">Lỗi</span><a class="retry" href="#">⟲ Thử lại</a></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:24%"></div></div>
+            <span class="mw-row-eta err-text">Mạng bị ngắt kết nối</span>
+          </div>
+
+          <div class="mw-row failed">
+            <span class="mw-row-icon err">⚠</span>
+            <span class="mw-row-name">document-protected.pdf</span>
+            <span class="mw-row-meta"><span class="err">Lỗi</span><a class="retry" href="#">⟲ Thử lại</a></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:0%"></div></div>
+            <span class="mw-row-eta err-text">Sai mật khẩu chia sẻ</span>
+          </div>
+
+          <div class="mw-divider"></div>
+
+          <div class="mw-row active">
+            <span class="mw-row-icon dl">↓</span>
+            <span class="mw-row-name">setup-2024-installer.exe</span>
+            <span class="mw-row-meta"><span class="pct">42%</span><span class="speed">2.1 MB/s</span></span>
+            <div class="mw-row-bar"><div class="mw-row-bar-fill" style="width:42%"></div></div>
+            <span class="mw-row-eta">Còn 4 phút</span>
+          </div>
+
+          <div class="mw-overflow">
+            <span>+ 8 mục khác</span>
+            <span class="chev">›</span>
+          </div>
+
+          <div class="mw-footer">
+            <span class="sync-info"><span class="sync-icon">⟲</span> Đồng bộ: 12 file đang chờ</span>
+            <span class="budget">DL 3/3 · UL 0/2</span>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">
+        Failed pull lên top, border-left đỏ pulse nhẹ. Inline ⟲ Thử lại (không có ✕ để tránh accident dismiss).
+      </div>
+    </div>
+
+    <!-- ── 1D · Empty / Login ── -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">1D · Chưa đăng nhập</div>
+      <div class="desktop-stage">
+        <div class="mini-window">
+          <div class="mw-header">
+            <span class="mw-brand">Fshare</span>
+            <span style="flex:1;"></span>
+            <button class="mw-btn" title="Mở cửa sổ chính">⛶</button>
+            <button class="mw-btn danger" title="Đóng">✕</button>
+          </div>
+          <div class="mw-empty">
+            <div class="mw-empty-icon">◉</div>
+            <div class="mw-empty-title">Chưa đăng nhập</div>
+            <div class="mw-empty-desc">Đăng nhập để xem trạng thái chuyển file</div>
+            <button class="mw-empty-cta">Mở cửa sổ Fshare</button>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">
+        Fallback khi tray click mà session hết hạn. Đơn giản, 1 CTA duy nhất.
+      </div>
+    </div>
+
+    <!-- ── 1E · Auto-hiding (idle 30s) ── -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">1E · Tự ẩn (idle 30s)</div>
+      <div class="desktop-stage">
+        <div class="mini-window mw-fading">
+          <div class="mw-header">
+            <span class="mw-brand">Fshare</span>
+            <span class="mw-speed" style="color: var(--ink4);">Hoàn tất · đang ẩn…</span>
+            <button class="mw-btn" title="Mở cửa sổ chính">⛶</button>
+          </div>
+          <div class="mw-divider"></div>
+          <div style="padding:24px 16px; text-align:center; color: var(--ink3); font-size:12px;">
+            Mọi transfer đã hoàn tất<br>
+            Mini window sẽ ẩn sau vài giây
+          </div>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">
+        Khi tất cả idle ≥ 30s → fade 200ms rồi hide. Sau đó tray icon trở về màu idle.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="annotations">
+    <div class="annot">
+      <div class="annot-title">Spec — kích thước</div>
+      Width cố định <b>360px</b> · padding <b>16px</b> · radius <b>14px</b> · row height <b>52px</b> · border-radius row hover <b>8px</b>.
+    </div>
+    <div class="annot">
+      <div class="annot-title">Spec — màu accent</div>
+      Brand <code>#FF5B2E</code> · gradient cam→hồng (<code>#FF3D7F</code>) trên progress bar. Download <code>#2566E5</code> · Upload <code>#FF5B2E</code> · Sync <code>#0A8A5C</code>.
+    </div>
+    <div class="annot">
+      <div class="annot-title">Tương tác</div>
+      Hover row → highlight + hiện ⏸/▶/✕. Click row → focusTask → mở main + ListView.positionViewAtIndex. Drag header để di chuyển.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Section 2 · SYSTEM TRAY                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>2 · System Tray Icon</h2>
+  <p class="section-desc">
+    3 trạng thái màu khác nhau · cùng logo silhouette · tooltip thay đổi theo aggregate · double-click 250ms guard.
+  </p>
+
+  <div class="tray-stage">
+    <div class="tray-icons-row">
+
+      <div class="tray-icon-block">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="22" fill="#9CA3AF" opacity="0.95"/>
+          <text x="28" y="35" text-anchor="middle" fill="white" font-size="20" font-weight="700" font-family="var(--font-sans)">F</text>
+        </svg>
+        <span class="label">IDLE<span class="hex">#9CA3AF</span></span>
+      </div>
+
+      <div class="tray-icon-block">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <defs>
+            <linearGradient id="grad-active" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FF5B2E"/>
+              <stop offset="60%" stop-color="#FF3D7F"/>
+              <stop offset="100%" stop-color="#FFAF1D"/>
+            </linearGradient>
+          </defs>
+          <circle cx="28" cy="28" r="22" fill="url(#grad-active)"/>
+          <text x="28" y="35" text-anchor="middle" fill="white" font-size="20" font-weight="700" font-family="var(--font-sans)">F</text>
+        </svg>
+        <span class="label">ACTIVE<span class="hex">#FF5B2E</span></span>
+      </div>
+
+      <div class="tray-icon-block">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="22" fill="#D53030"/>
+          <text x="28" y="35" text-anchor="middle" fill="white" font-size="20" font-weight="700" font-family="var(--font-sans)">F</text>
+        </svg>
+        <span class="label">ERROR<span class="hex">#D53030</span></span>
+      </div>
+
+    </div>
+
+    <div class="tray-taskbar">
+      <span class="spacer"></span>
+      <span class="item" title="Volume">🔊</span>
+      <span class="item" title="Battery">🔋</span>
+      <span class="item" title="Network">📶</span>
+      <span class="item fshare" title="Fshare">
+        <svg width="16" height="16" viewBox="0 0 16 16">
+          <circle cx="8" cy="8" r="7" fill="url(#grad-active)"/>
+          <text x="8" y="11" text-anchor="middle" fill="white" font-size="9" font-weight="700">F</text>
+        </svg>
+      </span>
+      <span class="item">🇻🇳</span>
+      <span class="clock">10:32</span>
+      <span class="item">▲</span>
+    </div>
+  </div>
+
+  <div class="mockup-grid" style="margin-top: 28px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+
+    <!-- Tooltip variations -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">2A · Tooltip (hover tray)</div>
+      <div style="background: linear-gradient(180deg,#1E1F2C,#14141C); padding: 40px 28px; border-radius: 10px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start;">
+        <div class="tray-tooltip" style="position: relative;">Fshare</div>
+        <div class="tray-tooltip" style="position: relative;">Fshare — đang chuyển 5 · chờ 2</div>
+        <div class="tray-tooltip" style="position: relative;">Fshare — đang chuyển 5 · chờ 2 · lỗi 1</div>
+      </div>
+      <div class="mockup-cell-desc">3 ví dụ tooltip theo aggregate. Idle / busy / busy+error.</div>
+    </div>
+
+    <!-- Context menu -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">2B · Right-click menu</div>
+      <div style="background: linear-gradient(180deg,#1E1F2C,#14141C); padding: 40px 28px; border-radius: 10px; display: flex; justify-content: center;">
+        <div class="ctx-menu">
+          <div class="ctx-menu-item">Hiện cửa sổ</div>
+          <div class="ctx-menu-item">
+            Tạm dừng tất cả
+            <span class="shortcut">Ctrl+P</span>
+          </div>
+          <div class="ctx-menu-divider"></div>
+          <div class="ctx-menu-item">Thoát</div>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">Giữ menu native như hiện tại. Pause disable khi không có transfer.</div>
+    </div>
+
+    <!-- Balloon variations -->
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">2C · Balloon — Hoàn tất</div>
+      <div style="background: linear-gradient(180deg,#1E1F2C,#14141C); padding: 40px 16px; border-radius: 10px; display: flex; justify-content: center;">
+        <div class="balloon success">
+          <div class="b-icon">✓</div>
+          <div class="b-body">
+            <div class="b-title">Fshare</div>
+            <div class="b-msg">Đã hoàn tất</div>
+            <div class="b-detail">setup-2024-installer.exe</div>
+          </div>
+          <button class="b-close">✕</button>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">Auto-dismiss 4s. Click → focusTask + show main.</div>
+    </div>
+
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">2D · Balloon — Lỗi</div>
+      <div style="background: linear-gradient(180deg,#1E1F2C,#14141C); padding: 40px 16px; border-radius: 10px; display: flex; justify-content: center;">
+        <div class="balloon error">
+          <div class="b-icon">⚠</div>
+          <div class="b-body">
+            <div class="b-title">Fshare</div>
+            <div class="b-msg">Tải thất bại: installer-large.dmg</div>
+            <div class="b-detail">Mạng bị ngắt kết nối</div>
+          </div>
+          <button class="b-close">✕</button>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">Icon đỏ. Detail là error message từ TransferService.</div>
+    </div>
+
+    <div class="mockup-cell">
+      <div class="mockup-cell-label">2E · Balloon — Gộp nhiều</div>
+      <div style="background: linear-gradient(180deg,#1E1F2C,#14141C); padding: 40px 16px; border-radius: 10px; display: flex; justify-content: center;">
+        <div class="balloon success">
+          <div class="b-icon">✓</div>
+          <div class="b-body">
+            <div class="b-title">Fshare</div>
+            <div class="b-msg">Đã hoàn tất 3 file</div>
+            <div class="b-detail">setup.exe, video.mp4 và 1 mục khác</div>
+          </div>
+          <button class="b-close">✕</button>
+        </div>
+      </div>
+      <div class="mockup-cell-desc">Debounce 2s — gộp toast khi ≥2 task complete liên tiếp. Tránh spam tray.</div>
+    </div>
+
+  </div>
+
+  <div class="annotations">
+    <div class="annot">
+      <div class="annot-title">Triển khai icon</div>
+      3 file PNG family (16/24/32/48/64) hoặc 1 SVG tint runtime qua QPainter. Switch via <code>setHudHint(active, pending, failed)</code> → cache state cuối tránh setIcon thừa.
+    </div>
+    <div class="annot">
+      <div class="annot-title">Click trái = popup</div>
+      <code>QSystemTrayIcon::Trigger</code> defer 250ms qua QTimer. Nếu <code>DoubleClick</code> arrive trong window → cancel timer, show main thay vì popup.
+    </div>
+    <div class="annot">
+      <div class="annot-title">Balloon gating</div>
+      Setting <code>notifyOnTransferDone</code> default ON. Idempotent — mỗi taskId chỉ notify 1 lần per terminal state.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Section 3 · TRAY POPUP (P1)                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>3 · Tray Popup (P1)</h2>
+  <p class="section-desc">
+    Anchored vào tray icon · width compact 320px · tail ▼ chỉ về icon · auto-dismiss focus-out · KHÔNG drag · KHÔNG persist position.
+  </p>
+
+  <div class="popup-stage">
+    <div class="popup-container">
+      <div class="tray-popup">
+        <div class="tp-header">
+          <span class="tp-brand">Fshare</span>
+          <span class="tp-speed">↓ 12.4 MB/s · ↑ 3.1 MB/s</span>
+          <button class="mw-btn" title="Mở cửa sổ chính">⛶</button>
+        </div>
+        <div class="mw-divider"></div>
+
+        <div class="tp-row">
+          <span class="tp-row-icon dl">↓</span>
+          <span class="tp-row-name">setup-2024-installer.exe</span>
+          <span class="tp-row-meta"><span class="pct">42%</span> · 2.1 MB/s</span>
+          <div class="tp-row-bar"><div class="tp-row-bar-fill" style="width:42%"></div></div>
+        </div>
+        <div class="tp-row">
+          <span class="tp-row-icon ul">↑</span>
+          <span class="tp-row-name">vacation-video-final.mp4</span>
+          <span class="tp-row-meta"><span class="pct">78%</span> · 1 phút</span>
+          <div class="tp-row-bar"><div class="tp-row-bar-fill" style="width:78%"></div></div>
+        </div>
+        <div class="tp-row">
+          <span class="tp-row-icon sync">⟲</span>
+          <span class="tp-row-name">photos-2024-batch-7.zip</span>
+          <span class="tp-row-meta"><span class="pct">15%</span> · 640 KB/s</span>
+          <div class="tp-row-bar"><div class="tp-row-bar-fill" style="width:15%"></div></div>
+        </div>
+
+        <div class="mw-overflow" style="margin-top: 6px; padding: 6px 10px; font-size: 11px;">
+          <span>+ 4 mục khác</span>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="tp-footer">
+          <span>⟲ Sync 12 chờ</span>
+          <span class="budget">DL 3/3 · UL 1/2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mock taskbar at bottom -->
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.08); padding: 8px 16px; display: flex; align-items: center; gap: 16px; color: rgba(255,255,255,0.85); font-size: 12px;">
+      <span style="flex: 1;"></span>
+      <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">🔊</span>
+      <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">🔋</span>
+      <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">📶</span>
+      <span style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: rgba(255,91,46,0.15); border-radius: 4px;">
+        <svg width="14" height="14" viewBox="0 0 16 16">
+          <circle cx="8" cy="8" r="7" fill="url(#grad-active)"/>
+          <text x="8" y="11" text-anchor="middle" fill="white" font-size="9" font-weight="700">F</text>
+        </svg>
+      </span>
+      <span style="font-family: var(--font-mono); font-size: 11px; padding-left: 4px; color: rgba(255,255,255,0.85);">10:32</span>
+    </div>
+  </div>
+
+  <div class="annotations">
+    <div class="annot">
+      <div class="annot-title">Anchor logic</div>
+      <code>QSystemTrayIcon::geometry()</code> trên Win/macOS → align bottom-right popup chạm top-right icon, gap 8px. Linux DE → fallback góc bottom-right <code>availableGeometry</code>.
+    </div>
+    <div class="annot">
+      <div class="annot-title">Compact differences</div>
+      Row 44px (vs 52 ở mini) · KHÔNG sparkline · KHÔNG ⏸ pause-all (qua right-click menu) · KHÔNG ✕ (click ngoài tự đóng).
+    </div>
+    <div class="annot">
+      <div class="annot-title">Mutual exclusion</div>
+      Mini đang show + user click tray → mini đóng, popup mở. Không bao giờ có 2 cửa sổ HUD cùng tồn tại.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Section 4 · COMPARISON                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>4 · Mini Window vs Tray Popup</h2>
+  <p class="section-desc">Cùng data feed (TransferHudViewModel), khác host strategy.</p>
+
+  <div class="compare-grid">
+    <div class="head">Thuộc tính</div>
+    <div class="head">Mini Window</div>
+    <div class="head">Tray Popup</div>
+
+    <div class="row-label">Trigger</div>
+    <div class="val col-2">Tự động khi hide-to-tray + có transfer</div>
+    <div class="val">User single-click tray icon</div>
+
+    <div class="row-label">Width × Height</div>
+    <div class="val col-2">360 × auto (200-360)</div>
+    <div class="val">320 × auto (compact)</div>
+
+    <div class="row-label">Vị trí</div>
+    <div class="val col-2">Drag tự do · snap edges · persist <code>QSettings</code></div>
+    <div class="val">Anchor tray icon · reset mỗi lần mở</div>
+
+    <div class="row-label">Drag handle</div>
+    <div class="val col-2">Có (cả header)</div>
+    <div class="val dim">Không</div>
+
+    <div class="row-label">Sparkline 60s</div>
+    <div class="val col-2">Có (P2)</div>
+    <div class="val dim">Không (giữ compact)</div>
+
+    <div class="row-label">⏸ Pause all button</div>
+    <div class="val col-2">Có (header)</div>
+    <div class="val">Qua right-click tray menu</div>
+
+    <div class="row-label">✕ Close button</div>
+    <div class="val col-2">Có</div>
+    <div class="val">Click ngoài auto-dismiss</div>
+
+    <div class="row-label">Auto-hide khi idle</div>
+    <div class="val col-2">30s idle → fade out</div>
+    <div class="val dim">Không (user-controlled)</div>
+
+    <div class="row-label">Row height</div>
+    <div class="val col-2">52px (rộng rãi)</div>
+    <div class="val">44px (compact)</div>
+
+    <div class="row-label">Tail/Arrow</div>
+    <div class="val col-2 dim">Không</div>
+    <div class="val">▼ chỉ về tray (8px)</div>
+
+    <div class="row-label">Drop shadow</div>
+    <div class="val col-2">Có (12 32 0 0,0,0,.20)</div>
+    <div class="val">Có (cùng spec)</div>
+
+    <div class="row-label">Shared</div>
+    <div class="val col-2" style="grid-column: 2 / -1; background: var(--accentSoft); color: var(--accent); font-weight: 600;">
+      ViewModel · Top-5 logic · Row interactions · Aurora tokens · Theme switch · Reduce-motion
+    </div>
+    <div style="display: none;"></div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Section 5 · IMPLEMENTATION ROADMAP                                       -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>5 · Implementation Roadmap</h2>
+  <p class="section-desc">Ship dần theo phase, mỗi phase tự deploy được.</p>
+
+  <div style="display: grid; grid-template-columns: 80px 1fr 200px; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--panel); font-size: 13px;">
+
+    <div style="padding: 12px 16px; background: var(--hover); font-weight: 700; color: var(--ink2); border-bottom: 1px solid var(--divider);">Phase</div>
+    <div style="padding: 12px 16px; background: var(--hover); font-weight: 700; color: var(--ink2); border-bottom: 1px solid var(--divider);">Scope</div>
+    <div style="padding: 12px 16px; background: var(--hover); font-weight: 700; color: var(--ink2); border-bottom: 1px solid var(--divider);">Effort</div>
+
+    <div style="padding: 14px 16px; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--divider);">P0</div>
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--divider);">
+      <code>TransferHudViewModel</code> + Tray màu 3 state + balloon + double-click guard
+      <div style="font-size: 12px; color: var(--ink4); margin-top: 4px;">Pure foundation — không UI mới. User ngay lập tức thấy tray "giống Drive".</div>
+    </div>
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--divider); font-family: var(--font-mono); color: var(--ink3);">~1.5 ngày</div>
+
+    <div style="padding: 14px 16px; font-weight: 700; color: var(--ink3); border-bottom: 1px solid var(--divider);">P1</div>
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--divider);">
+      <code>TrayPopupWindow.qml</code> + anchor + focus-dismiss + row interactions
+      <div style="font-size: 12px; color: var(--ink4); margin-top: 4px;">Single-click tray → popup. Drive/Dropbox-style.</div>
+    </div>
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--divider); font-family: var(--font-mono); color: var(--ink3);">~2 ngày</div>
+
+    <div style="padding: 14px 16px; font-weight: 700; color: var(--ink3); border-bottom: 1px solid var(--divider);">P2</div>
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--divider);">
+      <code>MiniHudWindow.qml</code> + drag + snap + persist + <code>Sparkline.qml</code> + ring buffer
+      <div style="font-size: 12px; color: var(--ink4); margin-top: 4px;">Floating mini window đầy đủ. Sparkline gộp luôn.</div>
+    </div>
+    <div style="padding: 14px 16px; border-bottom: 1px solid var(--divider); font-family: var(--font-mono); color: var(--ink3);">~3.5 ngày</div>
+
+    <div style="padding: 14px 16px; font-weight: 700; color: var(--ink3);">P3</div>
+    <div style="padding: 14px 16px;">
+      Polish — balloon click action, advanced animations, edge-case handling
+    </div>
+    <div style="padding: 14px 16px; font-family: var(--font-mono); color: var(--ink3);">~0.5 ngày</div>
+
+  </div>
+
+  <div style="margin-top: 16px; padding: 14px 18px; background: var(--accentSoft); border-left: 3px solid var(--accent); border-radius: 6px; color: var(--ink2); font-size: 13px;">
+    <b style="color: var(--accent);">Tổng ~7.5 ngày</b> · P0 alone đem lại 60% giá trị, ship ngay tuần đầu để user feedback sớm trước khi build mini window.
+  </div>
+</section>
+
+<script>
+  // Theme toggle
+  const toggleBtn = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel = document.getElementById('themeLabel');
+  function applyTheme(t) {
+    document.body.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('hud-theme', t);
+    themeIcon.textContent = t === 'dark' ? '☀' : '☾';
+    themeLabel.textContent = t === 'dark' ? 'Light mode' : 'Dark mode';
+  }
+  applyTheme(localStorage.getItem('hud-theme') || 'light');
+  toggleBtn.addEventListener('click', () => {
+    const cur = document.body.getAttribute('data-theme');
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+</script>
+
+</body>
+</html>

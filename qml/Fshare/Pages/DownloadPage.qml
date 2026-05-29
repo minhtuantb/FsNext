@@ -24,16 +24,25 @@ Item {
     id: page
 
     // Listen for the root window's "open add-download dialog" signals.
-    // `openDownloadWithLinks(links)` — drop / paste / tray hook routes URLs in.
-    // `openDownloadDialog()` — HomePage quick-action opens the empty dialog.
+    // Drag-drop / paste / Chrome native-host route URLs via the
+    // `pendingDownloadLinks` property on root (set BEFORE the page is
+    // navigated to, so we drain it both on first Component.onCompleted
+    // and on subsequent change events — mirrors the upload-page pattern,
+    // dodges the same Loader-instantiation race).
+    function _consumePendingDownloads() {
+        const w = Window.window;
+        if (!w) return;
+        const links = w.pendingDownloadLinks;
+        if (!links || links.length === 0) return;
+        addDialog.linksText = links;
+        addDialog.open();
+        w.pendingDownloadLinks = "";   // consumed
+    }
+    Component.onCompleted: _consumePendingDownloads()
     Connections {
         target: Window.window
         ignoreUnknownSignals: true
-        function onOpenDownloadWithLinks(links) {
-            if (links.length === 0) return;
-            addDialog.linksText = links;
-            addDialog.open();
-        }
+        function onPendingDownloadLinksChanged() { _consumePendingDownloads(); }
         function onOpenDownloadDialog() {
             addDialog.linksText = "";
             addDialog.open();
@@ -43,6 +52,33 @@ Item {
     property bool showHistory: false
     readonly property int activeCount:  downloadViewModel ? downloadViewModel.model.count : 0
     readonly property int historyCount: downloadViewModel ? downloadViewModel.historyModel.count : 0
+
+    // Highlighted task id — set by focusTask() and auto-cleared 1500ms later.
+    // FsTransferItem doesn't currently watch this, so visual feedback is
+    // limited to the ListView scrolling the row into view.  P3 polish can
+    // add a border pulse by wiring this through the delegate.
+    property string focusedTaskId: ""
+    Timer {
+        id: _focusClearTimer
+        interval: 1500
+        onTriggered: page.focusedTaskId = ""
+    }
+
+    // Called by Main.qml's HUD VM signal router when the user clicks a
+    // row in the tray popup / mini window.  Scrolls the active list to
+    // bring `taskId` into view; if the task isn't active (history-only)
+    // we silently no-op since scrolling a history list to a random row
+    // is rarely what the user wanted from a tray-popup click.
+    function focusTask(taskId) {
+        if (!downloadViewModel || !downloadViewModel.model) return;
+        const idx = downloadViewModel.model.rowOfTask(taskId);
+        if (idx < 0) return;          // not in active list — skip
+        page.showHistory = false;
+        downloadActiveList.positionViewAtIndex(idx, ListView.Center);
+        downloadActiveList.currentIndex = idx;
+        page.focusedTaskId = taskId;
+        _focusClearTimer.restart();
+    }
 
     // Page-level clock driving relative-time labels on just-completed rows.
     property real nowMs: Date.now()
@@ -75,9 +111,13 @@ Item {
                 spacing: AuroraTheme.sp4
 
                 // ── Top row: kicker+serif number · stats · actions ──
+                // Spacing trimmed sp6 (24) → sp4 (16) — earlier value sat right
+                // at the edge of available width on a 1100-window with the
+                // 240-px sidebar, so the trailing "Thêm URL" button could
+                // overflow past the panel border by a couple of pixels.
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: AuroraTheme.sp6
+                    spacing: AuroraTheme.sp4
 
                     // Left: kicker + big speed
                     ColumnLayout {
@@ -138,10 +178,12 @@ Item {
 
                     Item { Layout.fillWidth: true }
 
-                    // Right: mini stats (only on Active tab)
+                    // Right: mini stats (only on Active tab). Internal
+                    // spacing trimmed sp6 → sp4 for the same overflow reason
+                    // as the outer row above.
                     RowLayout {
                         visible: !page.showHistory
-                        spacing: AuroraTheme.sp6
+                        spacing: AuroraTheme.sp4
                         Layout.alignment: Qt.AlignVCenter
 
                         Repeater {
@@ -159,7 +201,13 @@ Item {
                                         : "—")
                                 },
                                 {
-                                    label: "Tổng tác vụ",
+                                    // "Tổng tác vụ" was correct domain-wise
+                                    // (a transfer task), but users read it
+                                    // as ambiguous CS jargon. "Tổng file"
+                                    // matches the kicker line above and is
+                                    // also visually narrower → buys a few
+                                    // more px of room for the action buttons.
+                                    label: "Tổng file",
                                     value: String(page.activeCount)
                                 }
                             ]
@@ -349,12 +397,31 @@ Item {
 
             // Active list
             ListView {
+                id: downloadActiveList
                 anchors.fill: parent
                 anchors.margins: AuroraTheme.sp2
                 clip: true
                 visible: !page.showHistory && page.activeCount > 0
                 model: downloadViewModel ? downloadViewModel.model : null
                 spacing: 0
+
+                // P3 polish — focused row highlight.  ListView paints this
+                // around currentIndex; opacity follows page.focusedTaskId
+                // so the pulse only shows briefly after a focusTask() call
+                // (1500 ms via _focusClearTimer), not on every keyboard nav.
+                highlight: Rectangle {
+                    color: "transparent"
+                    border.color: AuroraTheme.accent
+                    border.width: 2
+                    radius: AuroraTheme.radiusSm
+                    opacity: page.focusedTaskId.length > 0 ? 1.0 : 0.0
+                    Behavior on opacity {
+                        enabled: !AuroraTheme.reduceMotion
+                        NumberAnimation { duration: AuroraTheme.durBase }
+                    }
+                }
+                highlightFollowsCurrentItem: true
+                highlightMoveDuration: 200
 
                 delegate: FsTransferItem {
                     width: ListView.view ? ListView.view.width : 0
@@ -370,11 +437,16 @@ Item {
                     errorMessage:     model.errorMessage     || ""
                     completedAt:      model.completedAt      || 0
                     nowMs:            page.nowMs
+                    // The download task carries the original share URL the user
+                    // pasted (file or folder) — pass it through so the copy
+                    // button is visible and copies the right thing.
+                    linkcode:         model.linkCode || ""
 
                     onPauseClicked:    if (downloadViewModel) downloadViewModel.pauseTask(transferId)
                     onResumeClicked:   if (downloadViewModel) downloadViewModel.resumeTask(transferId)
                     onCancelClicked:   if (downloadViewModel) downloadViewModel.cancelTask(transferId)
                     onDismissClicked:  if (downloadViewModel) downloadViewModel.dismissCompleted(transferId)
+                    onCopyLinkClicked: if (downloadViewModel) downloadViewModel.copyShareLink(linkcode)
                     onOpenFolderClicked: {
                         const p = (model.localPath || "").replace(/\\/g, "/")
                         const dir = p.lastIndexOf("/") > 0 ? p.substring(0, p.lastIndexOf("/")) : p
@@ -407,7 +479,9 @@ Item {
                     showActions:      true
                     completedAt:      model.completedAt || 0
                     nowMs:            page.nowMs
+                    linkcode:         model.linkCode || ""
 
+                    onCopyLinkClicked: if (downloadViewModel) downloadViewModel.copyShareLink(linkcode)
                     onOpenFolderClicked: {
                         const p = (model.localPath || "").replace(/\\/g, "/")
                         const dir = p.lastIndexOf("/") > 0 ? p.substring(0, p.lastIndexOf("/")) : p

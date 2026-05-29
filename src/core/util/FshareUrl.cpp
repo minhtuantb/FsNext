@@ -6,12 +6,19 @@
 namespace fsnext::FshareUrl {
 
 // Matches, case-insensitively:
-//   [scheme://][www.]fshare.vn/(file|folder)/<linkcode>[/][?query][#frag]
+//   [(http(s):)?//][www.]fshare.vn/(file|folder)/<linkcode>[/][?query][#frag]
+//
+// Scheme prefix is intentionally flexible: bare host ("fshare.vn/..."),
+// protocol-relative ("//fshare.vn/...") and explicit http/https are all
+// accepted. Users paste from many sources (browser bar, share dialogs, HTML)
+// and rejecting any of these would surface as "không hợp lệ" for input the
+// user thinks is obviously a Fshare link.
+//
 // linkcode must be [A-Za-z0-9] — Fshare link codes are alphanumeric.
 static const QRegularExpression &pattern()
 {
     static const QRegularExpression kRe(
-        QStringLiteral(R"(^\s*(?:https?://)?(?:www\.)?fshare\.vn/(file|folder)/([A-Za-z0-9]+)/?(?:[?#].*)?\s*$)"),
+        QStringLiteral(R"(^\s*(?:(?:https?:)?//)?(?:www\.)?fshare\.vn/(file|folder)/([A-Za-z0-9]+)/?(?:[?#].*)?\s*$)"),
         QRegularExpression::CaseInsensitiveOption);
     return kRe;
 }

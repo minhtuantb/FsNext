@@ -1,28 +1,41 @@
-# BACKLOG — Fshare Tool FsNext
+# BACKLOG — FsNext
 
-## Known Issues from Current Codebase Analysis
+> Legend: ✅ done · 🔶 partial · ⬜ open. Cập nhật 2026-05-29.
 
-### Security
-- [ ] **Password storage**: Credentials stored as base64 (encoding, not encryption) in QSettings
-- [ ] **Token refresh**: No automatic token refresh mechanism — session expires silently
-- [ ] **OAuth secrets**: client_id/client_secret hardcoded in oauthconfig.h
+## Active backlog (đợt review 2026-05-29 — xem `docs/ASSESSMENT.md`)
 
-### Architecture
-- [ ] **Global state**: Heavy use of extern globals (client, analytics, megauser, logger)
-- [ ] **ActionThread monolith**: Single class dispatches ALL API operations via enum flags
-- [ ] **Direct CURL in workers**: DownloadFile/UploadFile bypass fshareclient for transfers
-- [ ] **No error recovery**: Many error paths show generic messages without actionable info
+### P1
+- ⬜ **Hợp nhất 2 design-system QML** (`FsAurora` + `Fshare`): chốt một bộ component chuẩn, migrate `FsAurora.Pages`
+  (HomePage, LoginView) sang Fshare, dọn artifact thiết kế (`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`).
+- ⬜ **Đóng crash audit**: đối chiếu từng finding trong `docs/CRASH_AUDIT.md` + `docs/FILE_MANAGER_CRASH_AUDIT.md`
+  với code hiện tại, đánh dấu Fixed/Won't-fix/Open. Ưu tiên race click-nhanh + `FolderTreeModel` đệ quy không cap depth.
 
-### UX
-- [ ] **No concurrent session handling**: Login from another device not detected
-- [ ] **File name conflicts**: No consistent handling of duplicate file names on download
-- [ ] **Disk space check**: No pre-download check for available disk space
-- [ ] **Progress persistence**: Download/upload progress lost on app crash (only history for completed items)
+### P2
+- ⬜ **Thiết kế lại session/cookie trong `HttpClient`** (đang vá mutex band-aid) khi có dịp refactor.
+- ⬜ **Test phần lõi**: `TransferOrchestrator` dispatch dưới tải, `RefreshTokenCoordinator` single-flight + 7-day,
+  `FileCacheService` write-through rollback. (Liên quan tech-debt `IFshareApi` bên dưới.)
+- ⬜ **i18n**: chạy `lupdate`, audit chuỗi hardcode trong `qml/`, quyết định danh sách ngôn ngữ.
 
-### Performance
-- [ ] **No connection pooling**: Each API call creates new CURL handle
-- [ ] **Synchronous folder tree**: Large folder trees block UI thread (via ActionThread, but still sequential)
-- [ ] **No file listing cache**: Every folder navigation triggers fresh API call
+### P3
+- ⬜ **SecureStore non-Windows** (Keychain/libsecret) khi port macOS/Linux.
+- ⬜ **Quy ước tài liệu sống vs snapshot** để tránh drift tái diễn (xem ASSESSMENT §7).
+
+---
+
+## Đã giải quyết trong FsNext (vấn đề của codebase legacy v5.3.0)
+
+> Phần này từng là "Known Issues" của bản cũ — nay đã được FsNext xử lý, giữ lại để đối chiếu lịch sử.
+
+- ✅ **Password storage**: nay mã hóa DPAPI qua `SecureStore` (không còn base64).
+- ✅ **Token refresh**: `RefreshTokenCoordinator` silent refresh single-flight.
+- ✅ **OAuth secrets**: tách `src/core/api/OAuthSecrets.h` (gitignored), không hardcode.
+- ✅ **Global state**: thay bằng DI qua `AppContext` (không còn extern globals).
+- ✅ **ActionThread monolith**: thay bằng service layer + `TransferOrchestrator`.
+- ✅ **No error recovery**: `AppError` phân loại + retry; session-expired flow có toast.
+- ✅ **Disk space check** / **filename conflicts**: đã xử lý (xem `download_test_cases.md`).
+- ✅ **Connection pooling / file listing cache**: HttpClient reuse + `FileCacheDB` cache-first.
+- 🔶 **Concurrent session / progress persistence**: phát hiện session-expired (HTTP 201); progress persistence một phần
+  (resume sidecar cho transfer đang chạy). Còn dư địa hoàn thiện.
 
 ---
 
@@ -45,20 +58,20 @@ and the original 2025-04-15 reproduction was against the stale tuple.
 Dev bypass that was added as a workaround **has been removed** from
 `AuthService.cpp`.
 
-Emergency runbook for future recurrence kept at `docs/10_login_400_playbook.md`.
+Emergency runbook for future recurrence kept at `docs/runbook_login_400.md`.
 
 ---
 
 ## Feature Requests (for future consideration)
 
-### 2026-04-15 — Multi-segment download
-**Status**: Not implemented (single-segment only)
+### 2026-04-15 — Multi-segment download  →  ✅ IMPLEMENTED
+**Status**: Done — `DownloadEngine` hỗ trợ multi-segment HTTP Range + resume sidecar `.fsdownload`.
 **Legacy reference** (old codebase, not a dependency): the old `downloadfile.cpp` had `attempt_segmented_download()` — probes HTTP 206 Range support, splits file into N segments (default 4), parallel download via CURL multi-handle.
 **Impact**: Slower download speeds on high-bandwidth connections, no parallel segments for large files.
 **When to implement**: After core UI is finished and basic downloads work.
 
-### 2026-04-15 — Chunked upload with adaptive sizing
-**Status**: Basic single-request upload implemented, no chunking
+### 2026-04-15 — Chunked upload with adaptive sizing  →  ✅ IMPLEMENTED (cơ bản)
+**Status**: Done — `UploadEngine` chunked + resumable (`queryResumeOffset`). Adaptive sizing theo latency: chưa.
 **Legacy reference** (old codebase, not a dependency): the old `uploadfile.cpp` uploaded in 20MB chunks with `Content-Range` headers, per-chunk retry (up to 100), adaptive chunk size based on network latency, session renewal on 401.
 **Impact**: Large uploads (>100MB) may fail on unstable connections with no recovery.
 **When to implement**: Before production release for upload reliability.

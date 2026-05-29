@@ -10,6 +10,20 @@ Item {
     property alias content: contentArea.children
     property alias footer: footerArea.children
     property int dialogWidth: 440
+    // When true, clicking the dimmed overlay outside the dialog box closes it.
+    // Set false for dialogs that stage user work (e.g. the upload dialog, where
+    // a stray click would otherwise discard the chosen files + folder). Esc and
+    // the explicit Cancel/✕ controls still close regardless.
+    property bool closeOnOverlayClick: true
+    // Fixed footer bar height when a footer is present (0 when empty).
+    // Using a fixed height instead of footerArea.childrenRect.height breaks
+    // the binding loop that arose from: footerItem.height ← childrenRect,
+    // footerArea anchors.fill parent (height ← footerItem.height), and the
+    // footer's Row using anchors.verticalCenter (position ← footerArea.height).
+    // That cycle converged to 64 numerically but Qt flagged it every open.
+    // Every in-app dialog footer is a 64-tall Row, so 64 is the safe default;
+    // a taller footer just sets footerHeight.
+    property int footerHeight: 64
 
     signal opened()
     signal closed()
@@ -58,7 +72,9 @@ Item {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: root.close()
+            // Always swallow the click (so it can't fall through to the page
+            // behind the modal); only close when the dialog opts in.
+            onClicked: if (root.closeOnOverlayClick) root.close()
         }
     }
 
@@ -130,14 +146,17 @@ Item {
                 height: childrenRect.height
             }
 
-            // Footer slot
+            // Footer slot — height keyed off child PRESENCE (children.length,
+            // a non-geometry property) rather than childrenRect, so there's no
+            // dependency cycle with footerArea's anchors.fill + the footer
+            // Row's verticalCenter. See `footerHeight` rationale above.
             Item {
                 id: footerItem
                 width: parent.width
-                height: footerArea.childrenRect.height > 0 ? footerArea.childrenRect.height : 0
+                height: footerArea.children.length > 0 ? root.footerHeight : 0
 
                 Rectangle {
-                    visible: footerArea.childrenRect.height > 0
+                    visible: footerArea.children.length > 0
                     anchors.top: parent.top; width: parent.width; height: 1; color: AuroraTheme.divider
                 }
 

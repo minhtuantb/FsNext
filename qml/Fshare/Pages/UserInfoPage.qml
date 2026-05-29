@@ -9,8 +9,9 @@ import Fshare.Utils 1.0
 import FsAurora.Theme 1.0
 import FsAurora.Components 1.0 as Aurora
 
-Item {
+Aurora.FsScrollPage {
     id: page
+    contentSpacing: AuroraTheme.sp6
 
     // ── Helpers ────────────────────────────────────────────────────────────
     function pct(used, total) {
@@ -29,69 +30,21 @@ Item {
 
     readonly property var vm: userInfoViewModel
 
-    Flickable {
-        anchors.fill: parent
-        contentWidth: parent.width
-        contentHeight: mainCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: mainCol
-            width: parent.width
-            spacing: AuroraTheme.sp6
-
             // ═══════════════════════════════════════════════════════════════
             // EDITORIAL HEADER
             // ═══════════════════════════════════════════════════════════════
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: AuroraTheme.sp2
-
-                Text {
-                    text: "━━ " + qsTr("Tài khoản")
-                    font.family: AuroraTheme.fontMono
-                    font.pixelSize: 11
-                    font.weight: Font.DemiBold
-                    font.letterSpacing: 1.4
-                    font.capitalization: Font.AllUppercase
-                    color: AuroraTheme.ink4
+            Aurora.FsPageHeader {
+                framed: false
+                kicker: qsTr("Tài khoản")
+                // The dynamic name + level pair is rendered as title + accentWord
+                // so the second-token italic-accent treatment lines up with the
+                // other editorial headers.
+                title: {
+                    const n = vm ? vm.userName : "";
+                    return (n.length > 0 ? n : qsTr("Thành viên")) + ",";
                 }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: AuroraTheme.sp2
-
-                    Text {
-                        text: {
-                            const n = vm ? vm.userName : "";
-                            return (n.length > 0 ? n : qsTr("Thành viên")) + ",";
-                        }
-                        font.family: AuroraTheme.fontSerif
-                        font.pixelSize: 48
-                        font.weight: Font.Normal
-                        font.letterSpacing: -1.4
-                        color: AuroraTheme.ink1
-                    }
-                    Text {
-                        text: (vm && vm.levelLabel.length > 0 ? vm.levelLabel : "Member") + "."
-                        font.family: AuroraTheme.fontSerif
-                        font.pixelSize: 48
-                        font.weight: Font.Normal
-                        font.italic: true
-                        font.letterSpacing: -1.4
-                        color: AuroraTheme.accent
-                    }
-                    Item { Layout.fillWidth: true }
-                }
-
-                Text {
-                    text: qsTr("Thông tin tài khoản và dung lượng Fshare")
-                    font.family: AuroraTheme.fontMono
-                    font.pixelSize: 12
-                    color: AuroraTheme.ink3
-                    Layout.topMargin: AuroraTheme.sp1
-                }
+                accentWord: (vm && vm.levelLabel.length > 0 ? vm.levelLabel : "Member") + "."
+                subtitle: qsTr("Thông tin tài khoản và dung lượng Fshare")
             }
 
             // ═══════════════════════════════════════════════════════════════
@@ -1125,6 +1078,4 @@ Item {
 
             // Bottom spacer
             Item { Layout.preferredHeight: AuroraTheme.sp4 }
-        }
-    }
 }

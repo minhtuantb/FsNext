@@ -1,6 +1,8 @@
 #include "SettingsViewModel.h"
 #include "core/services/SettingsService.h"
 
+#include <algorithm>
+
 namespace fsnext {
 
 SettingsViewModel::SettingsViewModel(SettingsService *service, QObject *parent)
@@ -48,6 +50,8 @@ QString SettingsViewModel::language() const     { return m_settings.language; }
 bool SettingsViewModel::autoLogin() const       { return m_settings.autoLogin; }
 bool SettingsViewModel::stayOnTop() const       { return m_settings.stayOnTop; }
 bool SettingsViewModel::darkMode() const        { return m_settings.darkMode; }
+bool SettingsViewModel::sidebarCollapsed() const{ return m_settings.sidebarCollapsed; }
+int  SettingsViewModel::sidebarHudVariant() const{ return m_settings.sidebarHudVariant; }
 bool SettingsViewModel::minimizeToTray() const  { return m_settings.minimizeToTray; }
 int  SettingsViewModel::fileConflictPolicy() const { return m_settings.fileConflictPolicy; }
 
@@ -160,12 +164,39 @@ void SettingsViewModel::setDarkMode(bool value)
     emit darkModeChanged();
 }
 
+void SettingsViewModel::setSidebarCollapsed(bool value)
+{
+    if (m_settings.sidebarCollapsed == value) return;
+    m_settings.sidebarCollapsed = value;
+    if (m_service) m_service->setSidebarCollapsed(value);
+    emit sidebarCollapsedChanged();
+}
+
+void SettingsViewModel::setSidebarHudVariant(int value)
+{
+    const int clamped = std::clamp(value, 0, 3);
+    if (m_settings.sidebarHudVariant == clamped) return;
+    m_settings.sidebarHudVariant = clamped;
+    if (m_service) m_service->setSidebarHudVariant(clamped);
+    emit sidebarHudVariantChanged();
+}
+
 void SettingsViewModel::setMinimizeToTray(bool value)
 {
     if (m_settings.minimizeToTray == value) return;
     m_settings.minimizeToTray = value;
     if (m_service) m_service->setMinimizeToTray(value);
     emit minimizeToTrayChanged();
+}
+
+bool SettingsViewModel::confirmOnClose() const { return m_settings.confirmOnClose; }
+
+void SettingsViewModel::setConfirmOnClose(bool value)
+{
+    if (m_settings.confirmOnClose == value) return;
+    m_settings.confirmOnClose = value;
+    if (m_service) m_service->setConfirmOnClose(value);
+    emit confirmOnCloseChanged();
 }
 
 void SettingsViewModel::setFileConflictPolicy(int value)
@@ -179,6 +210,33 @@ void SettingsViewModel::setFileConflictPolicy(int value)
     emit fileConflictPolicyChanged();
 }
 
+bool SettingsViewModel::notifyOnTransferDone() const { return m_settings.notifyOnTransferDone; }
+void SettingsViewModel::setNotifyOnTransferDone(bool value)
+{
+    if (m_settings.notifyOnTransferDone == value) return;
+    m_settings.notifyOnTransferDone = value;
+    if (m_service) m_service->setNotifyOnTransferDone(value);
+    emit notifyOnTransferDoneChanged();
+}
+
+bool SettingsViewModel::showOnHideToTray() const { return m_settings.showOnHideToTray; }
+void SettingsViewModel::setShowOnHideToTray(bool value)
+{
+    if (m_settings.showOnHideToTray == value) return;
+    m_settings.showOnHideToTray = value;
+    if (m_service) m_service->setShowOnHideToTray(value);
+    emit showOnHideToTrayChanged();
+}
+
+bool SettingsViewModel::showTaskbarProgress() const { return m_settings.showTaskbarProgress; }
+void SettingsViewModel::setShowTaskbarProgress(bool value)
+{
+    if (m_settings.showTaskbarProgress == value) return;
+    m_settings.showTaskbarProgress = value;
+    if (m_service) m_service->setShowTaskbarProgress(value);
+    emit showTaskbarProgressChanged();
+}
+
 // ---------------------------------------------------------------------------
 // Invokables
 // ---------------------------------------------------------------------------
@@ -188,6 +246,21 @@ void SettingsViewModel::applySettings()
     // Individual setters already persist immediately, so applySettings()
     // is a no-op for now. Kept as a QML-visible hook for future bulk commits.
     if (m_service) m_service->saveSettings(m_settings);
+}
+
+int     SettingsViewModel::savedMiniWindowX()      const { return m_settings.miniWindowX; }
+int     SettingsViewModel::savedMiniWindowY()      const { return m_settings.miniWindowY; }
+QString SettingsViewModel::savedMiniWindowScreen() const { return m_settings.miniWindowScreen; }
+
+void SettingsViewModel::saveMiniWindowPosition(int x, int y, const QString &screen)
+{
+    // Local cache mirrors the service so subsequent getters return the
+    // freshly-written value (the QML side may read it back in the same
+    // event loop tick the drag-end handler fires).
+    m_settings.miniWindowX      = x;
+    m_settings.miniWindowY      = y;
+    m_settings.miniWindowScreen = screen;
+    if (m_service) m_service->setMiniWindowPosition(x, y, screen);
 }
 
 void SettingsViewModel::resetSettings()
@@ -208,7 +281,11 @@ void SettingsViewModel::resetSettings()
     setStayOnTop(defaults.stayOnTop);
     setDarkMode(defaults.darkMode);
     setMinimizeToTray(defaults.minimizeToTray);
+    setConfirmOnClose(defaults.confirmOnClose);
     setFileConflictPolicy(defaults.fileConflictPolicy);
+    setNotifyOnTransferDone(defaults.notifyOnTransferDone);
+    setShowOnHideToTray(defaults.showOnHideToTray);
+    setShowTaskbarProgress(defaults.showTaskbarProgress);
 }
 
 } // namespace fsnext

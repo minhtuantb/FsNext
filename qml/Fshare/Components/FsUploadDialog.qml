@@ -1,15 +1,26 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // FsUploadDialog — Drag-drop + file picker upload dialog.
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 FsDialog {
     id: root
 
+    // The authoritative holder for the user's batch — typically
+    // uploadStagingViewModel from AppContext. When set, pendingFiles binds to
+    // its stagedFiles, and add/remove/clear/commit all route through it so
+    // state survives page navigation and app restart. Falsy = legacy
+    // self-contained mode (kept so this component isn't tied to one caller).
+    property var stagingModel: null
+
     property string targetFolder: "/"
-    property var    pendingFiles: []
+    // Files currently in the dialog list. When stagingModel is provided this
+    // shadows its stagedFiles via the binding below — writes from the UI go
+    // through the model methods, not by reassigning this.
+    property var    pendingFiles: stagingModel ? stagingModel.stagedFiles : []
     property string password:     ""
     property bool   secured:      false
 
@@ -55,17 +66,39 @@ FsDialog {
 
     title: qsTr("Tải lên file")
     dialogWidth: 500
+    // Don't discard the staged files/folder on a stray click outside the box —
+    // the user closes via Hủy / ✕ / Esc instead.
+    closeOnOverlayClick: false
 
-    // Reset the picker to root whenever the dialog is reopened — otherwise
-    // the last-chosen folder lingers across sessions, which is surprising.
+    // Hydrate local UI state from the staging model so a re-open of the
+    // dialog (page nav round-trip, post-restart "Tiếp tục" banner) shows the
+    // folder + password + privacy the user had set, instead of resetting to
+    // defaults like the old self-contained version did.
     onOpened: {
-        folderSel.currentIndex = 0;
-        root.targetFolder = "/";
-        // Park focus on the target-folder selector — the first decision the
-        // user has to make in the upload flow ("upload to where?"); a
-        // forceActiveFocus on the drop zone instead would imply file-add is
-        // next, but pending files usually arrive via drag/drop or the file
-        // picker which already grabs focus on its own.
+        if (root.stagingModel) {
+            root.targetFolder = root.stagingModel.targetFolder || "/";
+            root.password     = root.stagingModel.password || "";
+            root.secured      = root.stagingModel.secured;
+            // Push the hydrated password into the text field — the field's
+            // `text` is only one-way bound (onTextChanged → root.password) so
+            // setting root.password doesn't update what the user sees. Setting
+            // text directly also breaks the binding, but that's fine here
+            // because subsequent edits flow through onTextChanged.
+            passwordField.text = root.password;
+            // Reflect the hydrated folder in the dropdown.
+            const ids = root._folderOptions.ids;
+            const idx = ids.indexOf(root.targetFolder);
+            folderSel.currentIndex = (idx >= 0) ? idx : 0;
+            // The dialog has just told the VM "I'm showing you", so swallow the
+            // showRequested flag — a subsequent passive nav back to Upload
+            // shouldn't re-pop the dialog.
+            if (root.stagingModel.acknowledgeShow) root.stagingModel.acknowledgeShow();
+        } else {
+            folderSel.currentIndex = 0;
+            root.targetFolder = "/";
+        }
+        // Park focus on the target-folder selector — first decision the user
+        // has to make. Deferred so the dialog is fully on-screen first.
         Qt.callLater(() => folderSel.forceActiveFocus());
     }
 
@@ -76,7 +109,17 @@ FsDialog {
         onAccepted: root._addFiles(selectedFiles)
     }
 
+    // Single entry point for adding files via any picker (drop, "chọn từ máy",
+    // OS file dialog). When wired to a stagingModel, the model does the dedupe
+    // and stat — the dialog just hands paths over. The legacy local-list path
+    // (no model) is kept for back-compat callers that haven't migrated yet.
     function _addFiles(urls) {
+        if (root.stagingModel) {
+            const arr = [];
+            for (const u of urls) arr.push(u.toString());
+            root.stagingModel.addFiles(arr);
+            return;
+        }
         const newFiles = [];
         for (const u of urls) {
             const fullUrl = u.toString();
@@ -199,7 +242,13 @@ FsDialog {
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: root.pendingFiles = []
+                                // Only wipe files — keep folder/password/secured
+                                // so the user doesn't have to reconfigure after
+                                // picking a fresh batch.
+                                onClicked: {
+                                    if (root.stagingModel) root.stagingModel.clearFiles();
+                                    else root.pendingFiles = [];
+                                }
                             }
                         }
                     }
@@ -262,9 +311,13 @@ FsDialog {
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
-                                                const arr = root.pendingFiles.slice();
-                                                arr.splice(index, 1);
-                                                root.pendingFiles = arr;
+                                                if (root.stagingModel) {
+                                                    root.stagingModel.removeFile(index);
+                                                } else {
+                                                    const arr = root.pendingFiles.slice();
+                                                    arr.splice(index, 1);
+                                                    root.pendingFiles = arr;
+                                                }
                                             }
                                         }
                                     }
@@ -295,16 +348,23 @@ FsDialog {
                         onActivated: (idx) => {
                             const ids = root._folderOptions.ids;
                             root.targetFolder = ids[idx] ?? "/";
+                            if (root.stagingModel)
+                                root.stagingModel.targetFolder = root.targetFolder;
                         }
                     }
                 }
 
-                // Password
+                // Password — text set on onOpened from the staging model so a
+                // re-open of the dialog (page nav round-trip) doesn't blank it.
                 FsTextField {
+                    id: passwordField
                     Layout.fillWidth: true
                     placeholder: qsTr("Mật khẩu bảo vệ file (để trống nếu không cần)")
                     echoMode: TextInput.Password
-                    onTextChanged: root.password = text
+                    onTextChanged: {
+                        root.password = text;
+                        if (root.stagingModel) root.stagingModel.password = text;
+                    }
                 }
 
                 // Secured toggle
@@ -313,7 +373,10 @@ FsDialog {
                     spacing: AuroraTheme.sp2
                     FsSwitch {
                         checked: root.secured
-                        onToggled: root.secured = checked
+                        onToggled: {
+                            root.secured = checked;
+                            if (root.stagingModel) root.stagingModel.secured = checked;
+                        }
                     }
                     Text {
                         Layout.fillWidth: true
@@ -335,17 +398,29 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            FsButton {
+            Aurora.FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Hủy"); variant: "ghost"
                 onClicked: root.close()
             }
-            FsButton {
+            Aurora.FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Bắt đầu tải lên"); variant: "primary"
                 enabled: root.pendingFiles.length > 0
                 onClicked: {
-                    root.uploadStarted(root.pendingFiles, root.targetFolder);
+                    if (root.stagingModel) {
+                        // Final push of any UI state the model didn't get the
+                        // live update for, then hand the batch to the upload
+                        // VM and clear staging. The model handles dedupe,
+                        // invalid-file skip, and persistence.
+                        root.stagingModel.targetFolder = root.targetFolder;
+                        root.stagingModel.password     = root.password;
+                        root.stagingModel.secured      = root.secured;
+                        root.stagingModel.commit();
+                    } else {
+                        // Legacy path for callers without a model.
+                        root.uploadStarted(root.pendingFiles, root.targetFolder);
+                    }
                     root.close();
                 }
             }

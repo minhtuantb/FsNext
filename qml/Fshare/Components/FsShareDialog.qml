@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // FsShareDialog — Share link dialog with copy + optional password.
 //
 // Usage:
@@ -12,6 +12,7 @@
 import QtQuick
 import QtQuick.Layouts
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 FsDialog {
     id: root
 
@@ -69,7 +70,7 @@ FsDialog {
                         text: root.shareUrl
                         readOnly: true
                     }
-                    FsButton {
+                    Aurora.FsButton {
                         Layout.alignment: Qt.AlignBottom
                         text: qsTr("Sao chép")
                         variant: "secondary"
@@ -96,7 +97,7 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            FsButton {
+            Aurora.FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Đóng"); variant: "ghost"
                 onClicked: root.close()

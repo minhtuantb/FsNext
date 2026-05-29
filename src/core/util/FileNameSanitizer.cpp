@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QSet>
 #include <QStringLiteral>
 
@@ -28,12 +29,39 @@ static const QSet<QString> &reservedDeviceNames()
 
 QString sanitize(const QString &name)
 {
+    // Early default: if the trimmed input has no characters other than what
+    // we'd strip or substitute (path separators, Windows-reserved punctuation,
+    // control chars), the post-substitution result would be a row of '_' that
+    // looks intentional. Callers passing "", "   ", "///", "<>:" etc. clearly
+    // mean "no name" — fall back to the default rather than emit "___".
+    {
+        const QString probe = name.trimmed();
+        if (probe.isEmpty()) return QStringLiteral("download");
+        bool anyMeaningful = false;
+        for (QChar c : probe) {
+            const ushort u = c.unicode();
+            const bool stripped =
+                u < 0x20 || u == 0x7F
+                || c == QLatin1Char('/') || c == QLatin1Char('\\')
+                || QStringLiteral("<>:\"|?*").contains(c);
+            if (!stripped) { anyMeaningful = true; break; }
+        }
+        if (!anyMeaningful) return QStringLiteral("download");
+    }
+
     QString s = name;
 
     // Drop any path components — a server-supplied "../../etc/passwd" or
     // "C:\\Windows\\System32\\foo" must not escape the save folder.
     s.replace(QLatin1Char('/'),  QLatin1Char('_'));
     s.replace(QLatin1Char('\\'), QLatin1Char('_'));
+
+    // Collapse runs of '.' down to a single '.'. Defence-in-depth against
+    // "../foo" → "_.._foo" (substring still contains "..") and the file-manager
+    // surprise of names like "weird..ext" where the OS may strip differently
+    // than what the user sees. Single dots (extension separators) are kept.
+    static const QRegularExpression kDotRun(QStringLiteral(R"(\.{2,})"));
+    s.replace(kDotRun, QStringLiteral("."));
 
     // Substitute Windows-reserved characters.
     static const QString kReserved = QStringLiteral("<>:\"|?*");

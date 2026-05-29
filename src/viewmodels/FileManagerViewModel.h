@@ -126,6 +126,11 @@ public:
     Q_INVOKABLE void toggleSelection(const QString &linkcode, bool multiSelect = true);
     Q_INVOKABLE void selectAll();
     Q_INVOKABLE void clearSelection();
+    // Replace the entire selection with the given set of linkcodes. Called
+    // from QML keyboard / single-click handlers that want C++ state to match
+    // the visible highlight (otherwise bulk ops via selectedLinkcodes see an
+    // empty set while the user is staring at a highlighted row).
+    Q_INVOKABLE void setSelected(const QStringList &linkcodes);
 
     // ── Search ───────────────────────────────────────────────────────────
     Q_INVOKABLE void searchRecursive(const QString &keyword);

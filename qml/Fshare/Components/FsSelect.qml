@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Proprietary
-// FsSelect — Themed dropdown select built on QtQuick primitives.
+// FsSelect — Themed dropdown select built on Qt Quick Controls' Popup.
 //
 // Usage:
 //   FsSelect {
@@ -7,8 +7,20 @@
 //       currentIndex: 0
 //       onActivated: console.log(currentIndex, currentText)
 //   }
+//
+// Implementation note:
+//   Earlier revisions hand-rolled the dropdown as a Rectangle reparented to
+//   `root.Window.contentItem` and positioned via `mapToItem`. That works for
+//   a select sitting directly on a Page, but it breaks when the select is
+//   inside a modal (FsDialog) — the Window-rooted popup ends up either
+//   below the dialog overlay or at stale coordinates because the binding
+//   doesn't re-evaluate when ancestors move during the dialog's open
+//   animation. Switching to Controls.Popup hands all of this — overlay
+//   parenting, modal stacking, close-on-press-outside, focus capture — to
+//   Qt's own popup machinery, which is correct in both contexts.
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import FsAurora.Theme 1.0
 Item {
@@ -34,31 +46,30 @@ Item {
     Accessible.name: root.currentText
     Accessible.editable: false
 
-    // ── Keyboard support (v6.0+) ────────────────────────────────────────────
-    // Same opt-in dance as FsButton — Item-based controls need explicit
-    // tab-stop opt-in.  Space/Enter open the popup; arrow keys cycle when
-    // the popup is closed (matches native ComboBox).  Up/Down inside the
-    // open popup is handled by ListView's own key handler below.
+    // ── Keyboard support ──────────────────────────────────────────────────
+    // Space/Enter open the popup; arrow keys cycle when the popup is closed
+    // (matches native ComboBox).  Up/Down inside the open popup is handled
+    // by the ListView below.
     activeFocusOnTab: enabled
     Keys.onPressed: function(event) {
         if (!enabled) return;
         if (event.key === Qt.Key_Space || event.key === Qt.Key_Return
             || event.key === Qt.Key_Enter) {
-            popup.visible ? popup.close() : popup.open();
+            popup.opened ? popup.close() : popup.open();
             event.accepted = true;
-        } else if (!popup.visible && event.key === Qt.Key_Down) {
+        } else if (!popup.opened && event.key === Qt.Key_Down) {
             if (currentIndex < (model ? model.length - 1 : 0)) {
                 currentIndex += 1;
                 root.activated(currentIndex);
             }
             event.accepted = true;
-        } else if (!popup.visible && event.key === Qt.Key_Up) {
+        } else if (!popup.opened && event.key === Qt.Key_Up) {
             if (currentIndex > 0) {
                 currentIndex -= 1;
                 root.activated(currentIndex);
             }
             event.accepted = true;
-        } else if (event.key === Qt.Key_Escape && popup.visible) {
+        } else if (event.key === Qt.Key_Escape && popup.opened) {
             popup.close();
             event.accepted = true;
         }
@@ -68,11 +79,11 @@ Item {
         id: btn
         anchors.fill: parent
         radius: 8
-        color: popup.visible ? AuroraTheme.divider
+        color: popup.opened ? AuroraTheme.divider
                : ma.containsMouse ? AuroraTheme.divider
                : AuroraTheme.panel
         border.width: 1
-        border.color: popup.visible ? AuroraTheme.accent
+        border.color: popup.opened ? AuroraTheme.accent
                       : ma.containsMouse ? AuroraTheme.borderStrong
                       : AuroraTheme.border
         Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
@@ -96,7 +107,7 @@ Item {
                 name: "chevron-down"
                 sizePx: 14
                 color: AuroraTheme.ink3
-                rotation: popup.visible ? 180 : 0
+                rotation: popup.opened ? 180 : 0
                 Behavior on rotation { enabled: !AuroraTheme.reduceMotion; NumberAnimation { duration: AuroraTheme.durFast } }
             }
         }
@@ -107,45 +118,40 @@ Item {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             enabled: root.enabled
-            onClicked: popup.visible ? popup.close() : popup.open()
+            onClicked: popup.opened ? popup.close() : popup.open()
         }
     }
 
-    Rectangle {
+    // Drop-down popup — Controls.Popup auto-handles Overlay parenting so it
+    // shows correctly whether the FsSelect is on a plain page or inside a
+    // modal FsDialog. Coordinates are local to the popup's parent (which by
+    // default is this Item) — so y=root.height+4 places the dropdown
+    // directly under the button without any mapToItem gymnastics.
+    Popup {
         id: popup
-        function open() { visible = true; }
-        function close() { visible = false; }
-
-        visible: false
-        parent: root.Window.contentItem ?? root
-        x: {
-            const pt = root.mapToItem(parent, 0, root.height + 4);
-            return pt.x;
-        }
-        y: {
-            const pt = root.mapToItem(parent, 0, root.height + 4);
-            return pt.y;
-        }
+        x: 0
+        y: root.height + 4
         width: root.width
         height: Math.min(listView.contentHeight + AuroraTheme.sp2, 280)
-        radius: AuroraTheme.radiusMd
-        color: AuroraTheme.panel
-        border.width: 1
-        border.color: AuroraTheme.border
+        padding: 0
+        // Keep the dropdown above any sibling Item (including modal dialogs
+        // that aren't using Overlay.overlay themselves — FsDialog is plain
+        // Item-based so z is what stacks the popup over its content).
         z: 9999
+        modal: false
+        focus: true
+        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
-        MouseArea {
-            parent: popup.parent
-            anchors.fill: parent
-            enabled: popup.visible
-            z: popup.z - 1
-            onPressed: popup.close()
+        background: Rectangle {
+            radius: AuroraTheme.radiusMd
+            color: AuroraTheme.panel
+            border.width: 1
+            border.color: AuroraTheme.border
         }
 
-        ListView {
+        contentItem: ListView {
             id: listView
-            anchors.fill: parent
-            anchors.margins: AuroraTheme.sp1
+            implicitHeight: contentHeight
             model: root.model
             clip: true
             interactive: contentHeight > height

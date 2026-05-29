@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // FileDeleteDialog — extracted from FileManagerPage.qml under ADR 003 D13.
 //
 // Inputs (set by parent before calling open()):
@@ -16,6 +16,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Fshare.Components 1.0
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 
 FsDialog {
     id: root
@@ -104,13 +105,13 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            FsButton {
+            Aurora.FsButton {
                 id: cancelBtn
                 text: qsTr("Huỷ")
                 variant: "ghost"
                 onClicked: root.close()
             }
-            FsButton {
+            Aurora.FsButton {
                 text: qsTr("Xoá")
                 variant: "danger"
                 onClicked: {

@@ -34,6 +34,14 @@ void OAuthService::start(const OAuthConfig &cfg)
         return;
     }
 
+    // Claim the flow lock immediately.  Previously m_inFlight was only set
+    // after LoopbackServer::start() succeeded, which left a small (single-
+    // event-loop-tick) window where a second start() could clobber m_state /
+    // m_codeVerifier mid-init.  Even though Qt processes the GUI events
+    // serially today, relying on that as a safety property is brittle —
+    // claim the lock first, release on every error path below.
+    m_inFlight = true;
+
     m_cfg = cfg;
     m_state = generateOAuthState();
     m_refreshToken.clear();
@@ -62,6 +70,7 @@ void OAuthService::start(const OAuthConfig &cfg)
         } else {
             emit failed(tr("Không thể mở cổng localhost cho đăng nhập OAuth."));
         }
+        m_inFlight = false;   // release the lock claimed at the top
         return;
     }
 
@@ -88,7 +97,10 @@ void OAuthService::start(const OAuthConfig &cfg)
     const QString stateForAuth = usingRelay
         ? (QString::number(srv->port()) + QLatin1Char('.') + m_state)
         : m_state;
-    m_inFlight = true;
+    // m_inFlight was set at the top of start() — keep this assignment as a
+    // harmless no-op so callsites that look here for the "in flight" flag
+    // still see it being managed in one place.
+    Q_ASSERT(m_inFlight);
 
     // Capture outcome → our handlers
     QPointer<OAuthService> self(this);

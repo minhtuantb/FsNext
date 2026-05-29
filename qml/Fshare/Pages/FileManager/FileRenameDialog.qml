@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // FileRenameDialog — extracted from FileManagerPage.qml to keep that file
 // under 800 LOC (ADR 003 D13).
 //
@@ -20,6 +20,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Fshare.Components 1.0
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 
 FsDialog {
     id: root
@@ -107,12 +108,12 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            FsButton {
+            Aurora.FsButton {
                 text: qsTr("Cancel")
                 variant: "ghost"
                 onClicked: root.close()
             }
-            FsButton {
+            Aurora.FsButton {
                 id: saveBtn
                 text: qsTr("Rename")
                 variant: "primary"

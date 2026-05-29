@@ -15,6 +15,7 @@
 //   onLocalFileDeleted, onLocalFileDeleteFailed.
 
 import QtQuick
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Window
@@ -28,6 +29,32 @@ Item {
     property bool showHistory: false
     readonly property int activeCount: uploadViewModel ? uploadViewModel.model.count : 0
     readonly property int historyCount: uploadViewModel ? uploadViewModel.historyModel.count : 0
+
+    // Highlighted task id — set by focusTask(), auto-cleared after 1500ms.
+    // Mirrors DownloadPage's pattern; visual pulse can be wired in P3 by
+    // having FsTransferItem watch this and animate a border colour.
+    property string focusedTaskId: ""
+    Timer {
+        id: _focusClearTimer
+        interval: 1500
+        onTriggered: page.focusedTaskId = ""
+    }
+
+    // Called by Main.qml when the HUD VM's taskFocusRequested signal
+    // routes to this page.  Switches to active tab, scrolls the active
+    // ListView to the requested row, and sets the highlight property.
+    // No-op when the task isn't in the active list (history-only rows
+    // are skipped to avoid surprise scroll-to in a long history).
+    function focusTask(taskId) {
+        if (!uploadViewModel || !uploadViewModel.model) return;
+        const idx = uploadViewModel.model.rowOfTask(taskId);
+        if (idx < 0) return;
+        page.showHistory = false;
+        uploadActiveList.positionViewAtIndex(idx, ListView.Center);
+        uploadActiveList.currentIndex = idx;
+        page.focusedTaskId = taskId;
+        _focusClearTimer.restart();
+    }
 
     // Page-level clock for relative-time labels ("vừa xong" / "5 phút trước").
     // A single ticker beats per-row timers when the list grows long.
@@ -59,18 +86,77 @@ Item {
         }
     }
 
-    // Drag-drop → options dialog. The global router in Main.qml forwards
-    // local file URLs here instead of kicking off an upload directly, so
-    // the user still picks target folder / password / privacy before the
-    // transfer starts.
+    // Drag-drop → options dialog, routed via uploadStagingViewModel (C++).
+    // Staging state lives on AppContext, so it survives page-Loader teardown
+    // (the previous QML-only design lost the batch every time the user
+    // navigated away from Upload, and a Qt.callLater closure capturing the
+    // destroyed dialog used to crash the app).
+    //
+    // We open the dialog only when the VM raises showRequested — i.e. the user
+    // just dropped or picked a file. A passive sidebar navigation back to
+    // Upload while staging is leftover does NOT auto-pop the dialog (that
+    // would feel like the app pushing a modal on the user). The "Thêm file"
+    // / drop / Ctrl+U surfaces are still available to bring it back.
+    function _maybeOpenStaging() {
+        if (!uploadStagingViewModel) return;
+        if (uploadStagingViewModel.restoredFromDisk) return;   // banner path
+        if (!uploadStagingViewModel.showRequested)   return;
+        if (uploadDialog.visible) {
+            uploadStagingViewModel.acknowledgeShow();
+            return;
+        }
+        // Defer one tick — when this fires from globalDropArea.onDropped, the
+        // OS drag-drop (OLE on Windows) event is still being delivered.
+        // Opening a modal / forceActiveFocus inside that callback corrupts the
+        // drag session and silently kills future drops. Qt.callLater puts us
+        // on the next event-loop tick, after the drop event has unwound.
+        Qt.callLater(() => {
+            if (!uploadStagingViewModel) return;
+            if (!uploadStagingViewModel.showRequested) return;
+            if (!uploadDialog.visible) uploadDialog.open();
+            uploadStagingViewModel.acknowledgeShow();
+        });
+    }
+    Component.onCompleted: {
+        console.info("[UploadPage] onCompleted hasStaged=",
+                     uploadStagingViewModel ? uploadStagingViewModel.hasStaged : "no-vm",
+                     " showReq=",
+                     uploadStagingViewModel ? uploadStagingViewModel.showRequested : "?",
+                     " restored=",
+                     uploadStagingViewModel ? uploadStagingViewModel.restoredFromDisk : "?");
+        _maybeOpenStaging();
+    }
+    Connections {
+        target: uploadStagingViewModel
+        ignoreUnknownSignals: true
+        // VM raises this whenever addFiles() actually adds at least one file —
+        // covers drop / Ctrl+U / "chọn từ máy" picker / programmatic
+        // openUploadWithFiles. Sidebar nav alone does NOT raise it.
+        function onShowRequestedChanged() { _maybeOpenStaging(); }
+    }
     Connections {
         target: Window.window
         ignoreUnknownSignals: true
-        function onOpenUploadWithFiles(fileUrls) {
-            if (!fileUrls || fileUrls.length === 0) return;
-            uploadDialog.pendingFiles = [];
-            uploadDialog._addFiles(fileUrls);
-            uploadDialog.open();
+        // Ctrl+U shortcut path: open the OS file picker directly. Picked files
+        // flow into the staging VM same as drops, which auto-opens the dialog.
+        function onOpenUploadDialog() {
+            ctrlUFilePicker.open();
+        }
+    }
+
+    FileDialog {
+        id: ctrlUFilePicker
+        title:    qsTr("Chọn file để tải lên")
+        fileMode: FileDialog.OpenFiles
+        onAccepted: {
+            const urls = [];
+            for (let i = 0; i < selectedFiles.length; ++i)
+                urls.push(selectedFiles[i].toString());
+            if (urls.length === 0) return;
+            // Stage via the VM (dedupe, persistence, showRequested). The VM
+            // raises showRequested → _maybeOpenStaging() opens the dialog —
+            // same path as drag-drop, so behaviour is uniform across entries.
+            if (uploadStagingViewModel) uploadStagingViewModel.addFiles(urls);
         }
     }
 
@@ -79,7 +165,7 @@ Item {
     function _openInMyFiles(folderId, linkcode) {
         const rootWin = Window.window;
         if (!rootWin) return;
-        rootWin.currentPage = 3;
+        rootWin.currentPage = Pages.files;
         if (fileManagerViewModel)
             fileManagerViewModel.loadFolder(folderId === "/" ? "" : folderId);
     }
@@ -164,9 +250,12 @@ Item {
                 anchors.margins: AuroraTheme.sp6
                 spacing: AuroraTheme.sp4
 
+                // Spacing trimmed sp6 → sp4 — matches DownloadPage. Earlier
+                // value let the trailing action button overflow the panel
+                // border on 1100-wide windows with the sidebar expanded.
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: AuroraTheme.sp6
+                    spacing: AuroraTheme.sp4
 
                     ColumnLayout {
                         spacing: 2
@@ -225,9 +314,12 @@ Item {
 
                     Item { Layout.fillWidth: true }
 
+                    // Stats internal spacing also sp6 → sp4 (mirror of
+                    // DownloadPage). "Tổng tác vụ" relabelled to "Tổng file"
+                    // — clearer for end-users + visually narrower.
                     RowLayout {
                         visible: !page.showHistory
-                        spacing: AuroraTheme.sp6
+                        spacing: AuroraTheme.sp4
                         Layout.alignment: Qt.AlignVCenter
 
                         Repeater {
@@ -245,7 +337,7 @@ Item {
                                         : "—")
                                 },
                                 {
-                                    label: "Tổng tác vụ",
+                                    label: "Tổng file",
                                     value: String(page.activeCount)
                                 }
                             ]
@@ -327,6 +419,79 @@ Item {
         }
 
         // ═════════════════════════════════════════════════
+        //  RESTORE FROM PREVIOUS SESSION BANNER
+        //  Shown only when the staging VM has hydrated files from disk on app
+        //  launch. We intentionally DON'T auto-pop the upload dialog here — a
+        //  modal appearing seconds after launch feels intrusive. Instead the
+        //  banner asks the user to opt back in (or discard).
+        // ═════════════════════════════════════════════════
+        Rectangle {
+            id: restoreBanner
+            Layout.fillWidth: true
+            Layout.preferredHeight: restoreBannerRow.implicitHeight + AuroraTheme.sp4 * 2
+            visible: uploadStagingViewModel
+                  && uploadStagingViewModel.restoredFromDisk
+                  && uploadStagingViewModel.hasStaged
+            radius: AuroraTheme.radiusLg
+            color: AuroraTheme.accentSoft
+            border.width: 1
+            border.color: AuroraTheme.accent
+
+            RowLayout {
+                id: restoreBannerRow
+                anchors.fill: parent
+                anchors.margins: AuroraTheme.sp4
+                spacing: AuroraTheme.sp3
+
+                Aurora.FsIcon {
+                    Layout.preferredWidth:  24
+                    Layout.preferredHeight: 24
+                    name: "history"
+                    sizePx: 24
+                    color: AuroraTheme.accent
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+
+                    Text {
+                        text: qsTr("Còn %1 file từ phiên trước chưa tải lên")
+                                .arg(uploadStagingViewModel
+                                     ? uploadStagingViewModel.stagedFiles.length : 0)
+                        color: AuroraTheme.ink1
+                        font.family: AuroraTheme.fontSans
+                        font.pixelSize: 13
+                        font.weight: Font.DemiBold
+                    }
+                    Text {
+                        text: qsTr("Tiếp tục để mở lại bảng tải lên, hoặc bỏ để xoá khỏi danh sách.")
+                        color: AuroraTheme.ink3
+                        font.family: AuroraTheme.fontSans
+                        font.pixelSize: 11
+                    }
+                }
+
+                Aurora.FsButton {
+                    text:    qsTr("Tiếp tục")
+                    variant: "primary"
+                    size:    "sm"
+                    onClicked: {
+                        if (!uploadStagingViewModel) return;
+                        uploadStagingViewModel.acknowledgeRestored();
+                        uploadDialog.open();
+                    }
+                }
+                Aurora.FsButton {
+                    text:    qsTr("Bỏ")
+                    variant: "ghost"
+                    size:    "sm"
+                    onClicked: if (uploadStagingViewModel) uploadStagingViewModel.clear()
+                }
+            }
+        }
+
+        // ═════════════════════════════════════════════════
         //  DROP ZONE
         // ═════════════════════════════════════════════════
         Rectangle {
@@ -348,7 +513,15 @@ Item {
             DropArea {
                 id: dropArea
                 anchors.fill: parent
+                // Visual feedback (`containsDrag`) is per-DropArea, so the
+                // dashed border still highlights even though Main.qml's
+                // globalDropArea is the one that actually handles the drop
+                // (it sits above this in z-order). Keeping the onDropped
+                // here as a fallback for the edge case where globalDropArea
+                // is disabled (logged-out state, etc.).
+                onEntered: (drag) => console.info("[UploadPage:innerDrop] entered hasUrls=", drag.hasUrls)
                 onDropped: (drop) => {
+                    console.info("[UploadPage:innerDrop] dropped urls=", drop.urls);
                     if (Window.window && Window.window.routeDrop)
                         Window.window.routeDrop(drop);
                 }
@@ -477,11 +650,29 @@ Item {
             }
 
             ListView {
+                id: uploadActiveList
                 anchors.fill: parent
                 anchors.margins: AuroraTheme.sp2
                 clip: true
                 visible: !page.showHistory && page.activeCount > 0
                 model: uploadViewModel ? uploadViewModel.model : null
+
+                // P3 polish — focused row highlight ring.  Mirrors the
+                // DownloadPage pattern so HUD-driven focusTask() lands
+                // with consistent visual feedback across both surfaces.
+                highlight: Rectangle {
+                    color: "transparent"
+                    border.color: AuroraTheme.accent
+                    border.width: 2
+                    radius: AuroraTheme.radiusSm
+                    opacity: page.focusedTaskId.length > 0 ? 1.0 : 0.0
+                    Behavior on opacity {
+                        enabled: !AuroraTheme.reduceMotion
+                        NumberAnimation { duration: AuroraTheme.durBase }
+                    }
+                }
+                highlightFollowsCurrentItem: true
+                highlightMoveDuration: 200
 
                 delegate: FsTransferItem {
                     width: ListView.view ? ListView.view.width : 0
@@ -502,6 +693,10 @@ Item {
                     showOpenInBrowser: true
                     showInfoButton:    true
                     showDeleteLocal:   true
+                    // The Fshare URL is only known after the upload completes;
+                    // FsTransferItem's copy-link button keys off this being
+                    // non-empty, so the button auto-appears at that moment.
+                    linkcode:          model.linkCode || ""
 
                     onPauseClicked:        if (uploadViewModel) uploadViewModel.pauseTask(transferId)
                     onResumeClicked:       if (uploadViewModel) uploadViewModel.resumeTask(transferId)
@@ -539,6 +734,7 @@ Item {
                     showOpenInBrowser: true
                     showInfoButton:    true
                     showDeleteLocal:   true
+                    linkcode:          model.linkCode || ""
 
                     onCopyLinkClicked:     if (uploadViewModel) uploadViewModel.copyLinkToClipboard(transferId)
                     onOpenFolderClicked:   if (uploadViewModel) uploadViewModel.revealLocalFile(transferId)
@@ -574,21 +770,17 @@ Item {
     FsUploadDialog {
         id: uploadDialog
 
+        // Bind the staging model so the dialog's file list, folder choice and
+        // privacy flags read/write the AppContext-owned VM. The dialog itself
+        // is short-lived (dies when UploadPage is unloaded by the Loader); the
+        // VM is the persistent home for the user's in-progress batch.
+        stagingModel: uploadStagingViewModel ?? null
+
         // Preferred path: hand the C++ FolderPickerModel directly so the
         // dropdown reads precomputed label/id arrays without QML needing
         // to iterate the folder tree. This is what made the Upload tab
         // freeze for power users with thousands of folders.
         folderPickerModel: fileManagerViewModel
                            ? fileManagerViewModel.folderPickerModel : null
-
-        onUploadStarted: (files, folder) => {
-            if (!uploadViewModel) return;
-            const paths = files.map(f => f.path);
-            uploadViewModel.addUpload(paths, folder,
-                                      "",
-                                      uploadDialog.password ?? "",
-                                      uploadDialog.secured ?? false,
-                                      false);
-        }
     }
 }

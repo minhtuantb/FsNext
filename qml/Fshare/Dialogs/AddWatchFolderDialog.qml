@@ -1,10 +1,11 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // AddWatchFolderDialog — 2-step wizard for adding a watched folder
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 import Fshare.Components 1.0
 
 FsDialog {
@@ -357,7 +358,7 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            FsButton {
+            Aurora.FsButton {
                 text: root.step === 1 ? qsTr("Hủy") : qsTr("Quay lại")
                 variant: "ghost"
                 onClicked: {
@@ -366,7 +367,7 @@ FsDialog {
                 }
             }
 
-            FsButton {
+            Aurora.FsButton {
                 id: primaryBtn
                 text: root.step === 1 ? qsTr("Tiếp tục") : qsTr("Thêm")
                 variant: "primary"

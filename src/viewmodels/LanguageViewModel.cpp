@@ -60,8 +60,16 @@ void LanguageViewModel::loadTranslation(const QString &lang)
 
     if (m_translator.load(qm, dir)) {
         QCoreApplication::installTranslator(&m_translator);
+    } else {
+        // Surface this — a silent fallback hides packaging regressions
+        // ("we shipped without the .qm files") and leaves users with a
+        // confusing half-translated UI when only some keys are present in
+        // the bundled file.  We don't error out — the fallback to source
+        // strings is genuinely acceptable — but the log helps diagnostics
+        // when QA reports "language picker doesn't work".
+        qWarning() << "[LanguageViewModel] failed to load translation"
+                   << qm << "from" << dir << "— falling back to source language";
     }
-    // If the .qm file is missing, falls back gracefully to Vietnamese source strings.
 }
 
 void LanguageViewModel::persist(const QString &lang)

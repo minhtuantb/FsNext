@@ -77,6 +77,41 @@ void HomeSearchViewModel::classify(const QString &text)
         }
     }
 
+    // Quoted-phrase mode: a user-typed pair of surrounding double quotes
+    // (ASCII '"') is a precision flag that opts out of the n-gram bad-word
+    // splitter. The inner phrase is checked as ONE key against the dictionary,
+    // and downstream gets the bare (unquoted) phrase so the API call doesn't
+    // search for the literal quotes. This lets legitimate compound words like
+    // "Lồng tiếng" through even when their stem overlaps a dictionary entry,
+    // while still rejecting a phrase that EXACTLY matches a bad word.
+    const bool quoted = trimmed.size() >= 2
+                        && trimmed.startsWith(QLatin1Char('"'))
+                        && trimmed.endsWith(QLatin1Char('"'));
+    if (quoted) {
+        const QString inner = trimmed.mid(1, trimmed.size() - 2).trimmed();
+        if (inner.size() < kMinLength) {
+            setState(TooShort,
+                     tr("Nhập tối thiểu %1 ký tự để tìm kiếm").arg(kMinLength),
+                     QString{}, inner);
+            clearResults();
+            return;
+        }
+        if (m_filter) {
+            QString hit;
+            if (m_filter->checkExactPhrase(inner, &hit) == BadWordFilter::Blocked) {
+                setState(Blocked,
+                         tr("Từ khoá chứa nội dung không phù hợp"),
+                         hit, inner);
+                clearResults();
+                return;
+            }
+        }
+        setState(Keyword, tr("Chế độ chính xác · Nhấn Enter để tìm"),
+                 QString{}, inner);
+        scheduleKeywordSearch(inner);
+        return;
+    }
+
     // Plain keyword path — enforce the minimum length first so we don't
     // spend cycles in the bad-word filter for a 1-2 char fragment.
     if (trimmed.size() < kMinLength) {
@@ -157,39 +192,62 @@ void HomeSearchViewModel::runKeywordSearchNow()
     const QString keyword = m_pendingKeyword;
     if (keyword == m_inflightKeyword && m_searching) return;  // already fetching this exact term
 
+    // Fresh search — reset paging state.
+    m_currentPage  = 0;
+    m_hasMorePages = false;
+    fetchPage(keyword, /*page=*/1, /*append=*/false);
+}
+
+void HomeSearchViewModel::loadMore()
+{
+    if (!m_hasMorePages || m_searching || m_resultsForKeyword.isEmpty()) return;
+    fetchPage(m_resultsForKeyword, m_currentPage + 1, /*append=*/true);
+}
+
+void HomeSearchViewModel::fetchPage(const QString &keyword, int page, bool append)
+{
+    if (!m_api) return;
     m_inflightKeyword = keyword;
     const quint64 mySeq = ++m_requestSeq;
     setSearching(true);
 
     FshareApi *api = m_api;
     QPointer<HomeSearchViewModel> guard(this);
-    QtConcurrent::run([api, keyword, guard, mySeq]() {
+    QtConcurrent::run([api, keyword, page, append, guard, mySeq]() {
         if (!guard) return;
-        auto resp = api->searchFiles(keyword, /*page=*/1);
-        QMetaObject::invokeMethod(guard.data(), [guard, resp, keyword, mySeq]() {
+        auto resp = api->searchFiles(keyword, page);
+        QMetaObject::invokeMethod(guard.data(), [guard, resp, keyword, page, append, mySeq]() {
             if (!guard) return;
             // Stale response — a newer keystroke already kicked off another
             // request. Drop the data quietly so we don't overwrite fresher
-            // results with older ones.
+            // results with older ones. (Applies to load-more pages too — if
+            // the user typed a new keyword while page 2 was loading, we
+            // discard it.)
             if (mySeq != guard->m_requestSeq) return;
 
             guard->setSearching(false);
 
             if (resp.isError()) {
                 // Soft failure: keep the existing results model intact so the
-                // user doesn't lose what they had. Just clear the
-                // "currentlyShown keyword" marker. The overlay's empty/loading
-                // state will then reflect the absence of data.
-                guard->m_resultsForKeyword = keyword;
-                guard->m_noResultsHit = false;
+                // user doesn't lose what they had.
+                if (!append) {
+                    guard->m_resultsForKeyword = keyword;
+                    guard->m_noResultsHit = false;
+                }
                 emit guard->searchProgressChanged();
                 return;
             }
 
             const auto items = resp.data();
-            guard->m_resultsModel->resetItems(items);
+            if (append) guard->m_resultsModel->mergeItems(items);
+            else        guard->m_resultsModel->resetItems(items);
+
             guard->m_resultsForKeyword = keyword;
-            guard->m_noResultsHit = items.isEmpty();
+            guard->m_currentPage   = page;
+            // A full page means the server probably has more. We stop
+            // chasing pages the moment one arrives under-filled.
+            guard->m_hasMorePages  = (items.size() >= kPerPage);
+            guard->m_noResultsHit  = !append && items.isEmpty();
             emit guard->searchProgressChanged();
         });
     });
@@ -199,11 +257,19 @@ void HomeSearchViewModel::clearResults()
 {
     m_debounceTimer.stop();
     m_pendingKeyword.clear();
-    // Don't bump m_inflightKeyword — let any in-flight callback notice the
-    // request-sequence mismatch and discard itself.
+    // Invalidate every in-flight QtConcurrent callback: by bumping the
+    // sequence we guarantee any response that lands after clearResults()
+    // sees mySeq != m_requestSeq and discards itself. Without this bump,
+    // a response from a query the user already wiped would resurrect the
+    // resultsModel and the overlay would show "ghost" results for an
+    // empty / changed search box.
+    ++m_requestSeq;
+    m_inflightKeyword.clear();
     if (m_resultsModel->count() > 0) m_resultsModel->resetItems({});
     m_resultsForKeyword.clear();
     m_noResultsHit = false;
+    m_hasMorePages = false;
+    m_currentPage  = 0;
     setSearching(false);
 }
 

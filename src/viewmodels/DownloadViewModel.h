@@ -83,6 +83,25 @@ public:
     // history model. Called by the ✕ button on completed cards.
     Q_INVOKABLE void dismissCompleted(const QString &taskId);
 
+    // ── Path / link helpers (used by the HomePage "recent files" list) ──
+    // Stateless wrappers over PlatformUtils / QDesktopServices so QML
+    // doesn't have to hand-build file:// URLs (which silently failed on
+    // Windows paths with spaces). Each is a no-op on empty input.
+    //   revealInFolder — open the OS file browser with the file selected.
+    //   openLocalFile  — open the file with its default application.
+    //   openShareUrl   — open the file's fshare.vn page; accepts EITHER a
+    //                    bare linkcode OR an already-full http(s) URL
+    //                    (download tasks store the full URL in `linkcode`),
+    //                    mirroring UploadViewModel::openShareLinkInBrowser.
+    Q_INVOKABLE void revealInFolder(const QString &localPath) const;
+    Q_INVOKABLE void openLocalFile(const QString &localPath) const;
+    Q_INVOKABLE void openShareUrl(const QString &linkcodeOrUrl) const;
+
+    // Copy the file's fshare.vn share URL to the system clipboard and emit
+    // shareLinkCopied() so the UI can confirm with a toast. Accepts a bare
+    // linkcode OR a full URL (same normalisation as openShareUrl).
+    Q_INVOKABLE void copyShareLink(const QString &linkcodeOrUrl);
+
 signals:
     void totalSpeedChanged();
     void runStateChanged();
@@ -95,8 +114,14 @@ signals:
     // protected system directory (Music, Pictures, Windows, Program Files…).
     void downloadBlocked(const QString &reason);
 
+    // Emitted after copyShareLink() puts a normalised fshare URL on the
+    // clipboard — the UI shows a "đã sao chép" toast.
+    void shareLinkCopied(const QString &url);
+
 private:
     static bool isFolderUrl(const QString &url);
+    // Bare linkcode | full URL → canonical https share URL.
+    static QString normalizeShareUrl(const QString &linkcodeOrUrl);
     void updateTotalSpeed();
 
     // Soft-archive helpers — see UploadViewModel for the full rationale.

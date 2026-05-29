@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // FilePasswordDialog — extracted from FileManagerPage.qml under ADR 003 D13.
 //
 // Inputs (parent sets before open()):
@@ -15,6 +15,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Fshare.Components 1.0
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 
 FsDialog {
     id: root
@@ -142,8 +143,8 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            FsButton { text: qsTr("Cancel"); variant: "ghost"; onClicked: root.close() }
-            FsButton {
+            Aurora.FsButton { text: qsTr("Cancel"); variant: "ghost"; onClicked: root.close() }
+            Aurora.FsButton {
                 id: confirmBtn
                 text: root.removeMode ? qsTr("Remove Password") : qsTr("Set Password")
                 variant: "primary"

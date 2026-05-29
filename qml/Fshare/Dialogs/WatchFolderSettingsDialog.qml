@@ -1,10 +1,11 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // WatchFolderSettingsDialog — Edit settings for an existing watched folder
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 import Fshare.Components 1.0
 
 FsDialog {
@@ -216,12 +217,12 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            FsButton {
+            Aurora.FsButton {
                 text: qsTr("Hủy")
                 variant: "ghost"
                 onClicked: root.close()
             }
-            FsButton {
+            Aurora.FsButton {
                 text: qsTr("Lưu")
                 variant: "primary"
                 onClicked: {

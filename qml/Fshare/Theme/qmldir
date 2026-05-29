@@ -1,3 +1,0 @@
-module Fshare.Theme
-singleton FshareColors 1.0 FshareColors.qml
-singleton FshareTheme 1.0 FshareTheme.qml

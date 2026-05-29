@@ -11,6 +11,7 @@
 import QtQuick
 import QtQuick.Layouts
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 FsDialog {
     id: root
 
@@ -62,12 +63,12 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            FsButton {
+            Aurora.FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Hủy"); variant: "ghost"
                 onClicked: root.close()
             }
-            FsButton {
+            Aurora.FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Đổi tên"); variant: "primary"
                 onClicked: root.applyRename()

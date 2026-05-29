@@ -4,6 +4,7 @@
 #include "core/api/FshareApi.h"
 #include "core/services/AuthService.h"
 #include "core/services/OAuthService.h"
+#include "core/services/RefreshTokenCoordinator.h"
 #include "core/services/TransferService.h"
 #include "core/transfer/TransferOrchestrator.h"
 #include "core/transfer/BudgetManager.h"
@@ -18,6 +19,7 @@
 #include "viewmodels/AuthViewModel.h"
 #include "viewmodels/DownloadViewModel.h"
 #include "viewmodels/UploadViewModel.h"
+#include "viewmodels/UploadStagingViewModel.h"
 #include "viewmodels/FileManagerViewModel.h"
 #include "viewmodels/SettingsViewModel.h"
 #include "viewmodels/UserInfoViewModel.h"
@@ -27,7 +29,9 @@
 #include "viewmodels/TransferBudgetViewModel.h"
 #include "viewmodels/HomeSearchViewModel.h"
 #include "viewmodels/RemoteShareViewModel.h"
+#include "viewmodels/TransferHudViewModel.h"
 #include "core/util/BadWordFilter.h"
+#include "platform/PlatformUtils.h"
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QDebug>
@@ -54,16 +58,31 @@ void AppContext::init()
     // API client
     m_api = std::make_unique<FshareApi>(m_httpClient.get());
 
-    // Bad-word filter — loads the bundled dictionary once at startup.
-    // Fail-open: a load failure logs a warning and leaves every keyword
-    // classified as clean, never a hard error.
+    // Silent re-auth coordinator — must outlive m_api + m_authService since
+    // they both hold non-owning pointers to it.  Created here (after
+    // HttpClient + SettingsRepository) so its constructor can already read
+    // the persisted lastRefreshAt timestamp for the cold-start 7-day check
+    // (spec §6 edge case #1).
+    m_refreshCoord = std::make_unique<RefreshTokenCoordinator>(
+        m_httpClient.get(), m_settingsRepo.get());
+    m_api->setRefreshCoordinator(m_refreshCoord.get());
+
+    // Bad-word filter — loads the bundled dictionary once at startup,
+    // then applies any %APPDATA%/FsNext/badwords-overrides.json on top
+    // so compliance can patch the list without a rebuild. Fail-open:
+    // load failures just leave every keyword classified as clean.
     m_badWordFilter = std::make_unique<BadWordFilter>();
     m_badWordFilter->loadFromResource();
+    m_badWordFilter->applyOverridesFromAppData();
 
     // Services — OAuth first so AuthService can reference it
     m_oauthService = std::make_unique<OAuthService>(m_httpClient.get());
     m_authService = std::make_unique<AuthService>(m_api.get(), m_settingsRepo.get(),
                                                    m_oauthService.get());
+    // Hook the coordinator's signals into AuthService BEFORE any autoLogin
+    // can fire — without this, an immediate hard-fail on the cold-start
+    // refresh would emit sessionExpired with no listener.
+    m_authService->setRefreshCoordinator(m_refreshCoord.get());
     // Orchestrator owns the shared slot/priority budget for every transfer
     // producer (TransferService user DL/UL, SyncService auto-UL).  Created
     // before TransferService because the service holds a non-owning pointer.
@@ -114,6 +133,23 @@ void AppContext::init()
         cfg.maxGlobalSlots   = m_settingsService->maxGlobalSlots();
         m_transferOrchestrator->setConfig(cfg);
     });
+
+    // ── Proxy wiring ────────────────────────────────────────────────────────
+    // libcurl ignores QNetworkProxy entirely, so the proxy preference has to be
+    // pushed onto HttpClient (API calls) explicitly. The Download/Upload engines
+    // read the same persisted settings at dispatch time (see TransferService),
+    // so every libcurl producer routes through the configured proxy. Applied
+    // once at startup and re-applied on every settings change.
+    const auto applyProxy = [this]() {
+        const QString url = PlatformUtils::resolveProxyUrl(
+            m_settingsService->proxyMode(),
+            m_settingsService->proxyHost(),
+            m_settingsService->proxyPort());
+        m_httpClient->setProxyUrl(url);
+    };
+    applyProxy();
+    QObject::connect(m_settingsService.get(), &SettingsService::settingsChanged,
+                     this, applyProxy);
 
     // Wire: when a transfer completes, record the linkcode → local file mapping
     QObject::connect(m_transferService.get(), &TransferService::transferRecordReady,
@@ -168,6 +204,12 @@ void AppContext::init()
                                                        m_settingsService.get(),
                                                        m_authService.get());
     m_uploadVM = std::make_unique<UploadViewModel>(m_transferService.get(), m_authService.get());
+    // Staging VM is owned here (not by UploadPage) so it survives page-Loader
+    // teardowns — previously, switching pages destroyed the staged-files batch.
+    // Hydrates from SettingsRepository in its constructor; UploadPage drains
+    // the restore banner on first show.
+    m_uploadStagingVM = std::make_unique<UploadStagingViewModel>(m_uploadVM.get(),
+                                                                  m_settingsRepo.get());
     m_fileManagerVM = std::make_unique<FileManagerViewModel>(m_fileCacheService.get(),
                                                               m_batchResolver.get());
     m_favoritesVM = std::make_unique<FavoritesViewModel>(m_api.get(),
@@ -200,6 +242,16 @@ void AppContext::init()
     m_remoteShareVM = std::make_unique<RemoteShareViewModel>(m_api.get(),
                                                               m_downloadVM.get());
 
+    // HUD aggregate VM — must be created AFTER every other VM it references
+    // (Upload/Download/Sync/Budget) plus TransferService for terminal-event
+    // signals.  Drives SystemTray colour + balloon (wired in main.cpp) and
+    // the Mini Window / Tray Popup surfaces (P1+).
+    m_hudVM = std::make_unique<TransferHudViewModel>(m_uploadVM.get(),
+                                                      m_downloadVM.get(),
+                                                      m_syncVM.get(),
+                                                      m_budgetVM.get(),
+                                                      m_transferService.get());
+
     qDebug() << "[FsNext] AppContext initialized successfully";
 }
 
@@ -211,6 +263,7 @@ void AppContext::registerQml(QQmlApplicationEngine *engine)
     ctx->setContextProperty(QStringLiteral("authViewModel"), m_authVM.get());
     ctx->setContextProperty(QStringLiteral("downloadViewModel"), m_downloadVM.get());
     ctx->setContextProperty(QStringLiteral("uploadViewModel"), m_uploadVM.get());
+    ctx->setContextProperty(QStringLiteral("uploadStagingViewModel"), m_uploadStagingVM.get());
     ctx->setContextProperty(QStringLiteral("fileManagerViewModel"), m_fileManagerVM.get());
     ctx->setContextProperty(QStringLiteral("settingsViewModel"), m_settingsVM.get());
     ctx->setContextProperty(QStringLiteral("userInfoViewModel"), m_userInfoVM.get());
@@ -220,6 +273,7 @@ void AppContext::registerQml(QQmlApplicationEngine *engine)
     ctx->setContextProperty(QStringLiteral("transferBudgetViewModel"), m_budgetVM.get());
     ctx->setContextProperty(QStringLiteral("homeSearchViewModel"), m_homeSearchVM.get());
     ctx->setContextProperty(QStringLiteral("remoteShareViewModel"), m_remoteShareVM.get());
+    ctx->setContextProperty(QStringLiteral("transferHudViewModel"),  m_hudVM.get());
 
     qDebug() << "[FsNext] QML context properties registered";
 }

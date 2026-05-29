@@ -65,6 +65,17 @@ public:
     bool darkMode() const;
     void setDarkMode(bool value);
 
+    // Sidebar collapsed state — see ADR / Sprint 2 item C. Persisted in
+    // QSettings under "UI/sidebarCollapsed" so the user's preferred screen
+    // real-estate sticks across launches.
+    bool sidebarCollapsed() const;
+    void setSidebarCollapsed(bool value);
+
+    // Sidebar Mini-HUD variant (0=Speed Pulse, 1=Dual Rings, 2=File Marquee,
+    // 3=Stat Grid). Persisted under "UI/sidebarHudVariant".
+    int  sidebarHudVariant() const;
+    void setSidebarHudVariant(int value);
+
     QString language() const;
     void setLanguage(const QString &code);
 
@@ -80,6 +91,34 @@ public:
     // ADR 003 D4.
     bool minimizeToTray() const;
     void setMinimizeToTray(bool value);
+
+    // Pop a confirm dialog before closing the main window (default true).
+    // The dialog also lets the user persist their choice — see Main.qml's
+    // closeConfirmDialog wiring.
+    bool confirmOnClose() const;
+    void setConfirmOnClose(bool value);
+
+    // When true, the system tray fires a balloon (showMessage) on each
+    // transfer terminal event. Tray icon colour + tooltip live independently.
+    bool notifyOnTransferDone() const;
+    void setNotifyOnTransferDone(bool value);
+
+    // When true, hide-to-tray (X with minimizeToTray=on) shows the Mini
+    // HUD window when there's at least one active/pending transfer.
+    bool showOnHideToTray() const;
+    void setShowOnHideToTray(bool value);
+
+    // Persisted Mini HUD window position. -1 means "use default".
+    // miniWindowScreen stores the QScreen::name() so multi-monitor users
+    // get the popup back on the same physical display.
+    int     miniWindowX() const;
+    int     miniWindowY() const;
+    QString miniWindowScreen() const;
+    void    setMiniWindowPosition(int x, int y, const QString &screen);
+
+    // Windows taskbar progress bar toggle (no-op on other platforms).
+    bool showTaskbarProgress() const;
+    void setShowTaskbarProgress(bool value);
 
     // File-name conflict policy for downloads.  See ADR 003 D7.
     //   0 = Rename "(n)"  (default, non-destructive)

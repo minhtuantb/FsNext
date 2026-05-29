@@ -9,6 +9,7 @@ namespace fsnext {
 class FshareApi;
 class SettingsRepository;
 class OAuthService;
+class RefreshTokenCoordinator;
 struct OAuthConfig;
 struct OAuthResult;
 
@@ -22,6 +23,14 @@ public:
     explicit AuthService(FshareApi *api, SettingsRepository *settings,
                          OAuthService *oauth = nullptr, QObject *parent = nullptr);
     ~AuthService() override = default;
+
+    // Inject the silent-refresh coordinator after construction (AppContext
+    // creates it after AuthService since it depends on the same
+    // SettingsRepository).  Owns the (token, sessionId, cookie) snapshot on
+    // behalf of FshareApi, and surfaces sessionExpired signals which we
+    // funnel into handleSessionExpired().  Pass nullptr to revert to the
+    // legacy email/password silent-relogin path — useful for tests.
+    void setRefreshCoordinator(RefreshTokenCoordinator *coord);
 
     bool isLoggedIn() const;
     User currentUser() const;
@@ -81,14 +90,16 @@ private:
     void onOAuthSucceeded(const OAuthResult &result);
     void onOAuthFailed(const QString &message);
 
-    FshareApi          *m_api      = nullptr;
-    SettingsRepository *m_settings = nullptr;
-    OAuthService       *m_oauth    = nullptr;
-    Session             m_session;
-    bool                m_isLoggedIn = false;
+    FshareApi               *m_api      = nullptr;
+    SettingsRepository      *m_settings = nullptr;
+    OAuthService            *m_oauth    = nullptr;
+    // Owned by AppContext; nullptr until setRefreshCoordinator() runs.
+    RefreshTokenCoordinator *m_refresh  = nullptr;
+    Session                  m_session;
+    bool                     m_isLoggedIn = false;
     // True while tryRefreshSession() has a network call in flight; concurrent
     // callers wait for tryRefreshFinished instead of stacking redundant logins.
-    bool                m_refreshInFlight = false;
+    bool                     m_refreshInFlight = false;
 };
 
 } // namespace fsnext

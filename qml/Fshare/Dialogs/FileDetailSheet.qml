@@ -28,8 +28,10 @@ Item {
     function open()  { root.visible = true; root.forceActiveFocus(); }
     function close() {
         root.visible = false;
-        if (vm) vm.close();
         passwordInput.text = "";
+        // We DO NOT call vm.close() here — the host (Main.qml) decides
+        // whether to dismiss the VM entirely or restore the parent folder
+        // context (when the user drilled into the file from a folder).
         root.closed();
     }
 
@@ -69,7 +71,9 @@ Item {
         id: card
         width: Math.min(520, parent.width - 64)
         anchors.centerIn: parent
-        height: contentCol.implicitHeight + AuroraTheme.sp6 * 2
+        // Card height = contentCol's intrinsic height + actual top/bottom
+        // margins (which are asymmetric — top is sp10 to clear the X).
+        height: contentCol.implicitHeight + AuroraTheme.sp10 + AuroraTheme.sp6
         radius: 16
         color: AuroraTheme.panel
         border.width: 1
@@ -106,7 +110,16 @@ Item {
         ColumnLayout {
             id: contentCol
             anchors.fill: parent
-            anchors.margins: AuroraTheme.sp6
+            // Use a larger top margin so the centred FsFileTypeIcon (56px)
+            // doesn't sit underneath the absolutely-positioned close button
+            // (12px from top, 30px tall — i.e. extends to y=42 from card top).
+            // The original sp6 (24px) put the icon top at 24px, visually
+            // crowding the X corner — bumping the top margin to sp10 (40px)
+            // gives the icon a clean band of breathing room below the X.
+            anchors.leftMargin:   AuroraTheme.sp6
+            anchors.rightMargin:  AuroraTheme.sp6
+            anchors.bottomMargin: AuroraTheme.sp6
+            anchors.topMargin:    AuroraTheme.sp10
             spacing: AuroraTheme.sp4
 
             // ── Loading state (initial fetch) ──────────────────
@@ -185,7 +198,16 @@ Item {
                             let parts = [];
                             if (root._size > 0)     parts.push(FsFormat.bytes(root._size));
                             if (root._dlCount > 0)  parts.push(root._dlCount + " " + qsTr("lượt tải"));
-                            if (root._created.length > 0) parts.push(root._created);
+                            // Fshare returns `created` as a unix-epoch seconds
+                            // string (e.g. "1775012389"). FsFormat.dateTime
+                            // parses that and renders "dd/MM/yyyy HH:mm". The
+                            // helper returns "—" for unparseable input so we
+                            // gate on it explicitly to avoid a stray dash in
+                            // the metadata strip.
+                            if (root._created.length > 0) {
+                                const dt = FsFormat.dateTime(root._created, "");
+                                if (dt.length > 0) parts.push(dt);
+                            }
                             return parts.join(" · ");
                         }
                         font.family: AuroraTheme.fontMono
@@ -249,7 +271,7 @@ Item {
                     Layout.fillWidth: true
                     spacing: AuroraTheme.sp2
 
-                    FsButton {
+                    Aurora.FsButton {
                         Layout.fillWidth: true
                         visible: root._isMedia
                         variant: "primary"
@@ -257,7 +279,7 @@ Item {
                         enabled: !root._hasPwd || passwordInput.text.length > 0
                         onClicked: if (vm) vm.playCurrentFile(passwordInput.text)
                     }
-                    FsButton {
+                    Aurora.FsButton {
                         Layout.fillWidth: true
                         variant: root._isMedia ? "secondary" : "primary"
                         text: qsTr("⬇  Tải về máy")
@@ -268,13 +290,13 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: AuroraTheme.sp2
-                        FsButton {
+                        Aurora.FsButton {
                             Layout.fillWidth: true
                             variant: "ghost"
                             text: qsTr("⎘  Sao chép link")
                             onClicked: if (vm) vm.copyCurrentFileLink()
                         }
-                        FsButton {
+                        Aurora.FsButton {
                             Layout.fillWidth: true
                             variant: "ghost"
                             text: qsTr("↗  Mở trên fshare.vn")

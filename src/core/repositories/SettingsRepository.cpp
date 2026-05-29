@@ -25,6 +25,7 @@ AppSettings SettingsRepository::load()
     // struct ctor in AppSettings.h already encodes the platform default; here
     // we just persist whatever the user last picked.
     s.minimizeToTray = getBool(QStringLiteral("General/minimizeToTray"), s.minimizeToTray);
+    s.confirmOnClose = getBool(QStringLiteral("General/confirmOnClose"), s.confirmOnClose);
 
     // Connection
     s.proxyMode     = getInt  (QStringLiteral("Connection/proxyMode"), 0);
@@ -55,7 +56,17 @@ AppSettings SettingsRepository::load()
     s.rememberMe = getBool  (QStringLiteral("Account/rememberMe"), false);
 
     // UI
-    s.darkMode = getBool(QStringLiteral("UI/darkMode"), false);
+    s.darkMode         = getBool(QStringLiteral("UI/darkMode"),         false);
+    s.sidebarCollapsed = getBool(QStringLiteral("UI/sidebarCollapsed"), false);
+    s.sidebarHudVariant = qBound(0, getInt(QStringLiteral("UI/sidebarHudVariant"), 0), 3);
+
+    // HUD
+    s.notifyOnTransferDone = getBool  (QStringLiteral("Hud/notifyOnTransferDone"), true);
+    s.showOnHideToTray     = getBool  (QStringLiteral("Hud/showOnHideToTray"),     true);
+    s.showTaskbarProgress  = getBool  (QStringLiteral("Hud/showTaskbarProgress"),  true);
+    s.miniWindowX          = getInt   (QStringLiteral("Hud/miniWindowX"),          -1);
+    s.miniWindowY          = getInt   (QStringLiteral("Hud/miniWindowY"),          -1);
+    s.miniWindowScreen     = getString(QStringLiteral("Hud/miniWindowScreen"),     {});
 
     return s;
 }
@@ -68,6 +79,7 @@ void SettingsRepository::save(const AppSettings &s)
     setBool  (QStringLiteral("General/stayOnTop"),      s.stayOnTop);
     setBool  (QStringLiteral("General/autoStart"),      s.autoStart);
     setBool  (QStringLiteral("General/minimizeToTray"), s.minimizeToTray);
+    setBool  (QStringLiteral("General/confirmOnClose"), s.confirmOnClose);
 
     // Connection
     setInt   (QStringLiteral("Connection/proxyMode"), s.proxyMode);
@@ -95,7 +107,17 @@ void SettingsRepository::save(const AppSettings &s)
     setBool  (QStringLiteral("Account/rememberMe"), s.rememberMe);
 
     // UI
-    setBool(QStringLiteral("UI/darkMode"), s.darkMode);
+    setBool(QStringLiteral("UI/darkMode"),         s.darkMode);
+    setBool(QStringLiteral("UI/sidebarCollapsed"), s.sidebarCollapsed);
+    setInt (QStringLiteral("UI/sidebarHudVariant"), s.sidebarHudVariant);
+
+    // HUD
+    setBool  (QStringLiteral("Hud/notifyOnTransferDone"), s.notifyOnTransferDone);
+    setBool  (QStringLiteral("Hud/showOnHideToTray"),     s.showOnHideToTray);
+    setBool  (QStringLiteral("Hud/showTaskbarProgress"),  s.showTaskbarProgress);
+    setInt   (QStringLiteral("Hud/miniWindowX"),          s.miniWindowX);
+    setInt   (QStringLiteral("Hud/miniWindowY"),          s.miniWindowY);
+    setString(QStringLiteral("Hud/miniWindowScreen"),     s.miniWindowScreen);
 
     m_settings.sync();
 }

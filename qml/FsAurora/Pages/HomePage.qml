@@ -60,6 +60,74 @@ Item {
 
     property int _filter: 0   // 0=Tất cả, 1=Video, 2=Tài liệu, 3=Ảnh
 
+    // ── Recent files — merged download + upload history ──────────────
+    //
+    // TransferListModel role enum (src/viewmodels/TransferListModel.h). We
+    // hard-code the integer offsets here because TransferListModel isn't
+    // QML-registered (no QML_ELEMENT macro), so the enum constants aren't
+    // exposed by name. Keep these in lock-step with the C++ enum — they
+    // will compile against the same struct fields, so a header reorder
+    // would break the binding loudly at runtime (wrong-typed data).
+    readonly property int _roleFileName    : 257   // Qt.UserRole(256) + 1
+    readonly property int _roleFileSize    : 258
+    readonly property int _roleLinkCode    : 263   // + 7  (fshare file/<code>)
+    readonly property int _roleLocalPath   : 267   // + 11
+    readonly property int _roleCompletedAt : 270   // + 14
+
+    // How many rows we scan per model before merging. The history models are
+    // newest-first (prependTask inserts at index 0; scroll-loaded older rows
+    // append to the tail), so the most-recent entries — the only ones this
+    // glanceable surface shows — live at the low indices. Scanning a fixed
+    // window keeps this binding O(1) in history size: without it, every
+    // progress tick or scroll-load on the Download/Upload pages (which grow
+    // these models unbounded) would walk thousands of rows here. The window has
+    // headroom over the 50-row display cap so an active filter still has
+    // candidates to draw from.
+    readonly property int _recentScanCap: 80
+
+    // Merged history array, newest-first by completedAt, already filtered by the
+    // active category tab. Re-evaluated by QML's dependency tracker whenever
+    // either model's `count` ticks (QAbstractItemModel exposes count via
+    // rowsInserted/rowsRemoved) or `_filter` changes — _matchesFilter() reads
+    // page._filter, so the binding re-runs on tab switches too.
+    readonly property var _recentHistory: {
+        const dh = downloadViewModel ? downloadViewModel.historyModel : null;
+        const uh = uploadViewModel   ? uploadViewModel.historyModel   : null;
+        const dhCount = dh ? dh.count : 0;
+        const uhCount = uh ? uh.count : 0;
+        const out = [];
+        function _push(m, n, isUp) {
+            const lim = Math.min(n, page._recentScanCap);
+            for (let i = 0; i < lim; ++i) {
+                const idx = m.index(i, 0);
+                const name = m.data(idx, page._roleFileName) || "";
+                // Filter BEFORE the 50-row cap so selecting e.g. "Video"
+                // surfaces older videos instead of being starved by more-recent
+                // files of other types that would otherwise fill the cap first.
+                if (!page._matchesFilter(name)) continue;
+                out.push({
+                    fileName:    name,
+                    fileSize:    m.data(idx, page._roleFileSize)    || 0,
+                    linkCode:    m.data(idx, page._roleLinkCode)    || "",
+                    localPath:   m.data(idx, page._roleLocalPath)   || "",
+                    completedAt: m.data(idx, page._roleCompletedAt) || 0,
+                    isUpload:    isUp
+                });
+            }
+        }
+        if (dh) _push(dh, dhCount, false);
+        if (uh) _push(uh, uhCount, true);
+        // Newest first. completedAt is ms-since-epoch; descending sort
+        // puts the just-finished transfer at the top regardless of which
+        // queue produced it.
+        out.sort((a, b) => b.completedAt - a.completedAt);
+        // Cap at the 50 most-recent matches — the homepage "recent" surface is a
+        // glanceable summary, not a full log (the dedicated Download / Upload
+        // pages own the complete history with infinite scroll).
+        return out.slice(0, 50);
+    }
+    readonly property bool _recentEmpty: _recentHistory.length === 0
+
     // ── Live time / relative-time clock ──────────────────────────────
     property real nowMs: Date.now()
     Timer {
@@ -108,6 +176,32 @@ Item {
         const s = String(name || "");
         const dot = s.lastIndexOf(".");
         return dot < 0 ? "" : s.substring(dot + 1).toLowerCase();
+    }
+
+    // ── Recent-file row actions ──────────────────────────────────────
+    // Route through DownloadViewModel's C++ helpers rather than QML
+    // Qt.openUrlExternally. The C++ side uses PlatformUtils (explorer
+    // /select on Windows, QDesktopServices::openUrl) which handles spaces /
+    // Unicode / native separators robustly — the hand-built file:// URL
+    // approach silently failed on real Windows paths. openShareUrl also
+    // detects bare-linkcode vs full-URL (downloads store the full fshare
+    // URL in linkcode → prefixing it produced a double-domain link).
+    function _openLocalFile(localPath) {
+        if (downloadViewModel && localPath && localPath.length > 0)
+            downloadViewModel.openLocalFile(localPath);
+    }
+    function _openLocalFolder(localPath) {
+        if (downloadViewModel && localPath && localPath.length > 0)
+            downloadViewModel.revealInFolder(localPath);
+    }
+    function _openFshareLink(linkCode) {
+        if (downloadViewModel && linkCode && linkCode.length > 0)
+            downloadViewModel.openShareUrl(linkCode);
+    }
+    function _copyFshareLink(linkCode) {
+        // VM copies to clipboard + emits shareLinkCopied → Main.qml toasts.
+        if (downloadViewModel && linkCode && linkCode.length > 0)
+            downloadViewModel.copyShareLink(linkCode);
     }
 
     function _categoryOf(name) {
@@ -217,8 +311,35 @@ Item {
                         // dictionary lookup.
                         onTextChanged: if (homeSearchViewModel) homeSearchViewModel.classify(text)
 
+                        // Keyboard nav for the inline overlay. The overlay
+                        // doesn't take focus (it sits in a different parent
+                        // tree and would interfere with typing) so we hand
+                        // its highlight cursor explicit moves from here.
+                        Keys.onUpPressed:    function(e) {
+                            if (searchOverlay.active) { searchOverlay.moveHighlight(-1); e.accepted = true; }
+                        }
+                        Keys.onDownPressed:  function(e) {
+                            if (searchOverlay.active) { searchOverlay.moveHighlight(1); e.accepted = true; }
+                        }
+                        // Esc clears the field — classify() then transitions
+                        // to Idle and the overlay hides itself.
+                        Keys.onEscapePressed: function(e) {
+                            if (searchInput.text.length > 0) {
+                                searchInput.text = "";
+                                e.accepted = true;
+                            }
+                        }
+
                         onAccepted: {
                             if (!homeSearchViewModel) return;
+                            // If the overlay has a row highlighted via ↑/↓,
+                            // Enter activates that row instead of re-submitting
+                            // the keyword (matches Spotlight / Linear).
+                            if (searchOverlay.active && searchOverlay.highlightedIndex >= 0) {
+                                searchOverlay.activateHighlighted();
+                                searchInput.text = "";
+                                return;
+                            }
                             // The VM emits exactly one routing signal (or
                             // rejected*). The handlers in Main.qml /
                             // Connections below decide what UI to open.
@@ -266,7 +387,7 @@ Item {
             TopIconButton {
                 icon: "gear"
                 tooltip: qsTr("Cài đặt")
-                onActivated: page.pageRequested(6)
+                onActivated: page.pageRequested(Pages.settings)
             }
 
             // Upload CTA (gradient pill)
@@ -296,7 +417,7 @@ Item {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: page.pageRequested(1)
+                    onClicked: page.pageRequested(Pages.upload)
                 }
             }
         }
@@ -370,6 +491,30 @@ Item {
         function onRejectedTooShort()        { /* same */ }
     }
 
+    // ── Click-outside catcher for the overlay ─────────────────
+    // Transparent rectangle below the topBar that intercepts mouse clicks
+    // while the overlay is open and routes them to "dismiss". The overlay
+    // itself sits ABOVE this (z=5) so clicks INSIDE it still reach its
+    // ListView. Anchoring to topBar.bottom means clicks on the search pill
+    // / settings / upload buttons pass through (they're inside topBar at
+    // z=2, behind this).
+    MouseArea {
+        id: overlayDismissCatcher
+        anchors.top: topBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        z: 4
+        visible: searchOverlay.visible
+        // propagateComposedEvents=false (default) — the click is consumed
+        // here, not forwarded to the underlying ScrollView.
+        onClicked: {
+            // Clear the search field. classify() then transitions to Idle
+            // and both the overlay and hint chip auto-hide.
+            searchInput.text = "";
+        }
+    }
+
     // ── Inline keyword-search overlay ──────────────────────────
     // Floats below the search hint chip; only visible while the VM is in
     // Keyword state AND has something to show (loading / results / empty).
@@ -432,13 +577,18 @@ Item {
                 }
 
                 RowLayout {
+                    id: greetingRow
                     Layout.fillWidth: true
                     spacing: 0
+
+                    // Match FsPageHeader's narrow-window breakpoint (720px) so
+                    // editorial type scales consistently across the shell.
+                    readonly property int _heroSize: page.width < 720 ? 28 : 40
 
                     Text {
                         text: qsTr("Chào ") + page._firstName + ", "
                         font.family: AuroraTheme.fontSans
-                        font.pixelSize: 40
+                        font.pixelSize: greetingRow._heroSize
                         font.weight: Font.DemiBold
                         font.letterSpacing: -1.1
                         color: AuroraTheme.ink1
@@ -448,7 +598,7 @@ Item {
                         text: qsTr("tiếp tục?")
                         font.family: AuroraTheme.fontSerif
                         font.italic: true
-                        font.pixelSize: 40
+                        font.pixelSize: greetingRow._heroSize
                         font.letterSpacing: -1.1
                         color: AuroraTheme.accent
                     }
@@ -479,21 +629,21 @@ Item {
                     icon: "arrow-up"
                     title: qsTr("Tải file lên")
                     subtitle: qsTr("Kéo-thả hoặc chọn")
-                    onActivated: page.pageRequested(1)
+                    onActivated: page.pageRequested(Pages.upload)
                 }
                 QuickAction {
                     Layout.fillWidth: true
                     icon: "sync"
                     title: qsTr("Thêm folder sync")
                     subtitle: qsTr("2-way đồng bộ")
-                    onActivated: page.pageRequested(2)
+                    onActivated: page.pageRequested(Pages.sync)
                 }
                 QuickAction {
                     Layout.fillWidth: true
                     icon: "external-link"
                     title: qsTr("Tạo link chia sẻ")
                     subtitle: qsTr("Password + hết hạn")
-                    onActivated: page.pageRequested(3)
+                    onActivated: page.pageRequested(Pages.files)
                 }
             }
 
@@ -521,12 +671,18 @@ Item {
                     }
                     Item { Layout.fillWidth: true }
                     Text {
+                        // Split DL / UL counts so the title section reads as
+                        // "↓ 2 tải xuống · ↑ 1 tải lên · 47 MB/s tổng" and the
+                        // user knows what's running without scanning the cards.
+                        // Drop the part(s) that are zero so the chip stays tight
+                        // when only one direction is active.
                         text: {
-                            const total = page._dlCount + page._ulCount;
-                            let s = total + qsTr(" đang hoạt động");
+                            const parts = [];
+                            if (page._dlCount > 0) parts.push("↓ " + page._dlCount + " " + qsTr("tải xuống"));
+                            if (page._ulCount > 0) parts.push("↑ " + page._ulCount + " " + qsTr("tải lên"));
                             const sp = page._dlSpeed || page._ulSpeed || "";
-                            if (sp.length > 0) s += " · " + sp + qsTr(" tổng");
-                            return s;
+                            if (sp.length > 0) parts.push(sp + " " + qsTr("tổng"));
+                            return parts.join(" · ");
                         }
                         font.family: AuroraTheme.fontMono
                         font.pixelSize: 11
@@ -562,7 +718,7 @@ Item {
                             tStatus:   status
                             onPauseClicked:  if (downloadViewModel) downloadViewModel.pauseTask(taskId)
                             onResumeClicked: if (downloadViewModel) downloadViewModel.resumeTask(taskId)
-                            onOpenClicked: page.pageRequested(0)
+                            onOpenClicked: page.pageRequested(Pages.download)
                         }
                     }
 
@@ -590,7 +746,7 @@ Item {
                             tStatus:   status
                             onPauseClicked:  if (uploadViewModel) uploadViewModel.pauseTask(taskId)
                             onResumeClicked: if (uploadViewModel) uploadViewModel.resumeTask(taskId)
-                            onOpenClicked: page.pageRequested(1)
+                            onOpenClicked: page.pageRequested(Pages.upload)
                         }
                     }
                 }
@@ -644,47 +800,40 @@ Item {
                         clip: true
                         interactive: false
                         spacing: 4
-                        model: downloadViewModel ? downloadViewModel.historyModel : null
+                        // JS array driven by page._recentHistory (merged DL+UL
+                        // sorted newest-first). Switching from a QAbstractItem
+                        // Model to an array also means delegates access fields
+                        // via `modelData`, not directly bound role names.
+                        model: page._recentHistory
 
-                        delegate: Loader {
+                        // Category filtering happens upstream in _recentHistory,
+                        // so every row here is already a match — render it
+                        // directly without a per-row Loader/visibility gate.
+                        delegate: RecentRow {
+                            required property var modelData
                             width: recentList.width
-                            active: page._matchesFilter(model.fileName || "")
-                            sourceComponent: active ? recentRowComp : null
-                            visible: active
-                            height: active ? 60 : 0
-
-                            property var _row: ({
-                                fileName:  model.fileName  || "",
-                                fileSize:  model.fileSize  || 0,
-                                localPath: model.localPath || "",
-                                completedAt: model.completedAt || 0
-                            })
-
-                            Component {
-                                id: recentRowComp
-                                RecentRow {
-                                    width: parent ? parent.width : 0
-                                    fileName:    _row.fileName
-                                    fileSize:    _row.fileSize
-                                    localPath:   _row.localPath
-                                    completedAt: _row.completedAt
-                                    nowMs:       page.nowMs
-                                    onOpenClicked:  Qt.openUrlExternally("file:///" + localPath)
-                                    onFolderClicked: {
-                                        const p = (localPath || "").replace(/\\/g, "/");
-                                        const dir = p.lastIndexOf("/") > 0 ? p.substring(0, p.lastIndexOf("/")) : p;
-                                        Qt.openUrlExternally("file:///" + dir);
-                                    }
-                                }
-                            }
+                            height: 60
+                            fileName:    modelData.fileName
+                            fileSize:    modelData.fileSize
+                            linkCode:    modelData.linkCode
+                            localPath:   modelData.localPath
+                            completedAt: modelData.completedAt
+                            isUpload:    modelData.isUpload
+                            nowMs:       page.nowMs
+                            // Double-click row → open the local file.
+                            onOpenClicked:  page._openLocalFile(modelData.localPath)
+                            // Single-click row → copy the fshare link.
+                            onCopyClicked:  page._copyFshareLink(modelData.linkCode)
+                            // Folder icon → open the containing folder.
+                            onFolderClicked: page._openLocalFolder(modelData.localPath)
+                            // Fshare icon → open the share page in browser.
+                            onShareClicked: page._openFshareLink(modelData.linkCode)
                         }
 
                         // Empty state
                         ColumnLayout {
                             anchors.centerIn: parent
-                            visible: (!downloadViewModel
-                                      || !downloadViewModel.historyModel
-                                      || downloadViewModel.historyModel.count === 0)
+                            visible: page._recentEmpty
                             spacing: AuroraTheme.sp2
 
                             Rectangle {
@@ -768,7 +917,26 @@ Item {
         property string subtitle: ""
         signal activated()
 
-        Layout.preferredHeight: 108
+        // Height bumped 108 → 124. Earlier value forced the inner layout
+        // into negative overflow (RowLayout 38 + Title 17 + Subtitle 14 +
+        // 3×spacing 10 = 99 > 76 content area), so Qt squashed spacings
+        // and the fill-height spacer per card unpredictably. Result: rows
+        // of cards looked subtly mis-aligned because the title/subtitle
+        // y-positions weren't deterministic. 124 leaves ~23px of real
+        // breathing room and the column layout fits cleanly.
+        Layout.preferredHeight: 124
+        // Force equal-width columns in the parent GridLayout. Without
+        // this, each card's implicit width is derived from its own
+        // title / subtitle Text content — so "Dán link & tải" + "Paste
+        // link Fshare" ends up narrower than "Thêm folder sync" +
+        // "2-way đồng bộ". Setting preferredWidth=0 + the existing
+        // fillWidth means every card grows from the same zero base
+        // and shares the available width equally.
+        Layout.preferredWidth: 0
+        // Same insurance for implicitWidth — Qt 6 sometimes prefers
+        // Item's implicitWidth over Layout.preferredWidth when the
+        // latter is 0. Explicit 0 settles the tie unambiguously.
+        implicitWidth: 0
         radius: AuroraTheme.radiusLg
         color: AuroraTheme.panel
         border.width: 1
@@ -783,17 +951,26 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 40
                 spacing: 0
 
                 Rectangle {
-                    Layout.preferredWidth: 38
-                    Layout.preferredHeight: 38
+                    Layout.preferredWidth: 40
+                    Layout.preferredHeight: 40
+                    // Pin the box explicitly to vertical-center so a future
+                    // RowLayout default change can't drift it off-axis.
+                    Layout.alignment: Qt.AlignVCenter
                     radius: AuroraTheme.radiusMd
                     color: AuroraTheme.accentTint10
                     Aurora.FsIcon {
                         anchors.centerIn: parent
                         name: card.icon
-                        sizePx: 18
+                        // Bumped 18 → 20 so the icon fills more of the 40px
+                        // box. Smaller sizes amplified the per-SVG viewBox
+                        // padding differences (link/external-link have
+                        // off-centre content) and made the icons look
+                        // mis-aligned card-to-card.
+                        sizePx: 20
                         color: AuroraTheme.accent
                     }
                 }
@@ -801,6 +978,11 @@ Item {
                 Aurora.FsIcon {
                     name: "chevron-right"
                     sizePx: 14
+                    // Explicit vertical-centre. Aurora.FsIcon's recent
+                    // `opacity: root.color.a` binding led to inconsistent
+                    // default alignment in a few Qt 6.8 builds; this kills
+                    // the ambiguity.
+                    Layout.alignment: Qt.AlignVCenter
                     color: qaMa.containsMouse ? AuroraTheme.accent : AuroraTheme.ink4
                     Behavior on color { enabled: !AuroraTheme.reduceMotion
                         ColorAnimation { duration: AuroraTheme.durFast } }
@@ -893,7 +1075,7 @@ Item {
         signal resumeClicked()
         signal openClicked()
 
-        Layout.preferredHeight: 86
+        Layout.preferredHeight: 96
         radius: AuroraTheme.radiusLg
         color: AuroraTheme.panel
         border.width: 1
@@ -902,6 +1084,19 @@ Item {
         // Status enum (mirrors TransferState): 0 Queued, 1 Active, 2 Paused,
         // 3 Complete, 4 Error, 5 Cancelled
         readonly property bool _paused: tStatus === 2
+        readonly property bool _queued: tStatus === 0
+        readonly property bool _error:  tStatus === 4
+        readonly property bool _active: tStatus === 1
+        readonly property bool _isUp:   kind === "upload"
+        // Human-readable state label appended after the size — keeps the
+        // user oriented even when speed=0 (queued / paused) so the card
+        // isn't ambiguous.
+        readonly property string _stateLabel: {
+            if (_error)  return qsTr("Lỗi");
+            if (_paused) return qsTr("Tạm dừng");
+            if (_queued) return qsTr("Trong hàng đợi");
+            return _isUp ? qsTr("Đang tải lên") : qsTr("Đang tải xuống");
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -912,10 +1107,39 @@ Item {
                 Layout.fillWidth: true
                 spacing: AuroraTheme.sp3
 
-                FsFileTypeIcon {
-                    fileName: tCard.tName
-                    isFolder: false
-                    sizePx: 36
+                // File-type icon with a small direction badge in the
+                // bottom-right corner. Single 36×36 footprint preserved —
+                // the badge is overlaid, not a separate column, so the
+                // card height doesn't grow on small windows. Color picks:
+                //   download (↓) → accent  (orange — matches DL surfaces)
+                //   upload   (↑) → success (green — matches UL Complete state)
+                Item {
+                    Layout.preferredWidth: 36
+                    Layout.preferredHeight: 36
+                    FsFileTypeIcon {
+                        anchors.fill: parent
+                        fileName: tCard.tName
+                        isFolder: false
+                        sizePx: 36
+                    }
+                    Rectangle {
+                        width: 14; height: 14; radius: 7
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.rightMargin: -2
+                        anchors.bottomMargin: -2
+                        color: tCard._isUp ? AuroraTheme.success : AuroraTheme.accent
+                        border.width: 2
+                        border.color: AuroraTheme.panel
+                        Text {
+                            anchors.centerIn: parent
+                            text: tCard._isUp ? "↑" : "↓"
+                            color: "#FFFFFF"
+                            font.family: AuroraTheme.fontSans
+                            font.pixelSize: 9
+                            font.bold: true
+                        }
+                    }
                 }
 
                 ColumnLayout {
@@ -930,16 +1154,25 @@ Item {
                         color: AuroraTheme.ink1
                         elide: Text.ElideMiddle
                     }
+                    // Status line — direction-aware. Always leads with the
+                    // state label so a card without any speed/ETA (queued,
+                    // paused, error) still tells the user what's going on.
+                    // For active cards we append the ETA chip when available
+                    // so the line is "Đang tải xuống · 2.4 GB · còn 3 phút".
                     Text {
                         text: {
                             const sz = FsFormat.bytes(tCard.tSize);
-                            if (tCard._paused) return sz + " · " + qsTr("tạm dừng");
-                            if (tCard.tEta.length > 0) return sz + " · " + qsTr("còn ") + tCard.tEta;
-                            return sz;
+                            const parts = [tCard._stateLabel];
+                            if (sz.length > 0) parts.push(sz);
+                            if (tCard._active && tCard.tEta.length > 0)
+                                parts.push(qsTr("còn ") + tCard.tEta);
+                            return parts.join(" · ");
                         }
                         font.family: AuroraTheme.fontSans
                         font.pixelSize: 11
-                        color: AuroraTheme.ink3
+                        color: tCard._error
+                                ? AuroraTheme.danger
+                                : (tCard._paused ? AuroraTheme.warn : AuroraTheme.ink3)
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
@@ -1007,18 +1240,45 @@ Item {
         id: rRow
         property string fileName: ""
         property real   fileSize: 0
+        property string linkCode: ""
         property string localPath: ""
         property real   completedAt: 0
         property real   nowMs: 0
+        // Direction badge: false → ↓ accent (download), true → ↑ success
+        // (upload). Default false preserves the visual treatment for any
+        // legacy caller that doesn't set the property.
+        property bool   isUpload: false
         signal openClicked()
         signal folderClicked()
+        signal shareClicked()
+        signal copyClicked()
+
+        readonly property bool _hasLocal: localPath.length > 0
+        readonly property bool _hasLink:  linkCode.length > 0
 
         height: 56
         radius: AuroraTheme.radiusMd
-        color: rowMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
+        color: rowHover.hovered ? AuroraTheme.accentTint10 : "transparent"
         border.width: 0
         Behavior on color { enabled: !AuroraTheme.reduceMotion
             ColorAnimation { duration: AuroraTheme.durFast } }
+
+        // Pointer handlers (NOT an anchors.fill MouseArea) for row-level
+        // hover + double-click. A full-cover MouseArea declared after the
+        // RowLayout would sit on top in z-order and SWALLOW the per-action
+        // IconAction clicks — which is exactly why "mở thư mục" / "mở
+        // fshare" appeared dead. HoverHandler/TapHandler cooperate with the
+        // child MouseAreas instead of stealing their events.
+        HoverHandler { id: rowHover; cursorShape: Qt.PointingHandCursor }
+        TapHandler {
+            acceptedButtons: Qt.LeftButton
+            // Single tap → copy the fshare share link (quick, common action).
+            // Double tap → open the local file. TapHandler disambiguates the
+            // two by waiting one double-tap interval before emitting
+            // singleTapped, so a double-click won't also fire copy.
+            onSingleTapped: rRow.copyClicked()
+            onDoubleTapped: rRow.openClicked()
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -1026,15 +1286,43 @@ Item {
             anchors.rightMargin: AuroraTheme.sp4
             spacing: AuroraTheme.sp3
 
-            FsFileTypeIcon {
-                fileName: rRow.fileName
-                isFolder: false
-                sizePx: 36
+            // 36x36 icon + a small overlaid direction badge bottom-right —
+            // same visual idiom as the transfer cards above the list, so
+            // the user can scan direction at a glance without parsing the
+            // status text on every row.
+            Item {
+                Layout.preferredWidth: 36
+                Layout.preferredHeight: 36
+                FsFileTypeIcon {
+                    anchors.fill: parent
+                    fileName: rRow.fileName
+                    isFolder: false
+                    sizePx: 36
+                }
+                Rectangle {
+                    width: 14; height: 14; radius: 7
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.rightMargin: -2
+                    anchors.bottomMargin: -2
+                    color: rRow.isUpload ? AuroraTheme.success : AuroraTheme.accent
+                    border.width: 2
+                    border.color: AuroraTheme.panel
+                    Text {
+                        anchors.centerIn: parent
+                        text: rRow.isUpload ? "↑" : "↓"
+                        color: "#FFFFFF"
+                        font.family: AuroraTheme.fontSans
+                        font.pixelSize: 9
+                        font.bold: true
+                    }
+                }
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 2
+                spacing: 3
+
                 Text {
                     Layout.fillWidth: true
                     text: rRow.fileName
@@ -1044,24 +1332,60 @@ Item {
                     color: AuroraTheme.ink1
                     elide: Text.ElideMiddle
                 }
-                Text {
-                    text: FsFormat.bytes(rRow.fileSize) + " · " + page._relTime(rRow.completedAt)
-                    font.family: AuroraTheme.fontMono
-                    font.pixelSize: 11
-                    color: AuroraTheme.ink3
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: AuroraTheme.sp2
+
+                    // Direction pill — "Đã tải lên" / "Đã tải về" gives the
+                    // row an at-a-glance verb instead of relying only on the
+                    // tiny corner badge. Uses semantic soft tokens.
+                    Rectangle {
+                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: dirLabel.implicitWidth + AuroraTheme.sp3
+                        radius: AuroraTheme.radiusPill
+                        color: rRow.isUpload ? AuroraTheme.successSoft : AuroraTheme.accentSoft
+                        Text {
+                            id: dirLabel
+                            anchors.centerIn: parent
+                            text: rRow.isUpload ? qsTr("Đã tải lên") : qsTr("Đã tải về")
+                            font.family: AuroraTheme.fontSans
+                            font.pixelSize: 10
+                            font.weight: Font.DemiBold
+                            color: rRow.isUpload ? AuroraTheme.success : AuroraTheme.accent
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: FsFormat.bytes(rRow.fileSize) + " · " + page._relTime(rRow.completedAt)
+                        font.family: AuroraTheme.fontMono
+                        font.pixelSize: 11
+                        color: AuroraTheme.ink3
+                        elide: Text.ElideRight
+                    }
                 }
             }
 
-            IconAction { icon: "folder";        tooltip: qsTr("Mở thư mục chứa"); onActivated: rRow.folderClicked() }
-            IconAction { icon: "external-link"; tooltip: qsTr("Mở file");         onActivated: rRow.openClicked() }
-        }
-
-        MouseArea {
-            id: rowMa
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onDoubleClicked: rRow.openClicked()
+            // Actions reveal on row hover for a calmer idle state; the row is
+            // still openable via double-click when actions are hidden.
+            //   • folder       → open the containing folder on disk
+            //   • external-link → open the file's page on fshare.vn
+            // Each hides when its underlying data is missing (a download with
+            // no retained local copy still has a linkcode; an upload always
+            // has both).
+            IconAction {
+                icon: "folder"
+                tooltip: qsTr("Mở thư mục chứa")
+                visible: rRow._hasLocal && rowHover.hovered
+                onActivated: rRow.folderClicked()
+            }
+            IconAction {
+                icon: "external-link"
+                tooltip: qsTr("Mở trên Fshare")
+                visible: rRow._hasLink && rowHover.hovered
+                onActivated: rRow.shareClicked()
+            }
         }
     }
 

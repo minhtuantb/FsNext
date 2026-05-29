@@ -11,6 +11,7 @@ class FshareApi;
 class BadWordFilter;
 class AuthService;
 class OAuthService;
+class RefreshTokenCoordinator;
 class TransferOrchestrator;
 class TransferService;
 class FileService;
@@ -24,6 +25,7 @@ class SyncService;
 class AuthViewModel;
 class DownloadViewModel;
 class UploadViewModel;
+class UploadStagingViewModel;
 class FileManagerViewModel;
 class SettingsViewModel;
 class UserInfoViewModel;
@@ -33,6 +35,7 @@ class SyncViewModel;
 class TransferBudgetViewModel;
 class HomeSearchViewModel;
 class RemoteShareViewModel;
+class TransferHudViewModel;
 
 class AppContext : public QObject {
     Q_OBJECT
@@ -54,6 +57,10 @@ public:
     FileService *fileService() const { return m_fileService.get(); }
     SettingsService *settingsService() const { return m_settingsService.get(); }
     LanguageViewModel *languageViewModel() const { return m_languageVM.get(); }
+    // HUD aggregate VM — drives the tray-icon colour, balloon notifications
+    // and (in P1+) the Mini Window / Tray Popup QML surfaces.  main.cpp
+    // pulls this out to wire SystemTray and balloon gating.
+    TransferHudViewModel *hudViewModel() const { return m_hudVM.get(); }
 
 private:
     // Data layer
@@ -64,6 +71,9 @@ private:
 
     // API
     std::unique_ptr<FshareApi> m_api;
+    // Silent re-auth coordinator — depends on HttpClient + SettingsRepository,
+    // injected into FshareApi and AuthService.  Must outlive both.
+    std::unique_ptr<RefreshTokenCoordinator> m_refreshCoord;
 
     // Utilities (no Qt dependencies beyond QObject) — kept here so they
     // live for the application lifetime and can be referenced by ViewModels.
@@ -85,6 +95,10 @@ private:
     std::unique_ptr<AuthViewModel> m_authVM;
     std::unique_ptr<DownloadViewModel> m_downloadVM;
     std::unique_ptr<UploadViewModel> m_uploadVM;
+    // Session-and-restart-stable holder for the upload "staging" state — see
+    // UploadStagingViewModel.h. Lives here (not under UploadPage) so that
+    // navigating between pages doesn't destroy the user's in-progress batch.
+    std::unique_ptr<UploadStagingViewModel> m_uploadStagingVM;
     std::unique_ptr<FileManagerViewModel> m_fileManagerVM;
     std::unique_ptr<FavoritesViewModel> m_favoritesVM;
     std::unique_ptr<SettingsViewModel> m_settingsVM;
@@ -94,6 +108,8 @@ private:
     std::unique_ptr<TransferBudgetViewModel> m_budgetVM;
     std::unique_ptr<HomeSearchViewModel> m_homeSearchVM;
     std::unique_ptr<RemoteShareViewModel> m_remoteShareVM;
+    // HUD aggregate VM — created last so it can reference every other VM.
+    std::unique_ptr<TransferHudViewModel> m_hudVM;
 };
 
 } // namespace fsnext

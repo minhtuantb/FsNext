@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QStringList>
 #include <QVariantList>
@@ -55,6 +56,16 @@ class RemoteShareViewModel : public QObject {
     // ── File mode ─────────────────────────────────────────────
     Q_PROPERTY(QVariantMap currentFile    READ currentFile       NOTIFY fileChanged)
 
+    // True when the user navigated File-from-Folder and we still have the
+    // parent folder's state snapshotted. QML uses this to decide whether
+    // closing the FileDetailSheet should reopen the FolderBrowserDialog
+    // or just dismiss everything.
+    Q_PROPERTY(bool hasFolderContext      READ hasFolderContext  NOTIFY folderChanged)
+
+    // ── Selection (folder mode only — file-only multi-select) ─
+    Q_PROPERTY(int  selectedCount         READ selectedCount     NOTIFY selectionChanged)
+    Q_PROPERTY(bool hasSelection          READ hasSelection      NOTIFY selectionChanged)
+
 public:
     enum Mode {
         ModeNone   = 0,
@@ -81,6 +92,11 @@ public:
     int  totalCount()   const { return m_totalCount; }
 
     QVariantMap currentFile() const { return m_currentFile; }
+    bool hasFolderContext() const { return m_folderSnapshot.valid; }
+
+    int  selectedCount() const { return m_selected.size(); }
+    bool hasSelection()  const { return !m_selected.isEmpty(); }
+    Q_INVOKABLE bool isSelected(const QString &linkcode) const { return m_selected.contains(linkcode); }
 
     // ── Entry points (called from QML) ───────────────────────
     Q_INVOKABLE void openFolder(const QString &url);
@@ -90,7 +106,14 @@ public:
     // user just clicked. The current ?token= is preserved on the
     // synthesised file URL so password-less share folders that gate
     // access via token keep working without the user re-pasting the URL.
+    // The current folder state (stack, items, page) is snapshotted so the
+    // user can pop back to the folder via restoreFolderContext().
     Q_INVOKABLE void openFileFromCurrentFolder(const QString &linkcode);
+
+    // Reopen the folder browser at the exact state it was in before the
+    // user drilled into a file. Returns true on success; false when no
+    // snapshot exists (e.g. user came straight from a pasted file URL).
+    Q_INVOKABLE bool restoreFolderContext();
 
     // Reset state — call when the host dialog closes.
     Q_INVOKABLE void close();
@@ -113,12 +136,21 @@ public:
                                          const QString &password = QString{});
     Q_INVOKABLE void copyFolderItemLink(const QString &linkcode, bool isFolder);
 
+    // ── Bulk selection actions (files only) ──────────────────
+    Q_INVOKABLE void toggleSelection(const QString &linkcode);
+    Q_INVOKABLE void selectAllFiles();
+    Q_INVOKABLE void clearSelection();
+    // Queues download for every currently-selected linkcode. Folders are
+    // never in m_selected so we just iterate the file URLs.
+    Q_INVOKABLE void downloadSelected(const QString &password = QString{});
+
 signals:
     void modeChanged();
     void isLoadingChanged();
     void errorTextChanged();
     void folderChanged();
     void fileChanged();
+    void selectionChanged();
 
     // Surfaced to the dialog for toasts / status text.
     void operationMessage(const QString &msg, bool isError);
@@ -162,10 +194,36 @@ private:
     bool    m_hasMore     = false;
     static constexpr int kPageSize = 50;
 
+    // Multi-select state — file linkcodes only.
+    QSet<QString> m_selected;
+
     // File mode state — captured from getFileInfo so the QML can render
     // the detail sheet without having to model FileItem itself.
     QVariantMap m_currentFile;
     QString     m_currentFileUrl;       // canonical URL with ?token=
+
+    // Snapshot of the folder browser state, captured before we drill into
+    // a file via openFileFromCurrentFolder. Restored by
+    // restoreFolderContext() when the user pops out of the detail sheet.
+    struct FolderSnapshot {
+        QVector<FolderEntry> stack;
+        QString              token;
+        QVector<FileItem>    items;
+        int                  page    = 0;
+        int                  total   = 0;
+        bool                 hasMore = false;
+        bool                 valid   = false;
+    };
+    FolderSnapshot m_folderSnapshot;
+
+    // Monotonically increasing request ID — every entry point that changes
+    // what the user is "looking at" (open, close, navigate, restore) bumps
+    // this. Each QtConcurrent worker captures the value before launching and
+    // its main-thread callback skips applying results when the seq has moved
+    // on. QPointer alone catches destruction; this catches the more common
+    // "object alive but the user already opened a different share / folder"
+    // case where a stale response would otherwise overwrite the new state.
+    quint64 m_requestSeq = 0;
 };
 
 } // namespace fsnext

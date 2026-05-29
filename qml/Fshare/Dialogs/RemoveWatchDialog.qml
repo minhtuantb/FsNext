@@ -1,9 +1,10 @@
-// SPDX-License-Identifier: Proprietary
+﻿// SPDX-License-Identifier: Proprietary
 // RemoveWatchDialog — Confirm removal of a watched folder
 
 import QtQuick
 import QtQuick.Layouts
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 import Fshare.Components 1.0
 
 FsDialog {
@@ -106,13 +107,13 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            FsButton {
+            Aurora.FsButton {
                 id: cancelBtn
                 text: qsTr("Hủy")
                 variant: "ghost"
                 onClicked: root.close()
             }
-            FsButton {
+            Aurora.FsButton {
                 text: qsTr("Xóa")
                 variant: "danger"
                 onClicked: {

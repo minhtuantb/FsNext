@@ -292,9 +292,17 @@ void FileCacheDB::upsertFiles(const QString &userId, const QVector<FileItem> &it
 {
     if (items.isEmpty()) return;
 
-    QSqlQuery q(m_db);
-    m_db.transaction();
+    // transaction() returns false when SQLite refuses to open one (locked,
+    // read-only, IO error).  Without this check, the subsequent UPSERTs ran
+    // in auto-commit and partial state could persist — including children
+    // pointing at a parent_id whose own row failed to insert.
+    if (!m_db.transaction()) {
+        qWarning() << "[FileCacheDB] upsertFiles: BEGIN failed:"
+                   << m_db.lastError().text();
+        return;
+    }
 
+    QSqlQuery q(m_db);
     q.prepare(QStringLiteral(R"(
         INSERT INTO files
             (linkcode, fshare_id, parent_id, name, type, size, path, secure, has_password,
@@ -314,6 +322,7 @@ void FileCacheDB::upsertFiles(const QString &userId, const QVector<FileItem> &it
     )"));
 
     const qint64 now = nowSecs();
+    bool anyFailed = false;
 
     for (const FileItem &f : items) {
         q.addBindValue(f.linkcode);
@@ -336,11 +345,28 @@ void FileCacheDB::upsertFiles(const QString &userId, const QVector<FileItem> &it
         q.addBindValue(now);
         q.addBindValue(userId);
 
-        if (!q.exec())
+        if (!q.exec()) {
             qWarning() << "[FileCacheDB] upsert failed for" << f.linkcode << q.lastError().text();
+            anyFailed = true;
+        }
     }
 
-    m_db.commit();
+    // Roll back ALL inserts on any failure rather than committing a half-written
+    // batch.  A partially-applied page corrupts the cache view (folder shows
+    // some children, some missing) without the user knowing.  Better to drop
+    // the whole batch and let the next sync re-fetch.
+    if (anyFailed) {
+        qWarning() << "[FileCacheDB] upsertFiles: rolling back due to row errors";
+        m_db.rollback();
+        return;
+    }
+
+    if (!m_db.commit()) {
+        qWarning() << "[FileCacheDB] upsertFiles: COMMIT failed:"
+                   << m_db.lastError().text();
+        m_db.rollback();
+        return;
+    }
 
     // Sanity count after commit — helps diagnose why queryFiles returns 0 when
     // upsert appeared to succeed.
@@ -545,15 +571,30 @@ void FileCacheDB::removeFiles(const QStringList &linkcodes)
 {
     if (linkcodes.isEmpty()) return;
 
+    if (!m_db.transaction()) {
+        qWarning() << "[FileCacheDB] removeFiles: BEGIN failed:"
+                   << m_db.lastError().text();
+        return;
+    }
+
     QSqlQuery q(m_db);
-    m_db.transaction();
+    bool anyFailed = false;
     for (const QString &lc : linkcodes) {
         q.prepare(QStringLiteral("DELETE FROM files WHERE linkcode=?"));
         q.addBindValue(lc);
-        if (!q.exec())
+        if (!q.exec()) {
             qWarning() << "[FileCacheDB] removeFiles error:" << q.lastError().text();
+            anyFailed = true;
+        }
     }
-    m_db.commit();
+    if (anyFailed) {
+        m_db.rollback();
+        return;
+    }
+    if (!m_db.commit()) {
+        qWarning() << "[FileCacheDB] removeFiles COMMIT failed:" << m_db.lastError().text();
+        m_db.rollback();
+    }
 }
 
 void FileCacheDB::renameFile(const QString &linkcode, const QString &newName)
@@ -570,16 +611,31 @@ void FileCacheDB::updateParent(const QStringList &linkcodes, const QString &newP
 {
     if (linkcodes.isEmpty()) return;
 
+    if (!m_db.transaction()) {
+        qWarning() << "[FileCacheDB] updateParent: BEGIN failed:"
+                   << m_db.lastError().text();
+        return;
+    }
+
     QSqlQuery q(m_db);
-    m_db.transaction();
+    bool anyFailed = false;
     for (const QString &lc : linkcodes) {
         q.prepare(QStringLiteral("UPDATE files SET parent_id=? WHERE linkcode=?"));
         q.addBindValue(newParentId);
         q.addBindValue(lc);
-        if (!q.exec())
+        if (!q.exec()) {
             qWarning() << "[FileCacheDB] updateParent error:" << q.lastError().text();
+            anyFailed = true;
+        }
     }
-    m_db.commit();
+    if (anyFailed) {
+        m_db.rollback();
+        return;
+    }
+    if (!m_db.commit()) {
+        qWarning() << "[FileCacheDB] updateParent COMMIT failed:" << m_db.lastError().text();
+        m_db.rollback();
+    }
 }
 
 // ── local file tracking ──────────────────────────────────────────────────────
@@ -686,18 +742,46 @@ bool FileCacheDB::verifyLocalFile(const QString &userId, const QString &linkcode
 
 void FileCacheDB::clearUserCache(const QString &userId)
 {
+    // Wrap all three DELETEs in a single transaction.  Without this, a crash
+    // between DELETEs would leave folder_sync pointing at no-longer-existing
+    // files (or vice-versa) — UI then shows "completely cached" for empty
+    // folders, and queries return nothing.  Better atomic-or-nothing.
+    if (!m_db.transaction()) {
+        qWarning() << "[FileCacheDB] clearUserCache: BEGIN failed:"
+                   << m_db.lastError().text();
+        return;
+    }
+
     QSqlQuery q(m_db);
+    bool anyFailed = false;
+
     q.prepare(QStringLiteral("DELETE FROM files WHERE user_id=?"));
     q.addBindValue(userId);
-    q.exec();
+    if (!q.exec()) { anyFailed = true;
+        qWarning() << "[FileCacheDB] clearUserCache files DELETE failed:" << q.lastError().text(); }
 
     q.prepare(QStringLiteral("DELETE FROM folder_sync WHERE user_id=?"));
     q.addBindValue(userId);
-    q.exec();
+    if (!q.exec()) { anyFailed = true;
+        qWarning() << "[FileCacheDB] clearUserCache folder_sync DELETE failed:" << q.lastError().text(); }
 
     q.prepare(QStringLiteral("DELETE FROM local_files WHERE user_id=?"));
     q.addBindValue(userId);
-    q.exec();
+    if (!q.exec()) { anyFailed = true;
+        qWarning() << "[FileCacheDB] clearUserCache local_files DELETE failed:" << q.lastError().text(); }
+
+    if (anyFailed) {
+        m_db.rollback();
+        qWarning() << "[FileCacheDB] clearUserCache rolled back for user" << userId;
+        return;
+    }
+
+    if (!m_db.commit()) {
+        qWarning() << "[FileCacheDB] clearUserCache COMMIT failed:"
+                   << m_db.lastError().text();
+        m_db.rollback();
+        return;
+    }
 
     qDebug() << "[FileCacheDB] Cache cleared for user" << userId;
 }

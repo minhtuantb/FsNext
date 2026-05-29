@@ -18,6 +18,14 @@ public:
     explicit UploadEngine(QObject *parent = nullptr);
     ~UploadEngine() override;
 
+    // Network routing for the raw libcurl handles this engine creates. Pass the
+    // pre-resolved proxy URL (PlatformUtils::resolveProxyUrl — the same value
+    // HttpClient uses), set before the worker thread is started (QThread::start
+    // establishes the happens-before so the worker sees it). Honours the
+    // configured proxy (manual OR system) instead of silently bypassing it
+    // behind a gateway. Empty string = direct connection.
+    void setProxy(const QString &proxyUrl);
+
     void startUpload(const TransferTask &task);
     void pause();
     void resume();
@@ -48,6 +56,12 @@ private:
     // Returns the byte offset to resume from (0 = start over).
     int64_t queryResumeOffset(const QString &url, int64_t totalSize);
 
+    // Apply the security + routing options shared by every handle this engine
+    // creates (TLS hardening, whitelisted User-Agent, resolved proxy). Timeouts
+    // are left to the caller since the resume-query and the chunk upload have
+    // very different latency profiles.
+    void applyCommonOpts(void *curl) const;
+
     static size_t chunkReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata);
     static int chunkProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow);
 
@@ -55,6 +69,10 @@ private:
     SpeedMeter m_meter;
     std::atomic<bool> m_abort{false};
     std::atomic<bool> m_paused{false};
+
+    // Pre-resolved proxy URL ("host:port" or full proxy URL). Empty = direct.
+    // Set once before startUpload, then only read by the worker — no lock needed.
+    QString m_proxyUrl;
 
     // Total bytes uploaded across all completed chunks (for progress aggregation)
     std::atomic<int64_t> m_totalUploaded{0};

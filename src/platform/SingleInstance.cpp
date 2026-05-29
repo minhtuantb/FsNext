@@ -3,6 +3,8 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QDataStream>
+#include <QPointer>
+#include <QDebug>
 
 namespace fsnext {
 
@@ -61,11 +63,30 @@ void SingleInstance::onNewConnection()
     if (!socket)
         return;
 
-    connect(socket, &QLocalSocket::readyRead, this, [this, socket]() {
-        QDataStream stream(socket);
+    // Wrap the raw pointer in QPointer so the readyRead lambda can detect a
+    // socket that's already been deleteLater()'d via the disconnected
+    // signal — even if Qt queued readyRead first, between dispatch and
+    // execution the socket can become invalid (browser closes the tab
+    // mid-write, OS reaps the connection, etc.).
+    QPointer<QLocalSocket> sockGuard(socket);
+
+    connect(socket, &QLocalSocket::readyRead, this, [this, sockGuard]() {
+        if (!sockGuard) return;
+        QDataStream stream(sockGuard.data());
         stream.setVersion(QDataStream::Qt_6_0);
         QString msg;
         stream >> msg;
+        // Reject malformed/truncated framing.  Without this guard,
+        // QDataStream silently leaves msg empty and we'd emit
+        // messageReceived("") — which Main.qml maps to the "open download
+        // dialog with no link" path, surprising the user.  Tear the socket
+        // down so a buggy / hostile peer can't keep us busy.
+        if (stream.status() != QDataStream::Ok) {
+            qWarning() << "[SingleInstance] malformed framing on local socket — closing";
+            sockGuard->disconnectFromServer();
+            sockGuard->deleteLater();
+            return;
+        }
         emit messageReceived(msg);
     });
 

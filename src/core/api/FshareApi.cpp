@@ -1,11 +1,13 @@
 #include "FshareApi.h"
 #include "core/models/AppError.h"
+#include "core/services/RefreshTokenCoordinator.h"
 
 #include <json/json.h>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QMutexLocker>
 #include <QThread>
 
 namespace fsnext {
@@ -91,6 +93,34 @@ static AppError checkApiResponse(const HttpResponse &resp, const Json::Value &ro
     if (resp.statusCode != 200 && resp.statusCode != 302)
         return AppError::server(resp.statusCode, QStringLiteral("HTTP %1").arg(resp.statusCode));
 
+    return AppError::none();
+}
+
+// Spec §1.2 — every authenticated endpoint must classify HTTP 201/202 as an
+// auth-category error (NOT a server error) so executeAuthed's refresh path
+// fires.  Methods that hand-roll their status-code handling (i.e. don't go
+// through checkApiResponse) call this helper to map raw status → AppError.
+//
+// Returns a populated AppError (call .isError() check on caller) when the
+// status indicates an auth failure; returns AppError::none() otherwise so
+// the caller can keep its existing "server error" fallback.
+static AppError mapAuthStatus(int statusCode) {
+    if (statusCode == 201 || statusCode == 202) {
+        return AppError::auth(statusCode,
+            QStringLiteral("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại."));
+    }
+    return AppError::none();
+}
+
+// Same map for the JSON body's `code` field (Fshare sometimes returns 200 OK
+// at the HTTP layer but `{"code":201,...}` in the body).
+static AppError mapAuthApiCode(int apiCode, const QString &msg) {
+    if (apiCode == 201 || apiCode == 202) {
+        return AppError::auth(apiCode,
+            msg.isEmpty()
+                ? QStringLiteral("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.")
+                : msg);
+    }
     return AppError::none();
 }
 
@@ -203,9 +233,52 @@ FshareApi::FshareApi(HttpClient *http)
 
 void FshareApi::setSession(const QString &token, const QString &cookie)
 {
-    m_token = token;
+    {
+        QMutexLocker locker(&m_tokenMutex);
+        m_token = token;
+    }
     if (m_http)
         m_http->setCookie(cookie);
+}
+
+QString FshareApi::tokenSnapshot() const
+{
+    QMutexLocker locker(&m_tokenMutex);
+    return m_token;
+}
+
+void FshareApi::setRefreshCoordinator(RefreshTokenCoordinator *coord)
+{
+    m_refresh = coord;
+}
+
+bool FshareApi::ensureFresh()
+{
+    if (!m_refresh) return true;          // legacy path — no coordinator wired
+    return m_refresh->ensureFreshToken(); // false only on hard-fail
+}
+
+void FshareApi::syncTokenFromCoordinator()
+{
+    if (!m_refresh) return;
+    // Pull the canonical token snapshot every call.  This is what makes the
+    // "refresh rotated the token while we were waiting in handleAuthExpired"
+    // scenario safe — the retry below picks up the fresh value, not the
+    // value we captured when ensureFresh() returned.
+    const QString tok = m_refresh->token();
+    if (!tok.isEmpty()) {
+        QMutexLocker locker(&m_tokenMutex);
+        m_token = tok;
+    }
+    // Cookie is mirrored straight onto HttpClient by the coordinator on
+    // successful refresh; no extra plumbing needed here.
+}
+
+bool FshareApi::refreshAfterAuthError()
+{
+    if (!m_refresh) return false;
+    const RefreshResult r = m_refresh->handleAuthExpired();
+    return r.kind == RefreshResultKind::Success;
 }
 
 // ── Auth ──────────────────────────────────────────────────
@@ -282,26 +355,32 @@ ApiResponse<Session> FshareApi::loginOauth(const QString &service,
 ApiResponse<void> FshareApi::logout()
 {
     HttpResponse resp = m_http->get(API_BASE + QStringLiteral("/api/user/logout"));
-    m_token.clear();
+    {
+        QMutexLocker locker(&m_tokenMutex);
+        m_token.clear();
+    }
     m_http->setCookie({});
     return ApiResponse<void>::success(resp.statusCode);
 }
 
 ApiResponse<User> FshareApi::getUserInfo()
 {
-    HttpResponse resp = m_http->get(API_BASE + QStringLiteral("/api/user/get"));
-    Json::Value root = parseJson(resp.body);
-    AppError err = checkApiResponse(resp, root);
-    if (err.isError())
-        return ApiResponse<User>::failure(err, resp.statusCode);
+    return executeAuthed([this]() -> ApiResponse<User> {
+        HttpResponse resp = m_http->get(API_BASE + QStringLiteral("/api/user/get"));
+        Json::Value root = parseJson(resp.body);
+        AppError err = checkApiResponse(resp, root);
+        if (err.isError())
+            return ApiResponse<User>::failure(err, resp.statusCode);
 
-    return ApiResponse<User>::success(parseUser(root));
+        return ApiResponse<User>::success(parseUser(root));
+    });
 }
 
 // ── File listing & search ──────────────────────────────────
 
 ApiResponse<QVector<FileItem>> FshareApi::listFiles(const QString &folderUrl, int page, int pageSize)
 {
+    return executeAuthed([this, &folderUrl, page, pageSize]() -> ApiResponse<QVector<FileItem>> {
     // Root listing: empty URL means "account root" — getFolderListPaging requires
     // a URL, so fall back to /api/fileops/list/home (same endpoint family used
     // by listFolders, but targeted at root with dirOnly=0 so we get files
@@ -319,14 +398,19 @@ ApiResponse<QVector<FileItem>> FshareApi::listFiles(const QString &folderUrl, in
                           << "body(first 500)=" << QString::fromUtf8(resp.body.left(500));
         if (resp.statusCode <= 0)
             return ApiResponse<QVector<FileItem>>::failure(AppError::network(resp.statusCode, {}));
+        // Spec §1.2 — 201/202 = expired token; let executeAuthed retry.
+        if (AppError authErr = mapAuthStatus(resp.statusCode); authErr.isError())
+            return ApiResponse<QVector<FileItem>>::failure(authErr, resp.statusCode);
         if (resp.statusCode != 200)
             return ApiResponse<QVector<FileItem>>::failure(AppError::server(resp.statusCode, {}));
 
         Json::Value root = parseJson(resp.body);
         if (root.isObject() && root.isMember("code")) {
             int code = root.get("code", 200).asInt();
+            QString msg = QString::fromStdString(root.get("msg", "").asString());
+            if (AppError authErr = mapAuthApiCode(code, msg); authErr.isError())
+                return ApiResponse<QVector<FileItem>>::failure(authErr, resp.statusCode);
             if (code != 200) {
-                QString msg = QString::fromStdString(root.get("msg", "").asString());
                 return ApiResponse<QVector<FileItem>>::failure(AppError::server(code, msg));
             }
         }
@@ -350,7 +434,7 @@ ApiResponse<QVector<FileItem>> FshareApi::listFiles(const QString &folderUrl, in
     }
 
     Json::Value body;
-    body["token"] = m_token.toStdString();
+    body["token"] = tokenSnapshot().toStdString();
     body["url"] = normalisedUrl.toStdString();
     body["page_index"] = page;
     body["page_size"] = pageSize;
@@ -367,6 +451,8 @@ ApiResponse<QVector<FileItem>> FshareApi::listFiles(const QString &folderUrl, in
 
     if (resp.statusCode <= 0)
         return ApiResponse<QVector<FileItem>>::failure(AppError::network(resp.statusCode, {}));
+    if (AppError authErr = mapAuthStatus(resp.statusCode); authErr.isError())
+        return ApiResponse<QVector<FileItem>>::failure(authErr, resp.statusCode);
     if (resp.statusCode != 200)
         return ApiResponse<QVector<FileItem>>::failure(AppError::server(resp.statusCode, {}));
 
@@ -383,8 +469,10 @@ ApiResponse<QVector<FileItem>> FshareApi::listFiles(const QString &folderUrl, in
     // If response is an object with error code, surface it
     if (root.isObject() && root.isMember("code")) {
         int code = root.get("code", 200).asInt();
+        QString msg = QString::fromStdString(root.get("msg", "").asString());
+        if (AppError authErr = mapAuthApiCode(code, msg); authErr.isError())
+            return ApiResponse<QVector<FileItem>>::failure(authErr, resp.statusCode);
         if (code != 200) {
-            QString msg = QString::fromStdString(root.get("msg", "").asString());
             return ApiResponse<QVector<FileItem>>::failure(AppError::server(code, msg));
         }
     }
@@ -395,10 +483,13 @@ ApiResponse<QVector<FileItem>> FshareApi::listFiles(const QString &folderUrl, in
             items.append(parseFileItem(item));
     }
     return ApiResponse<QVector<FileItem>>::success(items);
+    });   // executeAuthed lambda
 }
 
 ApiResponse<QVector<FileItem>> FshareApi::listFolders(const QString &path)
 {
+    return executeAuthed([this, &path]() -> ApiResponse<QVector<FileItem>> {
+    using R = ApiResponse<QVector<FileItem>>;
     QString url = API_BASE + QStringLiteral("/api/fileops/list");
     if (!path.isEmpty())
         url += QStringLiteral("/") + path;
@@ -416,22 +507,26 @@ ApiResponse<QVector<FileItem>> FshareApi::listFolders(const QString &path)
 
         HttpResponse resp = m_http->get(pageUrl);
         if (resp.statusCode <= 0)
-            return ApiResponse<QVector<FileItem>>::failure(AppError::network(resp.statusCode, {}));
+            return R::failure(AppError::network(resp.statusCode, {}));
         if (resp.statusCode == 502 && pageIndex == 0) {
             // Legacy has 502 retry logic for bad gateway — simple retry here
             QThread::msleep(500);
             resp = m_http->get(pageUrl);
         }
+        if (AppError authErr = mapAuthStatus(resp.statusCode); authErr.isError())
+            return R::failure(authErr, resp.statusCode);
         if (resp.statusCode != 200)
-            return ApiResponse<QVector<FileItem>>::failure(AppError::server(resp.statusCode, {}));
+            return R::failure(AppError::server(resp.statusCode, {}));
 
         Json::Value root = parseJson(resp.body);
         // Handle error responses that come as objects instead of arrays
         if (root.isObject() && root.isMember("code")) {
             int code = root.get("code", 200).asInt();
+            QString msg = QString::fromStdString(root.get("msg", "").asString());
+            if (AppError authErr = mapAuthApiCode(code, msg); authErr.isError())
+                return R::failure(authErr, resp.statusCode);
             if (code != 200) {
-                QString msg = QString::fromStdString(root.get("msg", "").asString());
-                return ApiResponse<QVector<FileItem>>::failure(AppError::server(code, msg));
+                return R::failure(AppError::server(code, msg));
             }
         }
         if (!root.isArray() || root.empty())
@@ -446,60 +541,79 @@ ApiResponse<QVector<FileItem>> FshareApi::listFolders(const QString &path)
     }
 
     return ApiResponse<QVector<FileItem>>::success(allItems);
+    });   // executeAuthed lambda
 }
 
 ApiResponse<FileItem> FshareApi::getFileInfo(const QString &url)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["url"] = url.toStdString();
+    return executeAuthed([this, &url]() -> ApiResponse<FileItem> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["url"] = url.toStdString();
 
-    Json::StreamWriterBuilder writer;
-    std::string jsonStr = Json::writeString(writer, body);
-    HttpResponse resp = m_http->post(
-        API_BASE + QStringLiteral("/api/fileops/get"),
-        QByteArray::fromStdString(jsonStr));
+        Json::StreamWriterBuilder writer;
+        std::string jsonStr = Json::writeString(writer, body);
+        HttpResponse resp = m_http->post(
+            API_BASE + QStringLiteral("/api/fileops/get"),
+            QByteArray::fromStdString(jsonStr));
 
-    Json::Value root = parseJson(resp.body);
-    AppError err = checkApiResponse(resp, root);
-    if (err.isError())
-        return ApiResponse<FileItem>::failure(err, resp.statusCode);
+        Json::Value root = parseJson(resp.body);
+        AppError err = checkApiResponse(resp, root);
+        if (err.isError())
+            return ApiResponse<FileItem>::failure(err, resp.statusCode);
 
-    return ApiResponse<FileItem>::success(parseFileItem(root));
+        return ApiResponse<FileItem>::success(parseFileItem(root));
+    });
 }
 
 ApiResponse<QVector<FileItem>> FshareApi::searchFiles(const QString &keyword, int page)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["keyword"] = keyword.toStdString();
+    return executeAuthed([this, &keyword, page]() -> ApiResponse<QVector<FileItem>> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["keyword"] = keyword.toStdString();
 
-    Json::StreamWriterBuilder writer;
-    std::string jsonStr = Json::writeString(writer, body);
-    QString url = API_BASE + QStringLiteral("/api/fileops/search?pageIndex=") + QString::number(page);
-    HttpResponse resp = m_http->post(url, QByteArray::fromStdString(jsonStr));
+        Json::StreamWriterBuilder writer;
+        std::string jsonStr = Json::writeString(writer, body);
+        QString url = API_BASE + QStringLiteral("/api/fileops/search?pageIndex=") + QString::number(page);
+        HttpResponse resp = m_http->post(url, QByteArray::fromStdString(jsonStr));
 
-    if (resp.statusCode <= 0)
-        return ApiResponse<QVector<FileItem>>::failure(AppError::network(resp.statusCode, {}));
-    if (resp.statusCode != 200)
-        return ApiResponse<QVector<FileItem>>::failure(AppError::server(resp.statusCode, {}));
+        if (resp.statusCode <= 0)
+            return ApiResponse<QVector<FileItem>>::failure(AppError::network(resp.statusCode, {}));
+        // Spec §1.2 — Fshare returns HTTP 201 (sometimes 202) instead of 401 when
+        // the token has aged out.  Route those through executeAuthed's auth path
+        // so the refresh coordinator picks them up instead of bouncing the call
+        // out as a generic server error.
+        if (resp.statusCode == 201 || resp.statusCode == 202)
+            return ApiResponse<QVector<FileItem>>::failure(
+                AppError::auth(resp.statusCode,
+                    QStringLiteral("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.")),
+                resp.statusCode);
+        if (resp.statusCode != 200)
+            return ApiResponse<QVector<FileItem>>::failure(AppError::server(resp.statusCode, {}));
 
-    Json::Value root = parseJson(resp.body);
+        Json::Value root = parseJson(resp.body);
 
-    if (root.isObject() && root.isMember("code")) {
-        int code = root.get("code", 200).asInt();
-        if (code != 200) {
-            QString msg = QString::fromStdString(root.get("msg", "").asString());
-            return ApiResponse<QVector<FileItem>>::failure(AppError::server(code, msg));
+        if (root.isObject() && root.isMember("code")) {
+            int code = root.get("code", 200).asInt();
+            if (code == 201 || code == 202)
+                return ApiResponse<QVector<FileItem>>::failure(
+                    AppError::auth(code,
+                        QString::fromStdString(root.get("msg", "").asString())),
+                    resp.statusCode);
+            if (code != 200) {
+                QString msg = QString::fromStdString(root.get("msg", "").asString());
+                return ApiResponse<QVector<FileItem>>::failure(AppError::server(code, msg));
+            }
         }
-    }
 
-    QVector<FileItem> items;
-    if (root.isArray()) {
-        for (const auto &item : root)
-            items.append(parseFileItem(item));
-    }
-    return ApiResponse<QVector<FileItem>>::success(items);
+        QVector<FileItem> items;
+        if (root.isArray()) {
+            for (const auto &item : root)
+                items.append(parseFileItem(item));
+        }
+        return ApiResponse<QVector<FileItem>>::success(items);
+    });
 }
 
 // ── File operations ──────────────────────────────────────
@@ -525,153 +639,183 @@ static ApiResponse<void> postSimple(HttpClient *http, const QString &endpoint,
 
 ApiResponse<void> FshareApi::renameFile(const QString &linkcode, const QString &newName)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["file"] = linkcode.toStdString();
-    body["new_name"] = newName.toStdString();
-    return postSimple(m_http, QStringLiteral("/api/fileops/rename"), body);
+    return executeAuthed([this, &linkcode, &newName]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["file"] = linkcode.toStdString();
+        body["new_name"] = newName.toStdString();
+        return postSimple(m_http, QStringLiteral("/api/fileops/rename"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::deleteFiles(const QStringList &linkcodes)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["items"] = itemsArray(linkcodes);
-    return postSimple(m_http, QStringLiteral("/api/fileops/delete"), body);
+    return executeAuthed([this, &linkcodes]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["items"] = itemsArray(linkcodes);
+        return postSimple(m_http, QStringLiteral("/api/fileops/delete"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::createFolder(const QString &name, const QString &parentId)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["name"] = name.toStdString();
-    body["in_dir"] = parentId.toStdString();
-    return postSimple(m_http, QStringLiteral("/api/fileops/createFolder"), body);
+    return executeAuthed([this, &name, &parentId]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["name"] = name.toStdString();
+        body["in_dir"] = parentId.toStdString();
+        return postSimple(m_http, QStringLiteral("/api/fileops/createFolder"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::createFolderInPath(const QString &name, const QString &parentPath)
 {
-    // Fshare expects parentPath as a slash-rooted path: "/" for the root, or
-    // "/Foo/Bar" for a nested destination. Normalise so callers can hand us
-    // bare segments without worrying about the leading slash.
-    QString p = parentPath.trimmed();
-    if (p.isEmpty()) p = QStringLiteral("/");
-    else if (!p.startsWith(QLatin1Char('/'))) p.prepend(QLatin1Char('/'));
+    return executeAuthed([this, &name, &parentPath]() -> ApiResponse<void> {
+        // Fshare expects parentPath as a slash-rooted path: "/" for the root, or
+        // "/Foo/Bar" for a nested destination. Normalise so callers can hand us
+        // bare segments without worrying about the leading slash.
+        QString p = parentPath.trimmed();
+        if (p.isEmpty()) p = QStringLiteral("/");
+        else if (!p.startsWith(QLatin1Char('/'))) p.prepend(QLatin1Char('/'));
 
-    Json::Value body;
-    body["token"]  = m_token.toStdString();
-    body["name"]   = name.toStdString();
-    body["in_dir"] = p.toStdString();
-    return postSimple(m_http, QStringLiteral("/api/fileops/createFolderInPath"), body);
+        Json::Value body;
+        body["token"]  = tokenSnapshot().toStdString();
+        body["name"]   = name.toStdString();
+        body["in_dir"] = p.toStdString();
+        return postSimple(m_http, QStringLiteral("/api/fileops/createFolderInPath"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::moveFiles(const QStringList &linkcodes, const QString &to)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["items"] = itemsArray(linkcodes);
-    body["to"] = to.toStdString();
-    return postSimple(m_http, QStringLiteral("/api/fileops/move"), body);
+    return executeAuthed([this, &linkcodes, &to]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["items"] = itemsArray(linkcodes);
+        body["to"] = to.toStdString();
+        return postSimple(m_http, QStringLiteral("/api/fileops/move"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::copyFiles(const QStringList &linkcodes, const QString &to)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["items"] = itemsArray(linkcodes);
-    body["to"] = to.toStdString();
-    return postSimple(m_http, QStringLiteral("/api/fileops/copy"), body);
+    return executeAuthed([this, &linkcodes, &to]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["items"] = itemsArray(linkcodes);
+        body["to"] = to.toStdString();
+        return postSimple(m_http, QStringLiteral("/api/fileops/copy"), body);
+    });
 }
 
 // ── File settings ──────────────────────────────────────
 
 ApiResponse<void> FshareApi::changeSecure(const QStringList &linkcodes, bool secure)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["items"] = itemsArray(linkcodes);
-    body["status"] = secure ? 1 : 0;
-    return postSimple(m_http, QStringLiteral("/api/fileops/changeSecure"), body);
+    return executeAuthed([this, &linkcodes, secure]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["items"] = itemsArray(linkcodes);
+        body["status"] = secure ? 1 : 0;
+        return postSimple(m_http, QStringLiteral("/api/fileops/changeSecure"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::setFilePassword(const QStringList &linkcodes, const QString &password)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["items"] = itemsArray(linkcodes);
-    body["pass"] = password.toStdString();
-    return postSimple(m_http, QStringLiteral("/api/fileops/createFilePass"), body);
+    return executeAuthed([this, &linkcodes, &password]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["items"] = itemsArray(linkcodes);
+        body["pass"] = password.toStdString();
+        return postSimple(m_http, QStringLiteral("/api/fileops/createFilePass"), body);
+    });
 }
 
 ApiResponse<void> FshareApi::setDirectLink(const QStringList &linkcodes, bool enabled)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    body["items"] = itemsArray(linkcodes);
-    body["status"] = enabled ? 1 : 0;
-    return postSimple(m_http, QStringLiteral("/api/share/SetDirectLink"), body);
+    return executeAuthed([this, &linkcodes, enabled]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        body["items"] = itemsArray(linkcodes);
+        body["status"] = enabled ? 1 : 0;
+        return postSimple(m_http, QStringLiteral("/api/share/SetDirectLink"), body);
+    });
 }
 
 // ── Favorites ──────────────────────────────────────────────
 
 ApiResponse<void> FshareApi::changeFavorite(const QString &linkcode, bool add)
 {
-    Json::Value body;
-    body["token"] = m_token.toStdString();
-    Json::Value items(Json::arrayValue);
-    items.append(linkcode.toStdString());
-    body["items"] = items;
-    body["status"] = add ? 1 : 0;
-    return postSimple(m_http, QStringLiteral("/api/fileops/changeFavorite"), body);
+    return executeAuthed([this, &linkcode, add]() -> ApiResponse<void> {
+        Json::Value body;
+        body["token"] = tokenSnapshot().toStdString();
+        Json::Value items(Json::arrayValue);
+        items.append(linkcode.toStdString());
+        body["items"] = items;
+        body["status"] = add ? 1 : 0;
+        return postSimple(m_http, QStringLiteral("/api/fileops/changeFavorite"), body);
+    });
 }
 
 ApiResponse<bool> FshareApi::isFavorite(const QString &linkcode)
 {
-    QString url = API_BASE + QStringLiteral("/api/fileops/isFavorite?linkcode=") + linkcode;
-    HttpResponse resp = m_http->get(url);
-    Json::Value root = parseJson(resp.body);
-    AppError err = checkApiResponse(resp, root);
-    if (err.isError())
-        return ApiResponse<bool>::failure(err, resp.statusCode);
-    bool fav = safeBool(root.get("isFavorite", false));
-    return ApiResponse<bool>::success(fav);
+    return executeAuthed([this, &linkcode]() -> ApiResponse<bool> {
+        QString url = API_BASE + QStringLiteral("/api/fileops/isFavorite?linkcode=") + linkcode;
+        HttpResponse resp = m_http->get(url);
+        Json::Value root = parseJson(resp.body);
+        AppError err = checkApiResponse(resp, root);
+        if (err.isError())
+            return ApiResponse<bool>::failure(err, resp.statusCode);
+        bool fav = safeBool(root.get("isFavorite", false));
+        return ApiResponse<bool>::success(fav);
+    });
 }
 
 ApiResponse<QVector<FileItem>> FshareApi::listFavorites(const QString &extFilter)
 {
-    QString url = API_BASE + QStringLiteral("/api/fileops/listFavorite");
-    if (!extFilter.isEmpty())
-        url += QStringLiteral("?ext=") + extFilter;
+    return executeAuthed([this, &extFilter]() -> ApiResponse<QVector<FileItem>> {
+        using R = ApiResponse<QVector<FileItem>>;
+        QString url = API_BASE + QStringLiteral("/api/fileops/listFavorite");
+        if (!extFilter.isEmpty())
+            url += QStringLiteral("?ext=") + extFilter;
 
-    HttpResponse resp = m_http->get(url);
-    if (resp.statusCode <= 0)
-        return ApiResponse<QVector<FileItem>>::failure(AppError::network(resp.statusCode, {}));
+        HttpResponse resp = m_http->get(url);
+        if (resp.statusCode <= 0)
+            return R::failure(AppError::network(resp.statusCode, {}));
+        if (AppError authErr = mapAuthStatus(resp.statusCode); authErr.isError())
+            return R::failure(authErr, resp.statusCode);
 
-    Json::Value root = parseJson(resp.body);
+        Json::Value root = parseJson(resp.body);
 
-    // 404 = no favorites (empty list, not an error)
-    if (root.isObject() && root.isMember("code")) {
-        int code = root.get("code", 200).asInt();
-        if (code == 404)
-            return ApiResponse<QVector<FileItem>>::success({});
-        if (code != 200) {
+        // 404 = no favorites (empty list, not an error)
+        if (root.isObject() && root.isMember("code")) {
+            int code = root.get("code", 200).asInt();
+            if (code == 404)
+                return R::success({});
             QString msg = QString::fromStdString(root.get("msg", "").asString());
-            return ApiResponse<QVector<FileItem>>::failure(AppError::server(code, msg));
+            if (AppError authErr = mapAuthApiCode(code, msg); authErr.isError())
+                return R::failure(authErr, resp.statusCode);
+            if (code != 200) {
+                return R::failure(AppError::server(code, msg));
+            }
         }
-    }
 
-    QVector<FileItem> items;
-    if (root.isArray()) {
-        for (const auto &item : root)
-            items.append(parseFileItem(item));
-    }
-    return ApiResponse<QVector<FileItem>>::success(items);
+        QVector<FileItem> items;
+        if (root.isArray()) {
+            for (const auto &item : root)
+                items.append(parseFileItem(item));
+        }
+        return R::success(items);
+    });
 }
 
 // ── Transfer session creation ──────────────────────────────
 
 ApiResponse<QString> FshareApi::createDownloadSession(const QString &url, const QString &password)
 {
+    return executeAuthed([this, &url, &password]() -> ApiResponse<QString> {
     // Use QJsonObject + jsonBody() helper (same as login) so UTF-8 encoding
     // flows through QJsonDocument — NOT jsoncpp + std::string which has
     // occasionally lost bytes on Windows.
@@ -680,7 +824,7 @@ ApiResponse<QString> FshareApi::createDownloadSession(const QString &url, const 
     //   - zipflag: BOOL (legacy sessionapi.cpp:59 uses `false`, not 0)
     //   - password: omitted when empty (some builds choke on "password":"")
     QJsonObject body;
-    body[QStringLiteral("token")]   = m_token;
+    body[QStringLiteral("token")]   = tokenSnapshot();
     body[QStringLiteral("url")]     = url;
     body[QStringLiteral("zipflag")] = false;
     if (!password.isEmpty())
@@ -705,11 +849,13 @@ ApiResponse<QString> FshareApi::createDownloadSession(const QString &url, const 
     }
 
     return ApiResponse<QString>::success(location);
+    });   // executeAuthed lambda
 }
 
 ApiResponse<QString> FshareApi::createUploadSession(const QString &name, int64_t size,
                                                      const QString &folder, bool secured)
 {
+    return executeAuthed([this, &name, size, &folder, secured]() -> ApiResponse<QString> {
     // Fshare's upload API takes a folder PATH ("/", "/My Folder"), NOT a
     // folder ID. Passing "0" makes the server reject the request with a
     // misleading "không cho phép ký tự đặc biệt" message even though the
@@ -724,8 +870,13 @@ ApiResponse<QString> FshareApi::createUploadSession(const QString &name, int64_t
         folderForApi = QLatin1Char('/') + folderForApi;
     }
 
+    // Snapshot the token ONCE at the top of the lambda so the body, the
+    // redaction-preview, and the log-body replacement all see the same
+    // value even if a refresh rotates m_token mid-call.
+    const QString tokenForCall = tokenSnapshot();
+
     QJsonObject body;
-    body[QStringLiteral("token")]   = m_token;
+    body[QStringLiteral("token")]   = tokenForCall;
     body[QStringLiteral("name")]    = name;
     body[QStringLiteral("size")]    = QString::number(size);   // legacy sends as STRING
     body[QStringLiteral("path")]    = folderForApi;
@@ -733,13 +884,13 @@ ApiResponse<QString> FshareApi::createUploadSession(const QString &name, int64_t
 
     // Redact token for safe logging — show only prefix/suffix so session issues
     // are still traceable without leaking credentials.
-    const QString tokenPreview = m_token.size() > 10
-        ? m_token.left(4) + QStringLiteral("…") + m_token.right(4)
+    const QString tokenPreview = tokenForCall.size() > 10
+        ? tokenForCall.left(4) + QStringLiteral("…") + tokenForCall.right(4)
         : QStringLiteral("<empty>");
     const QByteArray reqBody = jsonBody(body);
     QByteArray reqBodyForLog = reqBody;
-    if (!m_token.isEmpty())
-        reqBodyForLog.replace(m_token.toUtf8(), tokenPreview.toUtf8());
+    if (!tokenForCall.isEmpty())
+        reqBodyForLog.replace(tokenForCall.toUtf8(), tokenPreview.toUtf8());
 
     qDebug().noquote() << "[FshareApi] createUploadSession REQUEST"
                        << "name:" << name
@@ -772,6 +923,7 @@ ApiResponse<QString> FshareApi::createUploadSession(const QString &name, int64_t
     }
 
     return ApiResponse<QString>::success(location);
+    });   // executeAuthed lambda
 }
 
 } // namespace fsnext

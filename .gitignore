@@ -55,6 +55,18 @@ vcvars-init.log
 summary.txt
 build-log.txt
 build-out.log
+build-log-*.txt
+# Transient debug captures (verify screenshots, redirected stdio, test runner output)
+verify-*.png
+verify-*.log
+launch_err.txt
+stderr*.txt
+stdout*.txt
+*-out.txt
+*-err.txt
+
+# ── Abandoned SmartTV/Android sub-project (removed from working tree, kept in history) ──
+smartTV_deleted/
 
 # ── Python (scripts/) ──────────────────────────────────────────────────────
 __pycache__/

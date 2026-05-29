@@ -95,6 +95,7 @@ set(FSNEXT_SOURCES
     # Core - Services
     src/core/services/AuthService.cpp
     src/core/services/OAuthService.cpp
+    src/core/services/RefreshTokenCoordinator.cpp
     src/core/services/TransferService.cpp
     src/core/services/FolderExpander.cpp
     src/core/services/FileService.cpp
@@ -134,6 +135,7 @@ set(FSNEXT_SOURCES
     src/viewmodels/AuthViewModel.cpp
     src/viewmodels/DownloadViewModel.cpp
     src/viewmodels/UploadViewModel.cpp
+    src/viewmodels/UploadStagingViewModel.cpp
     src/viewmodels/FileManagerViewModel.cpp
     src/viewmodels/FavoritesViewModel.cpp
     src/viewmodels/FileListModel.cpp
@@ -147,10 +149,12 @@ set(FSNEXT_SOURCES
     src/viewmodels/TransferBudgetViewModel.cpp
     src/viewmodels/HomeSearchViewModel.cpp
     src/viewmodels/RemoteShareViewModel.cpp
+    src/viewmodels/TransferHudViewModel.cpp
 
     # Platform
     src/platform/SingleInstance.cpp
     src/platform/SystemTray.cpp
+    src/platform/TaskbarProgress.cpp
     src/platform/PlatformUtils.cpp
 )
 
@@ -181,6 +185,7 @@ set(FSNEXT_HEADERS
     # Core - Services
     src/core/services/AuthService.h
     src/core/services/OAuthService.h
+    src/core/services/RefreshTokenCoordinator.h
     src/core/services/TransferService.h
     src/core/services/FolderExpander.h
     src/core/services/FileService.h
@@ -235,10 +240,12 @@ set(FSNEXT_HEADERS
     src/viewmodels/TransferBudgetViewModel.h
     src/viewmodels/HomeSearchViewModel.h
     src/viewmodels/RemoteShareViewModel.h
+    src/viewmodels/TransferHudViewModel.h
 
     # Platform
     src/platform/SingleInstance.h
     src/platform/SystemTray.h
+    src/platform/TaskbarProgress.h
     src/platform/PlatformUtils.h
 )
 
@@ -349,6 +356,7 @@ if(WIN32)
         bcrypt
         iphlpapi
         shell32
+        ole32     # CoCreateInstance for ITaskbarList3 (TaskbarProgress.cpp)
     )
     target_compile_definitions(FsNext PRIVATE
         CURL_STATICLIB
@@ -476,7 +484,6 @@ if(QMLLINT_EXE)
         "qml/FsAurora/Pages/*.qml"
         "qml/FsAurora/Components/*.qml"
         "qml/FsAurora/Theme/*.qml"
-        "qml/Fshare/Theme/*.qml"
     )
     add_custom_target(qml_lint
         COMMAND "${QMLLINT_EXE}"

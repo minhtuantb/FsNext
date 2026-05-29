@@ -3,6 +3,7 @@
 
 #include <QTcpSocket>
 #include <QHostAddress>
+#include <QPointer>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -120,11 +121,20 @@ void LoopbackServer::onNewConnection()
     QTcpSocket *sock = m_server->nextPendingConnection();
     if (!sock) return;
 
+    // QPointer the socket so the readyRead lambda can no-op cleanly if Qt
+    // queues this callback after disconnected → deleteLater has freed the
+    // socket. Without the guard, a malformed browser request that closes
+    // the connection immediately could leave the readyRead handler reading
+    // from a freed QTcpSocket.
+    QPointer<QTcpSocket> sockGuard(sock);
+
     // Parse a single HTTP request line ("GET /callback?code=...&state=... HTTP/1.1")
     // then close. We deliberately don't implement a full HTTP server — one request,
     // one response, done.
-    connect(sock, &QTcpSocket::readyRead, this, [this, sock]() {
+    connect(sock, &QTcpSocket::readyRead, this, [this, sockGuard]() {
         if (m_handled) return;
+        if (!sockGuard) return;
+        QTcpSocket *sock = sockGuard.data();
 
         const QByteArray data = sock->readAll();
         // First line only; query string is what we want.

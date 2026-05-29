@@ -122,6 +122,15 @@ UploadViewModel::UploadViewModel(TransferService *service, AuthService *auth, QO
             refreshRunState();
         });
 
+    // P7: the file uploaded but applying its password failed — warn the user so
+    // they don't assume a public file is protected.
+    connect(m_service, &TransferService::filePasswordSetFailed, this,
+        [this](const QString &fileName, const QString &message) {
+            emit uploadError(tr("Đã tải lên \"%1\" nhưng không đặt được mật khẩu: %2. "
+                                "File hiện KHÔNG được bảo vệ.")
+                                 .arg(fileName, message));
+        });
+
     connect(m_service, &TransferService::taskStateChanged, this,
         [this](const QString &id, TransferState state) {
             // Complete is handled exclusively by taskCompleted (which stamps
@@ -191,9 +200,36 @@ void UploadViewModel::addUpload(const QStringList &files,
     if (!m_service)
         return;
 
+    // Running total of bytes already accepted in THIS batch. The quota check is
+    // cumulative: ten files that each fit individually but together exceed free
+    // space must not all be enqueued, or the tail would fail at the server with
+    // an obscure error. Tracked per webspace pool (secured uploads draw on a
+    // separate VIP quota from normal ones).
+    int64_t committed = 0;
+
+    // Snapshot the user-quota fields ONCE per batch. The user object can't
+    // change between files added in the same call (the AuthService writes
+    // happen on the same thread we're on), and currentUser() is heavier than
+    // a struct read — it copies a User by value out of the service. The old
+    // per-file call repeated that copy for every file in the batch.
+    const bool    loggedIn     = m_auth && m_auth->isLoggedIn();
+    const User    user         = loggedIn ? m_auth->currentUser() : User{};
+    const bool    userIsVip    = loggedIn && user.isVip();
+    const int64_t webFree      = loggedIn ? user.webspaceFree()       : -1;
+    const int64_t webSecFree   = loggedIn ? user.webspaceSecureFree() : -1;
+
+    // NOTE: The size-of-disk loop below is synchronous on the calling thread.
+    // QFileInfo::size() on a local file is a stat() call (microseconds), so for
+    // typical batches this is negligible. For uploads sourced from a slow share
+    // (SMB/NFS) each stat can take tens of ms and a large drag-drop could stutter
+    // the UI. If telemetry confirms the stutter, hoist this whole loop into
+    // QtConcurrent::run + post the accept/reject decisions back via invokeMethod.
+    // Keeping it sync today preserves the existing same-thread ordering contract
+    // (callers see uploadError emissions and queued tasks before addUpload returns).
+
     for (const QString &file : files) {
         // --- P1-3: Quota / permission check ---
-        if (m_auth && m_auth->isLoggedIn()) {
+        if (loggedIn) {
             // Resolve file:/// URL → local path so we can read the file size.
             QString localPath = file;
             if (file.startsWith(QLatin1String("file://")))
@@ -203,32 +239,30 @@ void UploadViewModel::addUpload(const QStringList &files,
 
             const QFileInfo fi(localPath);
             if (fi.exists() && fi.size() > 0) {
-                const User user      = m_auth->currentUser();
                 const int64_t needed = fi.size();
 
                 if (secured) {
-                    if (!user.isVip()) {
+                    if (!userIsVip) {
                         emit uploadError(tr("Chỉ tài khoản VIP mới có thể upload file bảo mật."));
                         continue;
                     }
-                    const int64_t avail = user.webspaceSecureFree();
-                    if (avail >= 0 && needed > avail) {
+                    if (webSecFree >= 0 && committed + needed > webSecFree) {
                         emit uploadError(
-                            tr("Không đủ dung lượng bảo mật. Cần %1 MB, còn %2 MB.")
-                                .arg(needed / (1024LL * 1024))
-                                .arg(avail  / (1024LL * 1024)));
+                            tr("Không đủ dung lượng bảo mật. Cần thêm %1 MB, còn %2 MB.")
+                                .arg((committed + needed) / (1024LL * 1024))
+                                .arg(webSecFree  / (1024LL * 1024)));
                         continue;
                     }
                 } else {
-                    const int64_t avail = user.webspaceFree();
-                    if (avail >= 0 && needed > avail) {
+                    if (webFree >= 0 && committed + needed > webFree) {
                         emit uploadError(
-                            tr("Không đủ dung lượng. Cần %1 MB, còn %2 MB.")
-                                .arg(needed / (1024LL * 1024))
-                                .arg(avail  / (1024LL * 1024)));
+                            tr("Không đủ dung lượng. Cần thêm %1 MB, còn %2 MB.")
+                                .arg((committed + needed) / (1024LL * 1024))
+                                .arg(webFree  / (1024LL * 1024)));
                         continue;
                     }
                 }
+                committed += needed;
             }
         }
 
@@ -305,7 +339,21 @@ void UploadViewModel::openShareLinkInBrowser(const QString &taskId)
     if (!t.linkcode.isEmpty()) linkcode = t.linkcode;
     if (linkcode.isEmpty())    linkcode = m_linkcodeMap.value(taskId);
     if (linkcode.isEmpty())    return;
-    const QUrl url(QStringLiteral("https://www.fshare.vn/file/") + linkcode);
+
+    // Fshare's createUploadSession response stores the FULL share URL
+    // (e.g. "http://www.fshare.vn/file/MAACH7AIIPSK") in linkcode for the
+    // current callsites — copyLinkToClipboard wants that as-is. The
+    // earlier version of this function blindly prefixed with
+    // "https://www.fshare.vn/file/" which produced double-domain URLs
+    // like ".../file/http://...". Detect "is this already a URL" before
+    // prefixing so both cases (bare 12-char linkcode + full URL) work.
+    QUrl url;
+    if (linkcode.startsWith(QStringLiteral("http://"),  Qt::CaseInsensitive)
+        || linkcode.startsWith(QStringLiteral("https://"), Qt::CaseInsensitive)) {
+        url = QUrl(linkcode);
+    } else {
+        url = QUrl(QStringLiteral("https://www.fshare.vn/file/") + linkcode);
+    }
     QDesktopServices::openUrl(url);
 }
 

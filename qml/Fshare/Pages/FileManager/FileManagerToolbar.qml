@@ -81,7 +81,7 @@ RowLayout {
         }
     }
 
-    FsButton {
+    Aurora.FsButton {
         text: qsTr("New Folder")
         icon: "+"
         variant: "secondary"
@@ -89,7 +89,7 @@ RowLayout {
         onClicked: root.newFolderRequested()
     }
 
-    FsButton {
+    Aurora.FsButton {
         text: qsTr("Refresh")
         variant: "ghost"
         size: "default"

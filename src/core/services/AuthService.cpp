@@ -2,6 +2,7 @@
 #include "core/api/FshareApi.h"
 #include "core/api/OAuthProvider.h"
 #include "core/services/OAuthService.h"
+#include "core/services/RefreshTokenCoordinator.h"
 #include "core/repositories/SettingsRepository.h"
 #include "core/util/SecureStore.h"
 #include <QDebug>
@@ -30,6 +31,25 @@ AuthService::AuthService(FshareApi *api, SettingsRepository *settings,
         connect(m_oauth, &OAuthService::succeeded, this, &AuthService::onOAuthSucceeded);
         connect(m_oauth, &OAuthService::failed,    this, &AuthService::onOAuthFailed);
     }
+}
+
+void AuthService::setRefreshCoordinator(RefreshTokenCoordinator *coord)
+{
+    if (m_refresh == coord) return;
+    if (m_refresh) {
+        disconnect(m_refresh, nullptr, this, nullptr);
+    }
+    m_refresh = coord;
+    if (!m_refresh) return;
+
+    // Spec §3.4 hard-fail → kick to Login.  Funnel through the existing slot
+    // so the UI flow is identical (toast + state reset + isLoggedIn flip).
+    connect(m_refresh, &RefreshTokenCoordinator::sessionExpired,
+            this,      &AuthService::handleSessionExpired);
+    // Soft-fail toast — surface as sessionExpiredNotice but DO NOT log the
+    // user out (token still works for now).  QML treats this as a soft toast.
+    connect(m_refresh, &RefreshTokenCoordinator::tokenRefreshFailed,
+            this,      &AuthService::sessionExpiredNotice);
 }
 
 bool AuthService::isLoggedIn() const { return m_isLoggedIn; }
@@ -75,6 +95,15 @@ void AuthService::login(const QString &email, const QString &password)
             if (resp.isSuccess()) {
                 self->m_session = resp.data();
                 self->m_isLoggedIn = true;
+                // Seed the refresh coordinator so the very next FshareApi call
+                // observes the new (token, cookie) and can keep them fresh.
+                // Must run before the post-login getUserInfo kicks off.
+                if (self->m_refresh) {
+                    self->m_refresh->onLoginSuccess(
+                        self->m_session.token,
+                        self->m_session.sessionId,
+                        self->m_session.cookie);
+                }
                 emit self->isLoggedInChanged();
 
                 const bool remember = self->m_settings->getBool(
@@ -134,6 +163,11 @@ void AuthService::logout()
             auto *self = guard.data();
             self->m_session = Session{};
             self->m_isLoggedIn = false;
+            // Wipe the coordinator state so a stale lastRefreshAt / token
+            // doesn't survive into the next login and re-trigger
+            // sessionExpired spuriously.  Spec §6 edge case #8.
+            if (self->m_refresh)
+                self->m_refresh->onLogout();
             // Clear ALL saved credentials so next startup doesn't silently re-login.
             // Use "General/autoLogin" key to match SettingsRepository/AppSettings.
             self->m_settings->setBool  (QStringLiteral("General/autoLogin"), false);
@@ -153,6 +187,39 @@ void AuthService::logout()
 
 bool AuthService::tryRefreshSession()
 {
+    // Preferred path (spec §1): the RefreshTokenCoordinator already runs
+    // silent re-auth on every authenticated FshareApi call.  External
+    // triggers (TransferService receiving a 201 outside the FshareApi
+    // path — i.e. the standalone DownloadEngine/UploadEngine HTTP work)
+    // can drive a one-shot refresh through it here.
+    if (m_refresh) {
+        // Spec §6 edge case #1: outside the 7-day window we KNOW a refresh
+        // will fail — skip the round-trip and bounce straight to login.
+        if (!m_refresh->isPersistedSessionWithinWindow()) {
+            handleSessionExpired(tr("Phiên đăng nhập đã quá hạn 7 ngày. "
+                                    "Vui lòng đăng nhập lại."));
+            emit tryRefreshFinished(false);
+            return true;
+        }
+
+        // Capture m_refresh by value — coordinator outlives AuthService (owned
+        // by AppContext, destroyed AFTER us in reverse-init order).  guard
+        // (QPointer) lets us bail out cleanly if AuthService disappears
+        // mid-flight.
+        auto *coord = m_refresh;
+        QPointer<AuthService> guard(this);
+        QtConcurrent::run([coord, guard]() {
+            const RefreshResult r = coord->handleAuthExpired();
+            const bool ok = (r.kind == RefreshResultKind::Success);
+            QMetaObject::invokeMethod(guard.data(), [guard, ok]() {
+                if (!guard) return;
+                emit guard->tryRefreshFinished(ok);
+            });
+        });
+        return true;
+    }
+
+    // ── Legacy fallback (no coordinator wired) ───────────────────────────
     if (m_refreshInFlight) {
         // Single-flight: caller can hook tryRefreshFinished and wait.  Return
         // true to mean "a refresh is happening" — caller should NOT bail out
@@ -276,6 +343,11 @@ void AuthService::handleSessionExpired(const QString &message)
     // /api/user/logout endpoint (it would 201 too) — local cleanup is enough.
     m_session = Session{};
     m_isLoggedIn = false;
+    // Spec §4.5 — wipe the coordinator so the persisted lastRefreshAt is
+    // cleared.  Without this, the next app launch would attempt to refresh
+    // a token we know is dead and waste a round-trip / leak a soft-fail toast.
+    if (m_refresh)
+        m_refresh->onLogout();
 
     // Wipe saved credentials so the next startup shows the login form instead
     // of silently re-attempting auto-login with an expired token.
@@ -371,6 +443,13 @@ void AuthService::onOAuthSucceeded(const OAuthResult &result)
                     self->m_session.user.name = displayName;
 
                 self->m_isLoggedIn = true;
+                // Seed the refresh coordinator — same as password login.
+                if (self->m_refresh) {
+                    self->m_refresh->onLoginSuccess(
+                        self->m_session.token,
+                        self->m_session.sessionId,
+                        self->m_session.cookie);
+                }
                 emit self->isLoggedInChanged();
 
                 const bool remember = self->m_settings->getBool(

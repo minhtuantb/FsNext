@@ -146,12 +146,37 @@ void FolderTreeModel::rebuildVisible()
     // DFS walk starting from top-level folders (parentId == "" or "0").
     // Every folder is emitted — the Move/Copy dialog renders them as a
     // flat indented list (no expand/collapse).
+    //
+    // Defensive guards (added 2026-05-28 — FM-H3 audit):
+    //   • kMaxDepth caps recursion depth so a malformed cache (folder with
+    //     parentId pointing deeper than any real Fshare account ever has)
+    //     can't blow the stack.
+    //   • `visited` detects cycles — a server quirk or tampered cache that
+    //     leaves a folder's parentId pointing at itself (or a descendant)
+    //     would otherwise loop forever and stack-overflow.
+    constexpr int kMaxDepth = 64;
+    QSet<QString> visited;
+
     auto addSubtree = [&](auto &self, int idx, int depth) -> void {
         if (idx < 0 || idx >= m_all.size()) return;
+        if (depth > kMaxDepth) {
+            qWarning() << "[FolderTreeModel] depth cap reached at idx" << idx
+                       << "linkcode" << m_all[idx].linkcode
+                       << "— suspect malformed folder tree, truncating";
+            return;
+        }
+        const QString &lc = m_all[idx].linkcode;
+        if (!lc.isEmpty() && visited.contains(lc)) {
+            qWarning() << "[FolderTreeModel] cycle detected at linkcode" << lc
+                       << "(parentId=" << m_all[idx].parentId << ") — skipping";
+            return;
+        }
+        if (!lc.isEmpty()) visited.insert(lc);
+
         m_visible.append(idx);
         m_visibleDepths.append(depth);
 
-        auto it = m_childrenOfParent.find(m_all[idx].linkcode);
+        auto it = m_childrenOfParent.find(lc);
         if (it == m_childrenOfParent.end()) return;
         for (int childIdx : it.value())
             self(self, childIdx, depth + 1);

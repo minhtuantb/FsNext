@@ -49,6 +49,21 @@ qt_add_executable(test_file_cache_service
     ${CMAKE_SOURCE_DIR}/src/core/api/FshareApi.cpp
     ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.h
     ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.cpp
+    # Pulled in transitively: FileSyncWorker now talks to the TransferOrchestrator
+    # (enqueue/release/cancelQueued/dispatchReady), and FshareApi uses
+    # RefreshTokenCoordinator for the auth-refresh helper around executeAuthed.
+    # The test itself doesn't exercise transfer dispatch, but the linker still
+    # needs the symbols.
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.cpp
     ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.h
     ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.cpp
 )
@@ -136,3 +151,23 @@ qt_add_executable(test_speed_meter
 target_include_directories(test_speed_meter PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(test_speed_meter PRIVATE Qt6::Core Qt6::Test)
 add_test(NAME SpeedMeter COMMAND test_speed_meter)
+
+# ── test_resolve_proxy_url ────────────────────────────────
+# Pure-logic coverage of PlatformUtils::resolveProxyUrl — the single function
+# every libcurl producer (HttpClient + Download/Upload engines) routes through
+# to translate the persisted proxy mode/host/port into a CURLOPT_PROXY string.
+# Pulls Qt6::Gui only because PlatformUtils.cpp includes QDesktopServices for
+# unrelated helpers; resolveProxyUrl itself touches none of that.
+qt_add_executable(test_resolve_proxy_url
+    test_resolve_proxy_url.cpp
+    ${CMAKE_SOURCE_DIR}/src/platform/PlatformUtils.h
+    ${CMAKE_SOURCE_DIR}/src/platform/PlatformUtils.cpp
+)
+target_include_directories(test_resolve_proxy_url PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_resolve_proxy_url PRIVATE
+    Qt6::Core Qt6::Gui Qt6::Test
+)
+if(WIN32)
+    target_link_libraries(test_resolve_proxy_url PRIVATE advapi32 shell32 user32)
+endif()
+add_test(NAME ResolveProxyUrl COMMAND test_resolve_proxy_url)

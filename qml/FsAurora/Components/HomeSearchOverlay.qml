@@ -194,6 +194,16 @@ Item {
                 interactive: true
                 model: root._hasModel ? vm.resultsModel : null
 
+                // Infinite-scroll: when the user is near the bottom and
+                // the VM says there are more pages, kick off the next
+                // fetch. The VM's request-sequence guard prevents
+                // duplicates when the user is also editing the query.
+                onContentYChanged: {
+                    if (!vm || !vm.hasMorePages || vm.isSearching) return;
+                    const dist = contentHeight - (contentY + height);
+                    if (dist < height * 0.5) vm.loadMore();
+                }
+
                 delegate: Rectangle {
                     id: rowItem
                     width: listView.width

@@ -12,6 +12,7 @@
 #include <QLocale>
 #include <QPointer>
 #include <QUrl>
+#include <QVariant>
 #include <QtConcurrent>
 
 namespace fsnext {
@@ -93,6 +94,18 @@ QHash<int, QByteArray> SyncFoldersModel::roleNames() const
         { UploadSpeedTextRole,    "uploadSpeedText" },
         { UploadEtaTextRole,      "uploadEtaText" },
     };
+}
+
+QVariantMap SyncFoldersModel::get(int row) const
+{
+    QVariantMap out;
+    if (row < 0 || row >= m_folders.size())
+        return out;
+    const QModelIndex idx = index(row, 0);
+    const QHash<int, QByteArray> roles = roleNames();
+    for (auto it = roles.cbegin(); it != roles.cend(); ++it)
+        out.insert(QString::fromUtf8(it.value()), data(idx, it.key()));
+    return out;
 }
 
 void SyncFoldersModel::setFolderProgress(const QString &folderId, qreal ratio,

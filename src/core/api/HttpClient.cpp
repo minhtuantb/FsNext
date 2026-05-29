@@ -1,6 +1,7 @@
 #include "HttpClient.h"
 #include <curl/curl.h>
 #include <QDebug>
+#include <QMutexLocker>
 #include <QSet>
 #include <QUrl>
 
@@ -81,38 +82,59 @@ void HttpClient::setProxy(const QString &host, int port)
         clearProxy();
         return;
     }
-    m_proxyHost = host;
-    m_proxyPort = port;
+    QMutexLocker locker(&m_mutex);
+    m_proxyUrl = host + QStringLiteral(":") + QString::number(port);
+}
+
+void HttpClient::setProxyUrl(const QString &proxyUrl)
+{
+    if (proxyUrl.isEmpty()) {
+        clearProxy();
+        return;
+    }
+    if (!isSafeProxyHost(proxyUrl)) {
+        qWarning() << "[HttpClient] Rejected invalid proxy URL:" << proxyUrl
+                   << "— clearing proxy.";
+        clearProxy();
+        return;
+    }
+    QMutexLocker locker(&m_mutex);
+    m_proxyUrl = proxyUrl;
 }
 
 void HttpClient::clearProxy()
 {
-    m_proxyHost.clear();
-    m_proxyPort = 0;
+    QMutexLocker locker(&m_mutex);
+    m_proxyUrl.clear();
 }
 
 void HttpClient::setCaPath(const QString &path)
 {
+    QMutexLocker locker(&m_mutex);
     m_caPath = path;
 }
 
 void HttpClient::setDefaultHeader(const QString &key, const QString &value)
 {
+    QMutexLocker locker(&m_mutex);
     m_defaultHeaders[key] = value;
 }
 
 void HttpClient::removeDefaultHeader(const QString &key)
 {
+    QMutexLocker locker(&m_mutex);
     m_defaultHeaders.remove(key);
 }
 
 void HttpClient::setCookie(const QString &cookie)
 {
+    QMutexLocker locker(&m_mutex);
     m_cookie = cookie;
 }
 
 QString HttpClient::cookie() const
 {
+    QMutexLocker locker(&m_mutex);
     return m_cookie;
 }
 
@@ -174,8 +196,14 @@ CURL *HttpClient::createHandle()
     // Do NOT change without testing against the Fshare API gate.
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Fshare_Tool_2026");
 
-    if (!m_caPath.isEmpty()) {
-        curl_easy_setopt(curl, CURLOPT_CAINFO, m_caPath.toUtf8().constData());
+    // Snapshot caPath under the lock; release before the libcurl call.
+    QString caPath;
+    {
+        QMutexLocker locker(&m_mutex);
+        caPath = m_caPath;
+    }
+    if (!caPath.isEmpty()) {
+        curl_easy_setopt(curl, CURLOPT_CAINFO, caPath.toUtf8().constData());
     }
 
     // Plug into the shared cache so subsequent requests skip DNS lookup and
@@ -193,12 +221,24 @@ void HttpClient::applyHeaders(CURL *curl, const QMap<QString, QString> &extra)
 {
     struct curl_slist *headerList = nullptr;
 
+    // Snapshot default headers + cookie under the lock so a concurrent
+    // setCookie() / setDefaultHeader() (e.g. RefreshTokenCoordinator
+    // rotating the session) doesn't tear the QString d-pointer mid-read.
+    // We release the lock immediately after the copy so libcurl runs
+    // lock-free.
+    QMap<QString, QString> merged;
+    QString cookieSnapshot;
+    {
+        QMutexLocker locker(&m_mutex);
+        merged          = m_defaultHeaders;
+        cookieSnapshot  = m_cookie;
+    }
+
     // Merge default + extra with extra winning on key collision. Critical for
     // OAuth token exchange: defaults include Content-Type: application/json,
     // but that endpoint needs application/x-www-form-urlencoded. The old code
     // appended BOTH headers via curl_slist_append — CURL sent both and Google
     // responded with 400 ("invalid_request: Invalid form-urlencoded input").
-    QMap<QString, QString> merged = m_defaultHeaders;
     for (auto it = extra.cbegin(); it != extra.cend(); ++it) {
         merged[it.key()] = it.value();   // override
     }
@@ -208,8 +248,8 @@ void HttpClient::applyHeaders(CURL *curl, const QMap<QString, QString> &extra)
     }
 
     // Cookie
-    if (!m_cookie.isEmpty()) {
-        QString cookieHeader = QStringLiteral("Cookie: ") + m_cookie;
+    if (!cookieSnapshot.isEmpty()) {
+        QString cookieHeader = QStringLiteral("Cookie: ") + cookieSnapshot;
         headerList = curl_slist_append(headerList, cookieHeader.toUtf8().constData());
     }
 
@@ -220,10 +260,13 @@ void HttpClient::applyHeaders(CURL *curl, const QMap<QString, QString> &extra)
 
 void HttpClient::applyProxy(CURL *curl)
 {
-    if (!m_proxyHost.isEmpty() && m_proxyPort > 0) {
-        QString proxyUrl = m_proxyHost + QStringLiteral(":") + QString::number(m_proxyPort);
-        curl_easy_setopt(curl, CURLOPT_PROXY, proxyUrl.toUtf8().constData());
+    QString proxyUrl;
+    {
+        QMutexLocker locker(&m_mutex);
+        proxyUrl = m_proxyUrl;
     }
+    if (!proxyUrl.isEmpty())
+        curl_easy_setopt(curl, CURLOPT_PROXY, proxyUrl.toUtf8().constData());
 }
 
 HttpResponse HttpClient::get(const QString &url, const QMap<QString, QString> &headers)

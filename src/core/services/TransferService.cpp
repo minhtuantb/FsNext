@@ -244,6 +244,15 @@ void TransferService::resumeInFlightTasks(const QVector<TransferTask> &inflight,
                 t.fileSize = static_cast<int64_t>(
                     obj.value(QStringLiteral("total")).toDouble(t.fileSize));
                 t.retryCount = obj.value(QStringLiteral("retry")).toInt(t.retryCount);
+                // Restore the upload session URL (uploads only — downloads
+                // re-resolve session per dispatch). Absent on legacy snapshots
+                // → realUrl stays empty → dispatchUpload creates fresh, matching
+                // pre-#5 behaviour. If present-but-expired, the engine probes it
+                // first and bails through sessionExpired() to renew cleanly.
+                const QString persistedUrl =
+                    obj.value(QStringLiteral("realUrl")).toString();
+                if (!persistedUrl.isEmpty() && t.type == TransferType::Upload)
+                    t.realUrl = persistedUrl;
                 if (t.fileSize > 0)
                     t.progress = (static_cast<double>(t.bytesTransferred) / t.fileSize) * 100.0;
             }
@@ -277,6 +286,14 @@ void TransferService::persistProgressSnapshots()
         snap[QStringLiteral("bytes")] = static_cast<double>(t.bytesTransferred);
         snap[QStringLiteral("total")] = static_cast<double>(t.fileSize);
         snap[QStringLiteral("retry")] = t.retryCount;
+        // Uploads only: persist the GCS-style resumable session URL so a crash
+        // or clean exit mid-upload can resume from the server-confirmed offset
+        // on next launch instead of restarting from byte 0. If the URL has
+        // expired by then, UploadEngine::queryResumeOffset returns -1 (4xx) and
+        // sessionExpired() routes through onUploadSessionExpired to mint a
+        // fresh session — see UploadEngine.cpp's persisted-realUrl bail-out.
+        if (t.type == TransferType::Upload && !t.realUrl.isEmpty())
+            snap[QStringLiteral("realUrl")] = t.realUrl;
         const QString json = QString::fromUtf8(QJsonDocument(snap).toJson(QJsonDocument::Compact));
 
         const HistoryType ht = (t.type == TransferType::Upload)
@@ -625,6 +642,27 @@ void TransferService::dispatchUpload(const QString &taskId)
 
     emit taskStateChanged(taskId, TransferState::Active);
 
+    // Parked-engine resume: pauseTask leaves the engine alive (parked in its
+    // outer loop with the socket closed) and only releases the orchestrator
+    // slot. When the slot is granted again we just un-park it — the engine
+    // re-probes the committed server offset and continues. No new session or
+    // engine needed.
+    if (auto *engine = m_uploadEngines.value(taskId)) {
+        engine->resume();
+        return;
+    }
+
+    // Resume fast-path: the task holds a valid upload-session URL but has no
+    // live engine. This happens when pauseTask freed the slot while the session
+    // create was still in flight (the callback retained realUrl without
+    // spawning). Reuse the URL — skip a redundant session create — and let the
+    // engine resume straight from the server offset. See dispatchUpload's
+    // session-create callback and resumeTask.
+    if (!taskSnapshot.realUrl.isEmpty()) {
+        spawnUploadEngine(taskSnapshot);
+        return;
+    }
+
     auto *api = m_api;
     QPointer<TransferService> guard(this);
     QtConcurrent::run([api, guard, taskId, taskSnapshot]() mutable {
@@ -639,11 +677,12 @@ void TransferService::dispatchUpload(const QString &taskId)
             // BUG-6: if the user cancelled the task while createUploadSession
             // was in flight, the task is gone from m_tasks. Bail out — do NOT
             // spawn an orphan engine/thread or leak the active-slot counter.
-            bool stillQueued = false;
+            TransferState curState = TransferState::Queued;
+            bool found = false;
             for (const auto &t : self->m_tasks) {
-                if (t.id == taskId) { stillQueued = true; break; }
+                if (t.id == taskId) { curState = t.state; found = true; break; }
             }
-            if (!stillQueued) {
+            if (!found) {
                 qDebug() << "[TransferService] Upload" << taskId
                          << "cancelled before session create returned; dropping response.";
                 return;
@@ -659,29 +698,71 @@ void TransferService::dispatchUpload(const QString &taskId)
                 return;
             }
 
+            // Retain the freshly-created session URL on the task even if it is
+            // no longer Active — pauseTask frees the slot while a session create
+            // is in flight, and we want resume to reuse this URL (byte 0, but no
+            // wasted second session) instead of creating another one.
             TransferTask task = taskSnapshot;
             task.realUrl = resp.data();
             for (auto &t : self->m_tasks) if (t.id == taskId) { t.realUrl = task.realUrl; break; }
 
-            auto *engine = new UploadEngine();
-            auto *thread = new QThread();
-            engine->moveToThread(thread);
-            self->m_uploadEngines[taskId] = engine;
-            self->m_threads[taskId] = thread;
+            // The task was paused (slot already released by pauseTask) while the
+            // session create was in flight. Keep realUrl for a later resume; do
+            // not spawn an engine or it would run untracked outside the budget.
+            if (curState != TransferState::Active) {
+                qDebug() << "[TransferService] Upload" << taskId
+                         << "left Active before engine spawn; holding session for resume.";
+                return;
+            }
 
-            connect(engine, &UploadEngine::progressChanged, self,
-                [self, taskId](int64_t b, int64_t t, double s, const QString &e) { self->onUploadProgress(taskId, b, t, s, e); });
-            connect(engine, &UploadEngine::completed, self,
-                [self, taskId](const QString &lc) { self->onUploadComplete(taskId, lc); });
-            connect(engine, &UploadEngine::failed, self,
-                [self, taskId](const QString &err) { self->onUploadFailed(taskId, err); });
-            connect(engine, &UploadEngine::sessionExpired, self,
-                [self, taskId]() { self->onUploadSessionExpired(taskId); });
-            connect(thread, &QThread::started, engine, [engine, task]() { engine->startUpload(task); });
-
-            thread->start();
+            self->spawnUploadEngine(task);
         });
     });
+}
+
+void TransferService::spawnUploadEngine(const TransferTask &task)
+{
+    const QString taskId = task.id;
+    auto *engine = new UploadEngine();
+    auto *thread = new QThread();
+    engine->moveToThread(thread);
+    m_uploadEngines[taskId] = engine;
+    m_threads[taskId] = thread;
+
+    // Route uploads through the configured proxy. The raw libcurl handles in
+    // UploadEngine don't share HttpClient's proxy config, so without this an
+    // upload silently fails behind a gateway while everything else works. We
+    // resolve via the same PlatformUtils::resolveProxyUrl HttpClient uses, so
+    // both manual (mode 2) and system (mode 1) proxies are honoured identically.
+    if (m_settings) {
+        const QString proxyUrl = PlatformUtils::resolveProxyUrl(
+            m_settings->getInt(QStringLiteral("Connection/proxyMode"), 0),
+            m_settings->getString(QStringLiteral("Connection/proxyHost"), {}),
+            m_settings->getInt(QStringLiteral("Connection/proxyPort"), 0));
+        if (!proxyUrl.isEmpty())
+            engine->setProxy(proxyUrl);
+    }
+
+    connect(engine, &UploadEngine::progressChanged, this,
+        [this, taskId](int64_t b, int64_t t, double s, const QString &e) { onUploadProgress(taskId, b, t, s, e); });
+    connect(engine, &UploadEngine::completed, this,
+        [this, taskId](const QString &lc) { onUploadComplete(taskId, lc); });
+    connect(engine, &UploadEngine::failed, this,
+        [this, taskId](const QString &err) { onUploadFailed(taskId, err); });
+    connect(engine, &UploadEngine::sessionExpired, this,
+        [this, taskId]() { onUploadSessionExpired(taskId); });
+    connect(thread, &QThread::started, engine, [engine, task]() { engine->startUpload(task); });
+
+    // Self-cleanup: once the worker's event loop exits (after startUpload
+    // returns), delete the engine then the thread on their own threads. This
+    // replaces the per-handler quit()+wait()+deleteLater(), which blocked the
+    // GUI thread and — when wait() timed out while curl was still mid-connect —
+    // deleteLater()'d a QThread that was still running. Callers now only detach
+    // the maps and quit(); deletion waits until the thread truly finishes.
+    connect(thread, &QThread::finished, engine, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    thread->start();
 }
 
 void TransferService::onUploadProgress(const QString &taskId, int64_t bytes, int64_t total, double speed, const QString &eta)
@@ -720,8 +801,12 @@ void TransferService::onUploadComplete(const QString &taskId, const QString &lin
             break;
         }
     }
-    if (auto *e = m_uploadEngines.take(taskId)) e->deleteLater();
-    if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(1000); t->deleteLater(); }
+    // Engine + thread self-delete via finished→deleteLater (wired in
+    // spawnUploadEngine). Detach from the maps and ask the thread to quit; never
+    // wait() here — startUpload has already returned, so the thread exits its
+    // event loop promptly without blocking the GUI thread.
+    m_uploadEngines.remove(taskId);
+    if (auto *t = m_threads.take(taskId)) t->quit();
     emit taskCompleted(taskId);
 
     // Record linkcode → source path for file manager "on computer" indicator.
@@ -747,10 +832,20 @@ void TransferService::onUploadComplete(const QString &taskId, const QString &lin
         auto *api = m_api;
         const QString lc = snapshot.linkcode;
         const QString pw = snapshot.password;
-        QtConcurrent::run([api, lc, pw]() {
+        const QString fileName = snapshot.fileName;
+        QPointer<TransferService> guard(this);
+        QtConcurrent::run([api, lc, pw, fileName, guard]() {
             const auto res = api->setFilePassword({lc}, pw);
-            if (res.isError())
-                qWarning() << "[FsNext] setFilePassword failed:" << res.error().message;
+            if (!res.isError()) return;
+            qWarning() << "[FsNext] setFilePassword failed:" << res.error().message;
+            // P7: the upload succeeded but the file is NOT password-protected —
+            // surface that to the UI so the user knows the file is public and
+            // can re-apply the password from the file manager, rather than
+            // silently believing it is secured.
+            const QString msg = res.error().message;
+            QMetaObject::invokeMethod(guard.data(), [guard, fileName, msg]() {
+                if (guard) emit guard->filePasswordSetFailed(fileName, msg);
+            }, Qt::QueuedConnection);
         });
     }
 
@@ -769,8 +864,9 @@ void TransferService::onUploadFailed(const QString &taskId, const QString &error
     m_priorities.remove(taskId);
     TransferTask snapshot;
     for (auto &t : m_tasks) if (t.id == taskId) { t.state = TransferState::Error; t.errorMessage = error; snapshot = t; break; }
-    if (auto *e = m_uploadEngines.take(taskId)) e->deleteLater();
-    if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(1000); t->deleteLater(); }
+    // Engine + thread self-delete via finished→deleteLater (see spawnUploadEngine).
+    m_uploadEngines.remove(taskId);
+    if (auto *t = m_threads.take(taskId)) t->quit();
 
     // Sync-specific failure routing.
     if (snapshot.isSyncTask && !snapshot.syncFolderId.isEmpty())
@@ -791,8 +887,9 @@ void TransferService::onUploadSessionExpired(const QString &taskId)
     // Release the slot so the orchestrator can re-dispatch us when the
     // re-enqueued task floats back to the front of the queue.
     if (m_orch) m_orch->release(taskId);
-    if (auto *e = m_uploadEngines.take(taskId)) e->deleteLater();
-    if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(500); t->deleteLater(); }
+    // Engine + thread self-delete via finished→deleteLater (see spawnUploadEngine).
+    m_uploadEngines.remove(taskId);
+    if (auto *t = m_threads.take(taskId)) t->quit();
 
     // Reset task to Queued and re-enqueue at its original priority.  The
     // orchestrator will create a new session + engine from scratch (byte 0).
@@ -812,22 +909,71 @@ void TransferService::onUploadSessionExpired(const QString &taskId)
 
 void TransferService::pauseTask(const QString &id)
 {
+    // Download: in-place pause — the engine keeps its orchestrator slot so
+    // resume() restarts the byte stream instantly. (Unchanged behaviour.)
+    if (auto *engine = m_engines.value(id)) {
+        engine->pause();
+        for (auto &t : m_tasks) if (t.id == id) { t.state = TransferState::Paused; break; }
+        emit taskStateChanged(id, TransferState::Paused);
+        return;
+    }
+
+    // Upload (P1): pausing FREES the orchestrator slot so other queued uploads
+    // can run while this one is held — otherwise pausing N uploads (N =
+    // maxUploadSlots) would wedge the whole upload queue. A live engine parks
+    // itself (socket closed, thread idle); resume() re-enqueues and un-parks it
+    // in dispatchUpload. A still-Queued upload is just pulled from the pending
+    // queue. We branch on state so we never release a slot the task never held.
+    TransferState st = TransferState::Queued;
     bool found = false;
-    if (auto *engine = m_engines.value(id))        { engine->pause(); found = true; }
-    if (auto *engine = m_uploadEngines.value(id))  { engine->pause(); found = true; }
+    for (const auto &t : m_tasks) if (t.id == id) { st = t.state; found = true; break; }
     if (!found) return;
+
+    if (st == TransferState::Active) {
+        if (auto *engine = m_uploadEngines.value(id)) engine->pause();
+        if (m_orch) m_orch->release(id);
+    } else if (st == TransferState::Queued) {
+        if (m_orch) m_orch->cancelQueued(id);
+    } else {
+        return;  // already Paused / Complete / Error — nothing to do
+    }
     for (auto &t : m_tasks) if (t.id == id) { t.state = TransferState::Paused; break; }
     emit taskStateChanged(id, TransferState::Paused);
 }
 
 void TransferService::resumeTask(const QString &id)
 {
-    bool found = false;
-    if (auto *engine = m_engines.value(id))        { engine->resume(); found = true; }
-    if (auto *engine = m_uploadEngines.value(id))  { engine->resume(); found = true; }
-    if (!found) return;
-    for (auto &t : m_tasks) if (t.id == id) { t.state = TransferState::Active; break; }
-    emit taskStateChanged(id, TransferState::Active);
+    // Download: in-place resume of the still-running (paused) engine.
+    if (auto *engine = m_engines.value(id)) {
+        engine->resume();
+        for (auto &t : m_tasks) if (t.id == id) { t.state = TransferState::Active; break; }
+        emit taskStateChanged(id, TransferState::Active);
+        return;
+    }
+
+    // Upload (P1): pause freed the slot, so resume re-enqueues and lets the
+    // orchestrator re-grant one. dispatchUpload then un-parks the live engine,
+    // or — for a task whose engine is gone (restored from a previous session,
+    // or paused while its session create was racing) — spawns a fresh engine
+    // that resumes from the server offset. Restrict to Paused uploads so we
+    // don't disturb tasks in any other state.
+    for (auto &t : m_tasks) {
+        if (t.id != id) continue;
+        if (t.state != TransferState::Paused) return;
+        // Re-enqueue and let the orchestrator re-grant a slot. dispatchUpload
+        // un-parks / re-spawns the upload engine; dispatchDownload re-resolves a
+        // fresh download URL and the engine resumes from the on-disk partial
+        // (single-segment offset or multi-segment journal). Covers tasks whose
+        // engine is gone — paused while the session create was racing, or
+        // restored from a previous session.
+        t.state = TransferState::Queued;
+        const TransferPriority prio = m_priorities.value(id, TransferPriority::Interactive);
+        const TransferClass cls = (t.type == TransferType::Upload)
+                                  ? TransferClass::Upload : TransferClass::Download;
+        emit taskStateChanged(id, TransferState::Queued);
+        if (m_orch) m_orch->enqueue(id, cls, prio);
+        return;
+    }
 }
 
 void TransferService::cancelTask(const QString &id)
@@ -852,11 +998,17 @@ void TransferService::cancelTask(const QString &id)
         break;
     }
 
-    // Clean up engine + thread.  The engine was told to abort above;
-    // quit() asks the thread's event loop to exit, wait() blocks briefly.
-    if (auto *e = m_engines.take(id))      { e->deleteLater(); }
-    if (auto *e = m_uploadEngines.take(id)){ e->deleteLater(); }
-    if (auto *t = m_threads.take(id))      { t->quit(); t->wait(500); t->deleteLater(); }
+    // Clean up engine + thread. The engine was told to abort above.
+    if (auto *e = m_engines.take(id)) e->deleteLater();   // download engine
+    // The upload engine + thread self-delete via finished→deleteLater (wired in
+    // spawnUploadEngine), so detach + quit() only — no GUI-blocking wait() and no
+    // deleteLater() on a QThread that may still be inside curl_easy_perform.
+    const bool wasUpload = m_uploadEngines.contains(id);
+    m_uploadEngines.remove(id);
+    if (auto *t = m_threads.take(id)) {
+        t->quit();
+        if (!wasUpload) { t->wait(500); t->deleteLater(); }   // download thread: explicit cleanup
+    }
     m_priorities.remove(id);
 
     if (m_orch) {
@@ -912,12 +1064,32 @@ void TransferService::dispatchDownload(const QString &taskId)
 
     emit taskStateChanged(taskId, TransferState::Active);
 
+    // Resolve the libcurl proxy once on the main thread (reads settings) and
+    // hand it to the engine, so downloads honour the same proxy preference as
+    // API calls. Empty string = direct connection.
+    const QString proxyUrl = m_settings
+        ? PlatformUtils::resolveProxyUrl(
+              m_settings->getInt(QStringLiteral("Connection/proxyMode"), 0),
+              m_settings->getString(QStringLiteral("Connection/proxyHost"), {}),
+              m_settings->getInt(QStringLiteral("Connection/proxyPort"), 0))
+        : QString{};
+
+    // A retry / resume re-dispatch already carries a fully-resolved output file
+    // path in localPath (set on the first dispatch). Re-deriving the filename
+    // would pick a fresh "name (1).ext" and download to the wrong file instead
+    // of continuing the partial. A first dispatch has localPath = the save
+    // FOLDER (a directory), which is how we distinguish the two cases.
+    const bool alreadyResolved =
+        !taskSnapshot.localPath.isEmpty()
+        && !QFileInfo(taskSnapshot.localPath).isDir()
+        && QFileInfo(taskSnapshot.localPath).absoluteDir().exists();
+
     auto *api = m_api;
     QPointer<TransferService> guard(this);
-    QtConcurrent::run([api, guard, taskId, taskSnapshot]() mutable {
+    QtConcurrent::run([api, guard, taskId, taskSnapshot, proxyUrl, alreadyResolved]() mutable {
         auto resp = api->createDownloadSession(taskSnapshot.linkcode, taskSnapshot.password);
 
-        QMetaObject::invokeMethod(guard.data(), [guard, taskId, resp, taskSnapshot]() mutable {
+        QMetaObject::invokeMethod(guard.data(), [guard, taskId, resp, taskSnapshot, proxyUrl, alreadyResolved]() mutable {
             if (!guard) return;
             auto *self = guard.data();
 
@@ -947,8 +1119,9 @@ void TransferService::dispatchDownload(const QString &taskId)
 
             // Resolve the real filename from the download URL returned by
             // Fshare (e.g. https://download.fshare.vn/file/ABC/movie.mp4).
-            // The last path segment is the URL-encoded filename.
-            {
+            // The last path segment is the URL-encoded filename. Skipped on a
+            // retry / resume re-dispatch (localPath already points at the file).
+            if (!alreadyResolved) {
                 const QUrl dlUrl(task.realUrl);
                 QString urlFileName = dlUrl.fileName(); // URL-decoded by Qt
                 if (urlFileName.isEmpty())
@@ -985,14 +1158,19 @@ void TransferService::dispatchDownload(const QString &taskId)
 
             for (auto &t : self->m_tasks) {
                 if (t.id == taskId) {
-                    t.realUrl   = task.realUrl;
-                    t.fileName  = task.fileName;
-                    t.localPath = task.localPath;
+                    t.realUrl = task.realUrl;
+                    // Only overwrite the path/name on a fresh dispatch; a resume
+                    // must keep the partial file's existing path.
+                    if (!alreadyResolved) {
+                        t.fileName  = task.fileName;
+                        t.localPath = task.localPath;
+                    }
                     break;
                 }
             }
 
             auto *engine = new DownloadEngine();
+            engine->setProxy(proxyUrl);
             auto *thread = new QThread();
             engine->moveToThread(thread);
             self->m_engines[taskId] = engine;
@@ -1069,8 +1247,71 @@ void TransferService::onDownloadComplete(const QString &taskId, const QString &f
     }
 }
 
+// Classify a download failure as worth an automatic retry. Most failures are
+// transient (network blip, an expired single-use CDN URL that a fresh
+// createDownloadSession will replace, 5xx, 403-on-expiry). We only refuse to
+// retry the handful that re-attempting can never fix.
+static bool isTransientDownloadError(const QString &error)
+{
+    static const char *kPermanent[] = {
+        "404",                      // file removed / bad link
+        "401",                      // unauthorised — needs re-login, not a retry
+        "Không đủ dung lượng",      // disk full
+        "Không thể tạo file",       // filesystem / path error
+        "Không thể mở file",
+    };
+    for (const char *needle : kPermanent)
+        if (error.contains(QString::fromUtf8(needle), Qt::CaseInsensitive))
+            return false;
+    return true;
+}
+
 void TransferService::onDownloadFailed(const QString &taskId, const QString &error)
 {
+    // ── Bounded auto-retry (P1) ─────────────────────────────────────────────
+    // Re-resolve a fresh download URL and resume from the on-disk partial
+    // (single-segment offset / multi-segment journal) after an exponential
+    // backoff. retryCount caps the number of re-dispatches; the engine also
+    // does its own fast in-transfer retries before it ever reaches here.
+    static constexpr int kMaxDownloadRetries = 5;
+    int idx = -1;
+    for (int i = 0; i < m_tasks.size(); ++i)
+        if (m_tasks[i].id == taskId) { idx = i; break; }
+
+    if (idx >= 0 && m_tasks[idx].type == TransferType::Download
+        && isTransientDownloadError(error)
+        && m_tasks[idx].retryCount < kMaxDownloadRetries) {
+        const int n = ++m_tasks[idx].retryCount;
+        m_tasks[idx].realUrl.clear();              // force a fresh session URL
+        m_tasks[idx].state = TransferState::Queued;
+        m_tasks[idx].errorMessage.clear();
+
+        // Free the slot + tear down the dead engine/thread now; re-enqueue after
+        // the backoff so the slot is available to others meanwhile.
+        if (m_orch) m_orch->release(taskId);
+        if (auto *e = m_engines.take(taskId)) e->deleteLater();
+        if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(500); t->deleteLater(); }
+        emit taskStateChanged(taskId, TransferState::Queued);
+
+        const int delayMs = qMin(1000 << (n - 1), 16000);  // 1,2,4,8,16s
+        const TransferPriority prio = m_priorities.value(taskId, TransferPriority::Interactive);
+        qWarning() << "[TransferService] Download" << taskId << "failed (" << error
+                   << ") — auto-retry" << n << "of" << kMaxDownloadRetries << "in" << delayMs << "ms";
+        QPointer<TransferService> guard(this);
+        QTimer::singleShot(delayMs, this, [guard, taskId, prio]() {
+            if (!guard) return;
+            // The user may have cancelled during the backoff.
+            for (const auto &t : guard->m_tasks)
+                if (t.id == taskId) {
+                    if (guard->m_orch)
+                        guard->m_orch->enqueue(taskId, TransferClass::Download, prio);
+                    return;
+                }
+        });
+        return;
+    }
+
+    // ── Terminal failure ────────────────────────────────────────────────────
     if (m_orch) m_orch->release(taskId);
     m_priorities.remove(taskId);
     for (auto &t : m_tasks) if (t.id == taskId) { t.state = TransferState::Error; t.errorMessage = error; break; }

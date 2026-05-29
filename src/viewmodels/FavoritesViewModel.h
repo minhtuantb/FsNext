@@ -81,6 +81,10 @@ public:
     Q_INVOKABLE void toggleSelection(const QString &linkcode);
     Q_INVOKABLE void selectAll();
     Q_INVOKABLE void clearSelection();
+    // Replace the entire selection with the given set of linkcodes. See
+    // FileManagerViewModel::setSelected for rationale (keyboard / single-click
+    // handlers in QML need C++ state to mirror the visible highlight).
+    Q_INVOKABLE void setSelected(const QStringList &linkcodes);
 
     // ── File actions ─────────────────────────────────────────
     Q_INVOKABLE void copyLinks(const QStringList &linkcodes);

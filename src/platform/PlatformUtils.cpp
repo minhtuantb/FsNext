@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QTextStream>
 #include <QUrl>
+#include <QDebug>
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -145,6 +146,25 @@ QString PlatformUtils::proxyFromSystem()
 
 // ---------------------------------------------------------------------------
 
+QString PlatformUtils::resolveProxyUrl(int mode, const QString &manualHost, int manualPort)
+{
+    switch (mode) {
+    case 1: // System proxy — read from OS (Windows registry / "" elsewhere)
+        return proxyFromSystem();
+    case 2: { // Manual proxy
+        const QString host = manualHost.trimmed();
+        if (host.isEmpty() || manualPort < 1 || manualPort > 65535)
+            return {};
+        return host + QLatin1Char(':') + QString::number(manualPort);
+    }
+    case 0:  // No proxy
+    default:
+        return {};
+    }
+}
+
+// ---------------------------------------------------------------------------
+
 bool PlatformUtils::isSystemFolder(const QString &path)
 {
     if (path.isEmpty())
@@ -205,8 +225,21 @@ void PlatformUtils::openInExplorer(const QString &filePath)
     // explorer.exe /select,"C:\path\to\file.ext"
     const QString nativePath = QDir::toNativeSeparators(filePath);
     const QString args = QStringLiteral("/select,\"%1\"").arg(nativePath);
-    ShellExecuteW(nullptr, L"open", L"explorer.exe",
-                  args.toStdWString().c_str(), nullptr, SW_SHOWNORMAL);
+    // Keep the wstring alive through the ShellExecute call — passing
+    // .toStdWString().c_str() inline lets the temporary be destroyed at the
+    // semicolon, which is technically a dangling pointer even though the
+    // Win32 call has typically already copied internally by then.
+    const std::wstring argsW = args.toStdWString();
+    // ShellExecuteW returns an HINSTANCE that's actually an error code when
+    // <= 32 (per MSDN).  Silently failing here leaves the user wondering
+    // why "Show in Explorer" did nothing; log it so it shows up in the
+    // file logger we installed at startup.
+    const HINSTANCE rc = ShellExecuteW(nullptr, L"open", L"explorer.exe",
+                                       argsW.c_str(), nullptr, SW_SHOWNORMAL);
+    if (reinterpret_cast<INT_PTR>(rc) <= 32) {
+        qWarning() << "[PlatformUtils] ShellExecuteW(explorer /select) failed for"
+                   << nativePath << "rc=" << reinterpret_cast<INT_PTR>(rc);
+    }
 #elif defined(__APPLE__)
     QProcess::startDetached(QStringLiteral("open"), { QStringLiteral("-R"), filePath });
 #else

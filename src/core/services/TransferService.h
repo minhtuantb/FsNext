@@ -131,6 +131,11 @@ signals:
     // so the file manager can invalidate the matching cached folder.
     void uploadCompleted(const QString &folderPath);
 
+    // Emitted when the post-upload setFilePassword call fails: the file was
+    // uploaded but is NOT password-protected. Lets the UI warn the user instead
+    // of leaving them to assume the file is secured. (P7)
+    void filePasswordSetFailed(const QString &fileName, const QString &message);
+
     // Emitted alongside taskCompleted/taskFailed for tasks flagged as sync
     // uploads. Carries enough routing information for SyncService to update
     // its per-file state without having to snoop generic upload signals.
@@ -176,6 +181,13 @@ private:
     void onUploadComplete(const QString &taskId, const QString &linkcode);
     void onUploadFailed(const QString &taskId, const QString &error);
     void onUploadSessionExpired(const QString &taskId);
+
+    // Spawn the upload engine + worker thread for a task whose upload session
+    // URL (task.realUrl) is already resolved. Shared by the fresh-upload path
+    // (after createUploadSession) and the resume path (dispatchUpload reusing a
+    // retained realUrl). The engine resumes from the server offset when the
+    // task carries non-zero progress (see UploadEngine::startUpload).
+    void spawnUploadEngine(const TransferTask &task);
 
     // ── ADR D12 — progress-persistence wiring ──────────────────────────────
     // Snapshot the current state of every in-flight task to the history DB so

@@ -29,6 +29,14 @@ public:
     // "http://host:port" or an empty string when no system proxy is configured.
     static QString proxyFromSystem();
 
+    // Resolve the effective libcurl proxy URL from the persisted connection
+    // settings.  `mode`: 0 = none, 1 = system, 2 = manual.  Returns a string
+    // suitable for CURLOPT_PROXY ("host:port" or "scheme://host:port") or an
+    // empty string when no proxy should be applied.  Centralises the
+    // mode→URL mapping so every libcurl producer (HttpClient API calls,
+    // Download/Upload engines) resolves the proxy identically.
+    static QString resolveProxyUrl(int mode, const QString &manualHost, int manualPort);
+
     // Returns true when path is (or is directly equal to) a protected system
     // folder where downloads should be blocked:
     //   • Music / Pictures / Movies user libraries (all platforms)

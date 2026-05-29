@@ -17,6 +17,11 @@ class UserInfoViewModel : public QObject
     Q_PROPERTY(QString userEmail       READ userEmail       NOTIFY userInfoChanged)
     Q_PROPERTY(int     userLevel       READ userLevel       NOTIFY userInfoChanged)
     Q_PROPERTY(QString levelLabel      READ levelLabel      NOTIFY userInfoChanged)
+    // Convenience flag for QML: true for any paid/VIP tier (level 3+), false
+    // for free tier (level 0-2 "Thành viên thường"). Lets the sidebar / VIP
+    // card swap to a lighter visual variant for free users instead of showing
+    // the orange gradient hero unconditionally.
+    Q_PROPERTY(bool    isVip           READ isVip           NOTIFY userInfoChanged)
     Q_PROPERTY(QString accountType     READ accountType     NOTIFY userInfoChanged)
     Q_PROPERTY(QString joinDate        READ joinDate        NOTIFY userInfoChanged)
     Q_PROPERTY(QString vipExpiry       READ vipExpiry       NOTIFY userInfoChanged)
@@ -54,6 +59,7 @@ public:
     QString userEmail() const;
     int     userLevel() const;
     QString levelLabel() const;
+    bool    isVip() const;
     QString accountType() const;
     QString joinDate() const;
     QString vipExpiry() const;

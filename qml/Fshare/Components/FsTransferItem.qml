@@ -22,6 +22,13 @@ Item {
     property string eta: ""
     property int status: 0              // TransferState enum: 0=Queued 1=Active 2=Paused 3=Complete 4=Error 5=Cancelled
     property string errorMessage: ""
+    // Share URL associated with the row:
+    //   • Download rows  → the original Fshare share link the user pasted
+    //                      (file or folder). Available in every state.
+    //   • Upload rows    → the resulting share URL once the upload completes
+    //                      (empty before then).
+    // Drives the visibility of the "Copy link" action button below.
+    property string linkcode: ""
     property bool showActions: true
     // Enable ↑ ↓ queue-reorder buttons (shown for Queued items only).
     property bool showReorder: false
@@ -328,9 +335,12 @@ Item {
                     }
                 }
 
-                // Copy link — Complete only (shares link after upload)
+                // Copy link — shown whenever a shareable URL is known for the row:
+                //   • download rows: always (the user-pasted share URL)
+                //   • upload rows:   only on Complete (the resulting URL)
+                // Hidden on Cancelled rows since the link is moot there.
                 Rectangle {
-                    visible: root.status === 3
+                    visible: root.linkcode !== "" && root.status !== 5
                     width: 28; height: 28; radius: 8
                     color: copyLinkMa.containsMouse ? AuroraTheme.divider : "transparent"
                     Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
@@ -344,7 +354,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        ToolTip.text: qsTr("Sao chép liên kết")
+                        ToolTip.text: qsTr("Sao chép liên kết chia sẻ")
                         ToolTip.visible: containsMouse
                         ToolTip.delay: 400
                         onClicked: root.copyLinkClicked()
@@ -463,18 +473,27 @@ Item {
                     }
                 }
 
-                // Cancel (active) / Dismiss (complete). Renders identically
-                // but emits different signals so callers can distinguish
-                // "abort an upload" from "archive a finished card".
+                // Cancel (active) / Dismiss (complete). Same button slot, two
+                // different glyphs so the icon matches the semantic — a red
+                // ✕ on a finished upload made users worried they were about
+                // to delete the file (they're not; the row is just being
+                // archived into history). Completed → green ✓ + "Ẩn khỏi
+                // danh sách"; active → red ✕ + "Huỷ" as before.
                 Rectangle {
+                    readonly property bool _complete: root.status === 3
                     width: 28; height: 28; radius: 8
-                    color: cancelMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
+                    color: cancelMa.containsMouse
+                            ? (_complete ? AuroraTheme.successSoft : AuroraTheme.accentTint10)
+                            : "transparent"
                     Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
                     Text {
                         anchors.centerIn: parent
-                        text: "✕"
-                        font.pixelSize: 12
-                        color: cancelMa.containsMouse ? AuroraTheme.accent : AuroraTheme.ink2
+                        text: parent._complete ? "✓" : "✕"
+                        font.pixelSize: parent._complete ? 14 : 12
+                        font.bold: parent._complete
+                        color: parent._complete
+                                ? AuroraTheme.success
+                                : (cancelMa.containsMouse ? AuroraTheme.accent : AuroraTheme.ink2)
                         Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
                     }
                     MouseArea {
@@ -482,11 +501,13 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        ToolTip.text: root.status === 3 ? qsTr("Lưu trữ") : qsTr("Huỷ")
+                        ToolTip.text: parent._complete
+                            ? qsTr("Xoá hiển thị")
+                            : qsTr("Huỷ tải lên")
                         ToolTip.visible: containsMouse
                         ToolTip.delay: 400
                         onClicked: {
-                            if (root.status === 3) root.dismissClicked();
+                            if (parent._complete) root.dismissClicked();
                             else                   root.cancelClicked();
                         }
                     }

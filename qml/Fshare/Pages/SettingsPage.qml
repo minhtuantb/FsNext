@@ -15,71 +15,21 @@ import Fshare.Components 1.0
 import FsAurora.Theme 1.0
 import FsAurora.Components 1.0 as Aurora
 
-ScrollView {
+Aurora.FsScrollPage {
     id: page
-    clip: true
-
-    ColumnLayout {
-        width: page.availableWidth
-        spacing: AuroraTheme.sp4
+    contentSpacing: AuroraTheme.sp4
 
         // ═════════════════════════════════════════════════
         //  EDITORIAL HEADER
         // ═════════════════════════════════════════════════
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: setHeaderCol.implicitHeight + AuroraTheme.sp6 * 2
-            radius: AuroraTheme.radiusLg
-            color: AuroraTheme.panel
-            border.width: 1
-            border.color: AuroraTheme.border
-
-            ColumnLayout {
-                id: setHeaderCol
-                anchors.fill: parent
-                anchors.margins: AuroraTheme.sp6
-                spacing: 2
-
-                Text {
-                    text: "━━ Tuỳ chọn & hệ thống"
-                    color: AuroraTheme.ink4
-                    font.family: AuroraTheme.fontMono
-                    font.pixelSize: 11
-                    font.letterSpacing: 2.0
-                    font.capitalization: Font.AllUppercase
-                }
-
-                RowLayout {
-                    spacing: 8
-                    Layout.bottomMargin: 2
-
-                    Text {
-                        text: qsTr("Cài")
-                        color: AuroraTheme.ink1
-                        font.family: AuroraTheme.fontSerif
-                        font.pixelSize: 56
-                        font.letterSpacing: -1.8
-                        lineHeight: 1.0
-                    }
-                    Text {
-                        text: qsTr("đặt.")
-                        color: AuroraTheme.accent
-                        font.family: AuroraTheme.fontSerif
-                        font.italic: true
-                        font.pixelSize: 56
-                        font.letterSpacing: -1.8
-                        lineHeight: 1.0
-                    }
-                }
-
-                Text {
-                    Layout.topMargin: 4
-                    text: qsTr("Tùy chỉnh tải xuống, tải lên, ngôn ngữ và kết nối")
-                    color: AuroraTheme.ink3
-                    font.family: AuroraTheme.fontSans
-                    font.pixelSize: 13
-                }
-            }
+        Aurora.FsPageHeader {
+            framed: true
+            kicker: qsTr("Tuỳ chọn & hệ thống")
+            title: qsTr("Cài")
+            accentWord: qsTr("đặt.")
+            titlePixelSize: 56
+            titleLetterSpacing: -1.8
+            subtitle: qsTr("Tùy chỉnh tải xuống, tải lên, ngôn ngữ và kết nối")
         }
 
         // ── Chung ──────────────────────────────────────
@@ -122,6 +72,53 @@ ScrollView {
                                "Có thể bật lại bằng cách bấm icon trên khay.")
                     checked: settingsViewModel ? settingsViewModel.minimizeToTray : false
                     onToggled: if (settingsViewModel) settingsViewModel.minimizeToTray = checked
+                }
+
+                // Re-enable the close confirmation dialog. The dialog itself
+                // can tick "Don't ask again" which flips this off — this
+                // toggle is the only way to turn it back ON without resetting
+                // every setting.
+                SettingsToggle {
+                    Layout.fillWidth: true
+                    label: qsTr("Hỏi xác nhận khi đóng cửa sổ")
+                    desc: qsTr("Hiện popup 'Thoát hẳn / Thu nhỏ vào khay' mỗi lần bạn nhấn nút X. " +
+                               "Tắt nếu muốn cửa sổ ứng xử theo lựa chọn cuối.")
+                    checked: settingsViewModel ? settingsViewModel.confirmOnClose : true
+                    onToggled: if (settingsViewModel) settingsViewModel.confirmOnClose = checked
+                }
+
+                // ── HUD (Transfer mini window + tray balloons) ──────────
+                // Two related toggles kept here next to minimizeToTray
+                // because they're conceptually part of the same "what
+                // happens after I send the window away" surface.
+                SettingsToggle {
+                    Layout.fillWidth: true
+                    label: qsTr("Hiện mini HUD khi thu nhỏ")
+                    desc: qsTr("Khi bạn thu nhỏ cửa sổ (nút _) hoặc đóng vào khay mà đang có " +
+                               "lượt chuyển file, một cửa sổ nhỏ luôn-trên-cùng sẽ hiện tốc độ + " +
+                               "danh sách đang tải. Tự ẩn sau 30 giây khi mọi thứ hoàn tất.")
+                    checked: settingsViewModel ? settingsViewModel.showOnHideToTray : true
+                    onToggled: if (settingsViewModel) settingsViewModel.showOnHideToTray = checked
+                }
+
+                SettingsToggle {
+                    Layout.fillWidth: true
+                    label: qsTr("Hiện tiến độ trên thanh taskbar")
+                    desc: qsTr("Vẽ thanh tiến độ ngay trên nút taskbar của Fshare khi đang " +
+                               "chuyển file — xanh khi chạy, đỏ khi lỗi, vàng khi tạm dừng. " +
+                               "Cách xem tiến độ gọn nhất, không cần mở cửa sổ. (Chỉ Windows.)")
+                    checked: settingsViewModel ? settingsViewModel.showTaskbarProgress : true
+                    onToggled: if (settingsViewModel) settingsViewModel.showTaskbarProgress = checked
+                }
+
+                SettingsToggle {
+                    Layout.fillWidth: true
+                    label: qsTr("Thông báo bóng nhỏ khi tải xong / lỗi")
+                    desc: qsTr("Hiện balloon notification ở khay hệ thống mỗi khi một file " +
+                               "tải xong hoặc tải lỗi. Bấm vào thông báo để mở thẳng task đó. " +
+                               "Tắt sẽ chỉ đổi màu icon khay thầm lặng.")
+                    checked: settingsViewModel ? settingsViewModel.notifyOnTransferDone : true
+                    onToggled: if (settingsViewModel) settingsViewModel.notifyOnTransferDone = checked
                 }
             }
         }
@@ -456,7 +453,6 @@ ScrollView {
         }
 
         Item { Layout.preferredHeight: AuroraTheme.sp6 }
-    }
 
     // ═════════════════════════════════════════════════
     //  Helper components

@@ -400,6 +400,15 @@ void FileManagerViewModel::clearSelection()
     emit selectionChanged();
 }
 
+void FileManagerViewModel::setSelected(const QStringList &linkcodes)
+{
+    QSet<QString> next(linkcodes.cbegin(), linkcodes.cend());
+    next.remove(QString());   // drop empty entries
+    if (next == m_selected) return;
+    m_selected = std::move(next);
+    emit selectionChanged();
+}
+
 // ── search ────────────────────────────────────────────────────────────────────
 
 void FileManagerViewModel::searchRecursive(const QString &keyword)

@@ -283,10 +283,17 @@ void FileCacheService::listFiles(const QString &folderId,
     m_currentFilter   = typeFilter;
 
     if (!m_db->isOpen() || m_userId.isEmpty()) {
-        // No cache — fall through to the live FileService
+        // No cache — fall through to the live FileService. Guard against
+        // FileCacheService being destructed before the SingleShotConnection
+        // fires (cold-start race: user clicks a folder before auth completes,
+        // then quits the app while the API call is still in flight). Without
+        // the QPointer the `emit this->fileListLoaded(...)` below would
+        // dereference a dangling `this`.
+        QPointer<FileCacheService> guard(this);
         connect(m_service, &FileService::fileListLoaded,
-                this, [this](const QVector<FileItem> &files) {
-                    emit fileListLoaded(files);
+                this, [guard](const QVector<FileItem> &files) {
+                    if (!guard) return;
+                    emit guard->fileListLoaded(files);
                 }, Qt::SingleShotConnection);
         m_service->listFiles(folderId);
         return;

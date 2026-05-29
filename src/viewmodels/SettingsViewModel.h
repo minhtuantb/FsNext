@@ -35,8 +35,16 @@ class SettingsViewModel : public QObject
     Q_PROPERTY(bool autoLogin        READ autoLogin         WRITE setAutoLogin         NOTIFY autoLoginChanged)
     Q_PROPERTY(bool stayOnTop        READ stayOnTop         WRITE setStayOnTop         NOTIFY stayOnTopChanged)
     Q_PROPERTY(bool darkMode         READ darkMode          WRITE setDarkMode          NOTIFY darkModeChanged)
+    Q_PROPERTY(bool sidebarCollapsed READ sidebarCollapsed  WRITE setSidebarCollapsed  NOTIFY sidebarCollapsedChanged)
+    Q_PROPERTY(int  sidebarHudVariant READ sidebarHudVariant WRITE setSidebarHudVariant NOTIFY sidebarHudVariantChanged)
     Q_PROPERTY(bool minimizeToTray   READ minimizeToTray    WRITE setMinimizeToTray    NOTIFY minimizeToTrayChanged)
+    Q_PROPERTY(bool confirmOnClose   READ confirmOnClose    WRITE setConfirmOnClose    NOTIFY confirmOnCloseChanged)
     Q_PROPERTY(int  fileConflictPolicy READ fileConflictPolicy WRITE setFileConflictPolicy NOTIFY fileConflictPolicyChanged)
+
+    // HUD toggles
+    Q_PROPERTY(bool notifyOnTransferDone READ notifyOnTransferDone WRITE setNotifyOnTransferDone NOTIFY notifyOnTransferDoneChanged)
+    Q_PROPERTY(bool showOnHideToTray     READ showOnHideToTray     WRITE setShowOnHideToTray     NOTIFY showOnHideToTrayChanged)
+    Q_PROPERTY(bool showTaskbarProgress  READ showTaskbarProgress  WRITE setShowTaskbarProgress  NOTIFY showTaskbarProgressChanged)
 
 public:
     explicit SettingsViewModel(SettingsService *service, QObject *parent = nullptr);
@@ -57,8 +65,14 @@ public:
     bool autoLogin() const;
     bool stayOnTop() const;
     bool darkMode() const;
+    bool sidebarCollapsed() const;
+    int  sidebarHudVariant() const;
     bool minimizeToTray() const;
+    bool confirmOnClose() const;
     int  fileConflictPolicy() const;
+    bool notifyOnTransferDone() const;
+    bool showOnHideToTray() const;
+    bool showTaskbarProgress() const;
 
     // Setters
     void setDownloadThreads(int value);
@@ -74,11 +88,26 @@ public:
     void setAutoLogin(bool value);
     void setStayOnTop(bool value);
     void setDarkMode(bool value);
+    void setSidebarCollapsed(bool value);
+    void setSidebarHudVariant(int value);
     void setMinimizeToTray(bool value);
+    void setConfirmOnClose(bool value);
     void setFileConflictPolicy(int value);
+    void setNotifyOnTransferDone(bool value);
+    void setShowOnHideToTray(bool value);
+    void setShowTaskbarProgress(bool value);
 
     Q_INVOKABLE void applySettings();
     Q_INVOKABLE void resetSettings();
+
+    // Persisted Mini HUD window position — read on launch, written every
+    // time the user drags or snaps the floating mini window.  Returns -1
+    // for x/y when no saved position exists (caller falls back to default
+    // bottom-right of screen).
+    Q_INVOKABLE int     savedMiniWindowX() const;
+    Q_INVOKABLE int     savedMiniWindowY() const;
+    Q_INVOKABLE QString savedMiniWindowScreen() const;
+    Q_INVOKABLE void    saveMiniWindowPosition(int x, int y, const QString &screen);
 
 signals:
     void downloadThreadsChanged();
@@ -94,8 +123,14 @@ signals:
     void autoLoginChanged();
     void stayOnTopChanged();
     void darkModeChanged();
+    void sidebarCollapsedChanged();
+    void sidebarHudVariantChanged();
     void minimizeToTrayChanged();
+    void confirmOnCloseChanged();
     void fileConflictPolicyChanged();
+    void notifyOnTransferDoneChanged();
+    void showOnHideToTrayChanged();
+    void showTaskbarProgressChanged();
 
 private:
     SettingsService *m_service = nullptr;

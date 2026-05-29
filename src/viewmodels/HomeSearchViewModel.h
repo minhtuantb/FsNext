@@ -40,6 +40,7 @@ class HomeSearchViewModel : public QObject {
     Q_PROPERTY(bool isSearching   READ isSearching   NOTIFY searchProgressChanged)
     Q_PROPERTY(bool hasResults    READ hasResults    NOTIFY searchProgressChanged)
     Q_PROPERTY(bool noResultsHit  READ noResultsHit  NOTIFY searchProgressChanged)
+    Q_PROPERTY(bool hasMorePages  READ hasMorePages  NOTIFY searchProgressChanged)
     Q_PROPERTY(QString resultsForKeyword READ resultsForKeyword NOTIFY searchProgressChanged)
 public:
     // Mirrors the QML side. Order matters: the higher the value, the more
@@ -70,6 +71,7 @@ public:
     bool isSearching()   const { return m_searching; }
     bool hasResults()    const { return m_resultsModel && m_resultsModel->count() > 0; }
     bool noResultsHit()  const { return m_noResultsHit; }
+    bool hasMorePages()  const { return m_hasMorePages; }
     QString resultsForKeyword() const { return m_resultsForKeyword; }
 
     // Re-classify live as the user types. Called by HomePage on every
@@ -85,6 +87,11 @@ public:
     // Clear results model + cancel any in-flight search. Called by QML
     // when the search box is emptied or the overlay is dismissed.
     Q_INVOKABLE void clearResults();
+
+    // Fetch the next page of results for the current keyword. No-op when
+    // the previous page returned fewer than kPerPage items (i.e. the
+    // server signalled end-of-list) or while a fetch is in flight.
+    Q_INVOKABLE void loadMore();
 
 signals:
     void stateChanged();
@@ -111,6 +118,7 @@ private:
     // Phase-3 helpers ─────────────────────────────────────────
     void scheduleKeywordSearch(const QString &keyword);
     void runKeywordSearchNow();
+    void fetchPage(const QString &keyword, int page, bool append);
     void setSearching(bool v);
 
     BadWordFilter     *m_filter      = nullptr;
@@ -130,6 +138,8 @@ private:
     QString m_resultsForKeyword;    // keyword the resultsModel currently reflects
     bool    m_searching     = false;
     bool    m_noResultsHit  = false;
+    bool    m_hasMorePages  = false;
+    int     m_currentPage   = 0;    // last successfully fetched page (1-indexed)
     // Monotonically increasing request ID — lets late-arriving async
     // responses know whether they're still relevant or were superseded
     // by a newer keystroke.

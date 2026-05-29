@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: Proprietary
-// FsAurora · theme singleton — parallel to Fshare.Theme.FshareTheme.
+// FsAurora · theme singleton — the single source of truth for design tokens.
 //
 // Usage:
 //   import FsAurora.Theme
 //   color: AuroraTheme.panel
 //   font.family: AuroraTheme.fontSans
 //
-// Dark-mode sync is pushed from Main.qml (same source-of-truth as
-// FshareTheme.isDark) so the two systems stay visually aligned when the
-// user toggles theme while comparing variants.
+// Dark-mode toggle is pushed from Main.qml (driven by SettingsViewModel).
 
 pragma Singleton
 import QtQuick
@@ -39,14 +37,20 @@ QtObject {
     readonly property color successSoft: AuroraColors.successSoft
     readonly property color warn:        AuroraColors.warn
     readonly property color warnSoft:    AuroraColors.warnSoft
-    readonly property color danger:      AuroraColors.danger
-    readonly property color dangerSoft:  AuroraColors.dangerSoft
+    readonly property color danger:       AuroraColors.danger
+    readonly property color dangerSoft:   AuroraColors.dangerSoft
+    readonly property color dangerTint15: AuroraColors.dangerTint15
+    readonly property color dangerGlow:   AuroraColors.dangerGlow
     readonly property color info:        AuroraColors.info
     readonly property color infoSoft:    AuroraColors.infoSoft
 
     // ── Surface / ink (adaptive) ─────────────────────────
     readonly property color bg:           _p.bg
     readonly property color panel:        _p.panel
+    // Aurora-tier warm tint — used for row hover and the floating widget
+    // footer per the Aurora Glow spec. Mode-adaptive (cream in light,
+    // tinted-dark in dark).
+    readonly property color bgWarm:       _p.bgWarm
     readonly property color sidebar:      _p.sidebar          // always dark
     readonly property color border:       _p.border
     readonly property color borderStrong: _p.borderStrong
@@ -57,6 +61,23 @@ QtObject {
     readonly property color ink4:         _p.ink4
     readonly property color textOnAccent:     _p.textOnAccent
     readonly property color textOnSidebar:    _p.textOnSidebar
+
+    // ── Sidebar (Dark Aurora v2) ─────────────────────────
+    // Always-dark palette for the left rail. Not mode-adaptive — see
+    // AuroraColors.qml for the rationale (sidebar is intentionally near-
+    // black so the orange brand gradient reads as the shell's signature).
+    readonly property color sidebarBg:         AuroraColors.sidebarBg
+    readonly property color sidebarBgElev:     AuroraColors.sidebarBgElev
+    readonly property color sidebarBgElev2:    AuroraColors.sidebarBgElev2
+    readonly property color sidebarBgHover:    AuroraColors.sidebarBgHover
+    readonly property color sidebarLine:       AuroraColors.sidebarLine
+    readonly property color sidebarLineStrong: AuroraColors.sidebarLineStrong
+    readonly property color sidebarInk:        AuroraColors.sidebarInk
+    readonly property color sidebarInk2:       AuroraColors.sidebarInk2
+    readonly property color sidebarInk3:       AuroraColors.sidebarInk3
+    readonly property color sidebarInk4:       AuroraColors.sidebarInk4
+    readonly property color auroraSuccess:     AuroraColors.auroraSuccess
+    readonly property color auroraDanger:      AuroraColors.auroraDanger
 
     // ── Typography ───────────────────────────────────────
     // Aurora calls for Geist + Be Vietnam Pro (sans) / Geist Mono (mono) /
@@ -101,7 +122,15 @@ QtObject {
     readonly property int radiusSm:    6
     readonly property int radiusMd:   10
     readonly property int radiusLg:   14
+    // Aurora widget outer corner — 18px per the Aurora Glow spec. Sits
+    // between radiusLg (14, generic cards) and radiusXl (20, hero CTAs).
+    // Used specifically by the floating overlay widget surface.
+    readonly property int radiusOuter:18
     readonly property int radiusXl:   20
+    // Chrome button radius — 7px per Aurora spec. Snug for the 24x24
+    // header buttons (Pause/Expand/Close) so they read as compact glyph
+    // tiles rather than full pills.
+    readonly property int radiusChrome: 7
     readonly property int radiusPill: 999
 
     // ── Motion ───────────────────────────────────────────
@@ -128,4 +157,19 @@ QtObject {
     readonly property int heightListRow:  44
     readonly property int heightTitlebar: 40
     readonly property int heightToolbar:  56
+
+    // ── Aurora widget — overlay HUD spec ─────────────────
+    // Three canonical widths for the floating widget (collapsed peek →
+    // normal default → expanded power-user). Heights are derived from
+    // content (header + optional speedmeter + N rows + footer); only
+    // widths are tokenised since they drive snap targets and layout.
+    readonly property int widgetWidthCollapsed: 320
+    readonly property int widgetWidthNormal:    364
+    readonly property int widgetWidthExpanded:  420
+    // Aurora signature shadow tier values — opacities are exposed so
+    // the host (MiniHudWindow) can compose the multi-layer shadow with
+    // Rectangle border rings without hardcoding magic numbers.
+    readonly property real auroraGlowOpacity:   0.18  // warm halo
+    readonly property real auroraStrokeOpacity: 0.05  // inner stroke
+    readonly property real auroraDropOpacity:   0.06  // ambient drop
 }

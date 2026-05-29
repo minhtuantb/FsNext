@@ -16,6 +16,7 @@
 import QtQuick
 import QtQuick.Layouts
 import FsAurora.Theme 1.0
+import FsAurora.Components 1.0 as Aurora
 FsDialog {
     id: root
 
@@ -68,14 +69,14 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            FsButton {
+            Aurora.FsButton {
                 id: cancelConfirmBtn
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.cancelLabel
                 variant: "ghost"
                 onClicked: { root.cancelled(); root.close(); }
             }
-            FsButton {
+            Aurora.FsButton {
                 id: primaryConfirmBtn
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.primaryLabel

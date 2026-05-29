@@ -73,6 +73,16 @@ static TransferTask taskFromJson(const QJsonObject &o)
 
 static QVector<TransferTask> loadTasksFromJson(const QString &filePath)
 {
+    // Hard ceiling on rows we'll ever parse from a single legacy JSON file.
+    // The legacy format had no built-in cap, so a malformed (or maliciously
+    // edited) history.json with millions of entries would have caused
+    // QVector::reserve(arr.size()) to allocate gigabytes and either OOM the
+    // process or thrash for minutes on startup before the user sees any UI.
+    // The TransferHistoryDb migration target already has its own paging
+    // contract, so dropping rows beyond this cap is acceptable —
+    // realistically a user's *total* history is well under this number.
+    static constexpr int kMaxLegacyHistoryRows = 50000;
+
     QVector<TransferTask> result;
     QFile f(filePath);
     if (!f.exists()) return result;
@@ -89,8 +99,15 @@ static QVector<TransferTask> loadTasksFromJson(const QString &filePath)
     }
     if (!doc.isArray()) return result;
     const QJsonArray arr = doc.array();
-    result.reserve(arr.size());
-    for (const auto &v : arr) {
+    const int rowsToLoad = qMin(arr.size(), kMaxLegacyHistoryRows);
+    if (arr.size() > kMaxLegacyHistoryRows) {
+        qWarning() << "[HistoryRepo] Legacy JSON" << filePath << "has"
+                   << arr.size() << "rows; capping migration at"
+                   << kMaxLegacyHistoryRows;
+    }
+    result.reserve(rowsToLoad);
+    for (int i = 0; i < rowsToLoad; ++i) {
+        const auto &v = arr.at(i);
         if (v.isObject()) result.append(taskFromJson(v.toObject()));
     }
     return result;

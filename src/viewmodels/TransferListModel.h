@@ -79,6 +79,11 @@ public:
     // decide which completed items are ripe for archival.
     const QVector<TransferTask> &tasks() const { return m_tasks; }
 
+    // QML-callable row lookup by task id. Returns -1 if the task isn't in
+    // this model.  Used by Pages' focusTask(id) to drive
+    // ListView.positionViewAtIndex when the HUD asks for scroll-to.
+    Q_INVOKABLE int rowOfTask(const QString &id) const { return indexOfTask(id); }
+
 private:
     int indexOfTask(const QString &id) const;
 

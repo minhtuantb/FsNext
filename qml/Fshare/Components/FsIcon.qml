@@ -30,6 +30,9 @@ Item {
 
     implicitWidth: sizePx
     implicitHeight: sizePx
+    // Apply alpha at the Item level so MultiEffect receives a fully-opaque
+    // colorizationColor — see comment below.
+    opacity: root.color.a
     Accessible.role: accessibleName.length > 0 ? Accessible.Graphic : Accessible.NoRole
     Accessible.name: accessibleName
     Accessible.ignored: accessibleName.length === 0   // skip when purely decorative
@@ -49,11 +52,18 @@ Item {
         cache: true
         asynchronous: false
 
-        // Use this Image as a texture layer so MultiEffect can colorize it
+        // Source SVGs ship with hard-coded black fill/stroke. Qt 6.8's
+        // MultiEffect.colorization does mix(source.rgb, colorizationColor.rgb,
+        // colorization * colorizationColor.a) — black source + colour with
+        // alpha < 1 produces a dark/muddy mix instead of the intended tint.
+        // brightness=1.0 lifts every source pixel to white first, then a
+        // colorization with a fully-opaque target colour replaces it
+        // cleanly. The original alpha is re-applied via Item.opacity above.
         layer.enabled: true
         layer.effect: MultiEffect {
+            brightness: 1.0
             colorization: 1.0
-            colorizationColor: root.color
+            colorizationColor: Qt.rgba(root.color.r, root.color.g, root.color.b, 1.0)
         }
     }
 }

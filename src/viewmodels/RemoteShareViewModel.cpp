@@ -118,6 +118,14 @@ QString RemoteShareViewModel::tokenizedFileUrl(const QString &linkcode) const
 
 void RemoteShareViewModel::close()
 {
+    // Invalidate every in-flight QtConcurrent callback: by bumping the
+    // sequence before clearing state we guarantee any response landing
+    // after close() (or after a follow-up openFolder/openFile) sees
+    // mySeq != m_requestSeq and discards itself. Without this, a slow
+    // getFileInfo from the previous share could mutate the new share's
+    // breadcrumb name, or a stale listFiles could overwrite the new
+    // folder's items.
+    ++m_requestSeq;
     setMode(ModeNone);
     m_fileListModel->resetItems({});
     m_folderStack.clear();
@@ -128,10 +136,17 @@ void RemoteShareViewModel::close()
     m_currentFile.clear();
     m_currentFileUrl.clear();
     m_errorText.clear();
+    // Drop any pending folder snapshot too — close() means "user is done
+    // with this share". restoreFolderContext() callers should fire
+    // BEFORE close(), not after.
+    m_folderSnapshot = {};
+    const bool hadSel = !m_selected.isEmpty();
+    m_selected.clear();
     setLoading(false);
     emit folderChanged();
     emit fileChanged();
     emit errorTextChanged();
+    if (hadSel) emit selectionChanged();
 }
 
 void RemoteShareViewModel::openFolder(const QString &rawUrl)
@@ -156,13 +171,29 @@ void RemoteShareViewModel::openFolder(const QString &rawUrl)
     // Resolve the root folder's display name in parallel with the first
     // page listing — the name only affects the breadcrumb label, not the
     // listing itself, so we don't block the list on it.
+    //
+    // Capture FshareApi* as a local before launching the worker — m_api is
+    // const after construction so this is safe and avoids dereferencing
+    // `this` on the worker thread for the API call.
+    //
+    // Identity check: rather than gating on m_requestSeq (which would
+    // discard the name even when the user is still browsing the same
+    // share, just deeper down), we match on the root linkcode. The first
+    // stack entry only changes when the user opens a different share or
+    // closes this one, so this check still rejects "user moved on" while
+    // permitting "user drilled deeper".
     QPointer<RemoteShareViewModel> guard(this);
+    FshareApi *api               = m_api;
+    const QString rootLinkcode   = parsed.linkcode;
     setLoading(true);
-    QtConcurrent::run([this, guard, canonical]() {
-        if (!guard) return;
-        auto info = m_api->getFileInfo(canonical);
-        QMetaObject::invokeMethod(guard.data(), [guard, info]() {
-            if (!guard || guard->m_folderStack.isEmpty()) return;
+    QtConcurrent::run([api, guard, canonical, rootLinkcode]() {
+        if (!guard || !api) return;
+        auto info = api->getFileInfo(canonical);
+        QMetaObject::invokeMethod(guard.data(), [guard, info, rootLinkcode]() {
+            if (!guard) return;
+            if (guard->m_folderStack.isEmpty()
+                || guard->m_folderStack.first().linkcode != rootLinkcode)
+                return;
             if (info.isSuccess()) {
                 const QString name = info.data().name;
                 if (!name.isEmpty()) {
@@ -180,17 +211,59 @@ void RemoteShareViewModel::openFolder(const QString &rawUrl)
 
 // Used when the user is browsing a folder share and taps a file row —
 // we keep the same ?token= that authorised the parent listing so the
-// downstream getFileInfo / createDownloadSession calls don't 401.
+// downstream getFileInfo / createDownloadSession calls don't 401. We
+// also snapshot the entire folder state so the user can pop back to the
+// browser via restoreFolderContext() instead of starting over.
 void RemoteShareViewModel::openFileFromCurrentFolder(const QString &linkcode)
 {
     if (linkcode.isEmpty()) return;
-    const QString token = m_rootToken;     // preserve before close() clears it
+
+    // Snapshot first — openFile() calls close() which clears everything.
+    if (m_mode == ModeFolder) {
+        m_folderSnapshot.stack   = m_folderStack;
+        m_folderSnapshot.token   = m_rootToken;
+        m_folderSnapshot.items   = m_fileListModel->items();
+        m_folderSnapshot.page    = m_currentPage;
+        m_folderSnapshot.total   = m_totalCount;
+        m_folderSnapshot.hasMore = m_hasMore;
+        m_folderSnapshot.valid   = true;
+    }
+
     const QString fileUrl = tokenizedFileUrl(linkcode);
     openFile(fileUrl);
-    // openFile() reset m_rootToken to whatever it parsed from the URL we just
-    // synthesised — which is the same `token`, so we're good. (Guard kept
-    // for clarity in case the synthesis logic changes.)
-    if (m_rootToken.isEmpty() && !token.isEmpty()) m_rootToken = token;
+    // openFile() re-derives m_rootToken from the URL it just got — which
+    // includes the token we synthesised — so we don't need to fix it up.
+}
+
+bool RemoteShareViewModel::restoreFolderContext()
+{
+    if (!m_folderSnapshot.valid) return false;
+
+    // Bump seq: a file-mode getFileInfo (from openFileFromCurrentFolder)
+    // or createDownloadSession (from playCurrentFile) may still be in
+    // flight against the OLD mode. We do NOT want their main-thread
+    // callbacks to clobber the restored folder listing.
+    ++m_requestSeq;
+
+    // Tear down file state without nuking the snapshot.
+    m_currentFile.clear();
+    m_currentFileUrl.clear();
+    emit fileChanged();
+
+    // Reinstate folder state from snapshot.
+    m_folderStack = m_folderSnapshot.stack;
+    m_rootToken   = m_folderSnapshot.token;
+    m_fileListModel->resetItems(m_folderSnapshot.items);
+    m_currentPage = m_folderSnapshot.page;
+    m_totalCount  = m_folderSnapshot.total;
+    m_hasMore     = m_folderSnapshot.hasMore;
+    m_folderSnapshot = {};   // clear; hasFolderContext now returns false
+
+    setMode(ModeFolder);
+    setError(QString{});
+    setLoading(false);
+    emit folderChanged();
+    return true;
 }
 
 void RemoteShareViewModel::openFile(const QString &rawUrl)
@@ -208,12 +281,14 @@ void RemoteShareViewModel::openFile(const QString &rawUrl)
     m_currentFileUrl = canonical;
 
     QPointer<RemoteShareViewModel> guard(this);
+    FshareApi *api      = m_api;
+    const quint64 mySeq = m_requestSeq;
     setLoading(true);
-    QtConcurrent::run([this, guard, canonical]() {
-        if (!guard) return;
-        auto resp = m_api->getFileInfo(canonical);
-        QMetaObject::invokeMethod(guard.data(), [guard, resp]() {
-            if (!guard) return;
+    QtConcurrent::run([api, guard, canonical, mySeq]() {
+        if (!guard || !api) return;
+        auto resp = api->getFileInfo(canonical);
+        QMetaObject::invokeMethod(guard.data(), [guard, resp, mySeq]() {
+            if (!guard || guard->m_requestSeq != mySeq) return;
             guard->setLoading(false);
             if (resp.isError()) {
                 guard->setError(resp.error().message.isEmpty()
@@ -234,12 +309,20 @@ void RemoteShareViewModel::openFile(const QString &rawUrl)
 void RemoteShareViewModel::navigateInto(const QString &linkcode, const QString &name)
 {
     if (m_mode != ModeFolder || linkcode.isEmpty()) return;
+    // Bump seq BEFORE mutating state so any pending listFiles from the
+    // parent folder discards itself in its main-thread callback. Without
+    // this, a slow parent-folder fetch could land after we navigated in
+    // and overwrite the child folder's items.
+    ++m_requestSeq;
     m_folderStack.append({ linkcode, name.isEmpty() ? linkcode : name,
                             tokenizedFolderUrl(linkcode) });
     m_fileListModel->resetItems({});
     m_currentPage = 0;
     m_totalCount  = 0;
     m_hasMore     = false;
+    // Selection is scoped to a single folder listing — clear when changing
+    // levels so checkboxes from level N-1 don't ghost over the new view.
+    if (!m_selected.isEmpty()) { m_selected.clear(); emit selectionChanged(); }
     emit folderChanged();
     fetchFolderPage(0);
 }
@@ -247,11 +330,15 @@ void RemoteShareViewModel::navigateInto(const QString &linkcode, const QString &
 void RemoteShareViewModel::navigateBack()
 {
     if (m_folderStack.size() <= 1) return;
+    // Same logic as navigateInto: invalidate child-folder requests before
+    // we pop back so a late response can't pollute the parent listing.
+    ++m_requestSeq;
     m_folderStack.removeLast();
     m_fileListModel->resetItems({});
     m_currentPage = 0;
     m_totalCount  = 0;
     m_hasMore     = false;
+    if (!m_selected.isEmpty()) { m_selected.clear(); emit selectionChanged(); }
     emit folderChanged();
     fetchFolderPage(0);
 }
@@ -268,12 +355,17 @@ void RemoteShareViewModel::fetchFolderPage(int page)
     const QString folderUrl = m_folderStack.last().url;
 
     QPointer<RemoteShareViewModel> guard(this);
+    FshareApi *api      = m_api;
+    const quint64 mySeq = m_requestSeq;
     setLoading(true);
-    QtConcurrent::run([this, guard, folderUrl, page]() {
-        if (!guard) return;
-        auto resp = m_api->listFiles(folderUrl, page, kPageSize);
-        QMetaObject::invokeMethod(guard.data(), [guard, resp, page]() {
-            if (!guard) return;
+    QtConcurrent::run([api, guard, folderUrl, page, mySeq]() {
+        if (!guard || !api) return;
+        auto resp = api->listFiles(folderUrl, page, kPageSize);
+        QMetaObject::invokeMethod(guard.data(), [guard, resp, page, mySeq]() {
+            // Object alive + still on the SAME folder we kicked the
+            // request off for. A stale response (user navigated away mid
+            // load, or closed the dialog) is dropped silently.
+            if (!guard || guard->m_requestSeq != mySeq) return;
             guard->setLoading(false);
             if (resp.isError()) {
                 guard->setError(resp.error().message.isEmpty()
@@ -316,13 +408,19 @@ void RemoteShareViewModel::playCurrentFile(const QString &password)
     const QString name = m_currentFile.value(QStringLiteral("name")).toString();
 
     QPointer<RemoteShareViewModel> guard(this);
+    FshareApi *api      = m_api;
+    const quint64 mySeq = m_requestSeq;
     setLoading(true);
     const QString url = m_currentFileUrl;
-    QtConcurrent::run([this, guard, url, password, name]() {
-        if (!guard) return;
-        auto resp = m_api->createDownloadSession(url, password);
-        QMetaObject::invokeMethod(guard.data(), [guard, resp, name]() {
-            if (!guard) return;
+    QtConcurrent::run([api, guard, url, password, name, mySeq]() {
+        if (!guard || !api) return;
+        auto resp = api->createDownloadSession(url, password);
+        QMetaObject::invokeMethod(guard.data(), [guard, resp, name, mySeq]() {
+            // If the user navigated away (closed the sheet, restored folder
+            // context, opened another file) while we were waiting on the
+            // session, don't fire the OS player for a file they're no
+            // longer looking at.
+            if (!guard || guard->m_requestSeq != mySeq) return;
             guard->setLoading(false);
             if (resp.isError()) {
                 guard->setError(resp.error().message.isEmpty()
@@ -379,6 +477,56 @@ void RemoteShareViewModel::copyFolderItemLink(const QString &linkcode, bool isFo
         emit linkCopied();
         emit operationMessage(tr("Đã sao chép link"), false);
     }
+}
+
+// ─── Bulk selection ────────────────────────────────────────────────────────
+
+void RemoteShareViewModel::toggleSelection(const QString &linkcode)
+{
+    if (linkcode.isEmpty()) return;
+    if (m_selected.contains(linkcode)) m_selected.remove(linkcode);
+    else                                m_selected.insert(linkcode);
+    emit selectionChanged();
+}
+
+// "All" means every FILE row in the current listing — folders are skipped
+// because bulk-downloading a folder is materially different (it kicks off
+// a recursive crawl, not a single transfer) and would surprise users who
+// hit "Tải đã chọn".
+void RemoteShareViewModel::selectAllFiles()
+{
+    if (!m_fileListModel) return;
+    bool changed = false;
+    for (const FileItem &f : m_fileListModel->items()) {
+        if (f.isFile() && !f.linkcode.isEmpty() && !m_selected.contains(f.linkcode)) {
+            m_selected.insert(f.linkcode);
+            changed = true;
+        }
+    }
+    if (changed) emit selectionChanged();
+}
+
+void RemoteShareViewModel::clearSelection()
+{
+    if (m_selected.isEmpty()) return;
+    m_selected.clear();
+    emit selectionChanged();
+}
+
+void RemoteShareViewModel::downloadSelected(const QString &password)
+{
+    if (m_selected.isEmpty() || !m_downloadVm) return;
+    const QString folder = m_downloadVm->defaultSaveFolder();
+    int queued = 0;
+    for (const QString &lc : m_selected) {
+        if (lc.isEmpty()) continue;
+        m_downloadVm->addDownload(tokenizedFileUrl(lc), folder, password);
+        ++queued;
+    }
+    emit operationMessage(tr("Đã thêm %1 file vào danh sách tải").arg(queued), false);
+    // Selection isn't auto-cleared so the user can keep working with the
+    // same set (e.g. retry / copy links). QML "Bỏ chọn" button calls
+    // clearSelection() explicitly.
 }
 
 // ─── Static helpers ────────────────────────────────────────────────────────

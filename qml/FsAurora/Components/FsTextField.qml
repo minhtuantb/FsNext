@@ -59,7 +59,7 @@ Item {
                 radius: parent.radius + 3
                 color: "transparent"
                 border.width: 3
-                border.color: root.error !== "" ? Qt.rgba(0.835, 0.188, 0.188, 0.22)
+                border.color: root.error !== "" ? AuroraTheme.dangerGlow
                                                 : AuroraTheme.accentGlow
                 z: -1
             }

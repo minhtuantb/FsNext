@@ -886,6 +886,15 @@ void SyncService::rebuildWatcher()
     QSet<QString> visited;                           // canonical-path cycle guard
     for (const SyncFolder &f : m_folders) {
         if (!f.enabled) continue;
+        // QFileInfo::isDir() is a stat() syscall and CAN block on a slow /
+        // disconnected network mount (UNC path, mapped drive over VPN, etc.)
+        // — long enough to freeze the GUI for the user-visible duration of
+        // the OS SMB timeout.  We accept that risk here because removing the
+        // check just shifts the same syscall into QFileSystemWatcher::addPaths
+        // and we lose the explicit "skip nonexistent root" branch.  If a
+        // future regression points at GUI hangs during sync-folder load,
+        // refactor rebuildWatcher() to run on a worker thread and post the
+        // resulting path list back via QMetaObject::invokeMethod.
         if (!QFileInfo(f.localPath).isDir()) continue;
         fresh.append(f.localPath);
 

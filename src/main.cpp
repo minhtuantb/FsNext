@@ -1,10 +1,13 @@
 #include "app/Application.h"
 #include "app/AppContext.h"
 #include "core/services/AuthService.h"
+#include "core/services/SettingsService.h"
 #include "core/services/TransferService.h"
 #include "platform/SingleInstance.h"
 #include "platform/SystemTray.h"
+#include "platform/TaskbarProgress.h"
 #include "viewmodels/LanguageViewModel.h"
+#include "viewmodels/TransferHudViewModel.h"
 
 #include <QApplication>          // QSystemTrayIcon needs QApplication, not QGuiApplication
 #include <QQmlApplicationEngine>
@@ -22,6 +25,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QMutex>
+#include <QThreadPool>
 #include <cstdlib>
 #include <exception>
 
@@ -168,10 +172,11 @@ int main(int argc, char *argv[])
     fsnext::Application::initCurl();
 
     QApplication app(argc, argv);
-    // NB: setQuitOnLastWindowClosed(false) is deferred until AFTER tray.setup()
-    // succeeds — without a tray, the only way to "quit" must remain closing the
-    // last window (otherwise headless CI / desktops without tray would leak the
-    // process).  See the post-engine block below.
+    // NB: setQuitOnLastWindowClosed(false) is set UNCONDITIONALLY below
+    // (post-engine). The earlier gated-on-tray placement caused the app to
+    // silently quit when transfers finished + mini auto-hid on a machine
+    // where tray.setup() raced and returned false. User has explicit quit
+    // paths via close-confirm dialog + tray menu.
     app.setOrganizationName(QStringLiteral("FPT"));
     app.setOrganizationDomain(QStringLiteral("fshare.vn"));   // duplicated below for re-locking
     app.setApplicationName(QStringLiteral("FsNext"));
@@ -228,6 +233,16 @@ int main(int argc, char *argv[])
     // Initialize SSL
     fsnext::Application::initSsl();
 
+    // ── Application-context scope ────────────────────────────────────────────
+    // Everything below — AppContext (and the services it owns: HttpClient,
+    // FshareApi, TransferOrchestrator, etc.), the QML engine, the tray icon,
+    // and all signal wiring that captures them — lives inside this block so
+    // it destructs BEFORE cleanupCurl() runs at end-of-main.  Without the
+    // scope, HttpClient::~HttpClient() (which calls curl_share_cleanup) ran
+    // AFTER curl_global_cleanup, which libcurl explicitly documents as
+    // undefined behaviour.
+    int result = 0;
+    {
     // Create dependency injection container
     fsnext::AppContext context;
     context.init();
@@ -274,28 +289,42 @@ int main(int argc, char *argv[])
     engine.load(mainUrl);
 
     if (engine.rootObjects().isEmpty()) {
+        // Don't cleanupCurl() here — we're inside the application-context
+        // scope and AppContext (owning HttpClient) hasn't destructed yet.
+        // Set result and let the scope exit destruct services FIRST, then
+        // the post-scope code runs curl cleanup in the correct order.
         qCritical() << "[FsNext] No root objects created";
-        fsnext::Application::cleanupCurl();
-        return -1;
-    }
+        result = -1;
+    } else {
 
     qDebug() << "[FsNext] Application started, version:" << fsnext::Application::appVersion();
 
     // Try auto-login with saved credentials
     QTimer::singleShot(100, context.authService(), &fsnext::AuthService::autoLogin);
 
+    // Disable Qt's "quit when the last window closes" behaviour
+    // UNCONDITIONALLY. Reasoning: the user has explicit quit paths in every
+    // configuration — the close-confirm dialog ("Thoát hẳn"), the tray menu
+    // "Thoát", and the Main.qml onClosing branch when no minimize-to-tray
+    // is requested. Leaving Qt's implicit quit ON meant that as soon as
+    // BOTH the main window (hidden-to-tray) and the mini HUD (auto-hidden
+    // 30 s after transfers finish) were no longer visible, Qt would tear
+    // down the process — the user perceived this as "the app quits when
+    // upload finishes." Even on edge platforms with no system tray, the X
+    // button still hits the confirm dialog whose "Thoát hẳn" calls
+    // Qt.quit() explicitly, so we never leak an invisible process.
+    QApplication::setQuitOnLastWindowClosed(false);
+
     // System tray — owns its own QSystemTrayIcon.  Wired here (not in
     // AppContext::init) because tray needs a QApplication and the QML root
     // window to already exist.
     fsnext::SystemTray tray(&engine);
     if (tray.setup()) {
-        // Only safe to enable minimize-to-tray once we KNOW there's a tray to
-        // restore from.  Without this guard, closing the window on a desktop
-        // without tray would leave the app running invisibly forever.
-        QApplication::setQuitOnLastWindowClosed(false);
-        // Show / hide the root window when user clicks the tray.
-        QObject::connect(&tray, &fsnext::SystemTray::showWindowRequested,
-                         &app, [&engine]() {
+
+        // Shared "bring main window forward" closure — reused by DoubleClick
+        // (immediate) and Trigger (after the 250 ms guard; P0 fallback path
+        // until the popup window ships in P1).
+        auto raiseMainWindow = [&engine]() {
             const auto roots = engine.rootObjects();
             if (roots.isEmpty()) return;
             auto *w = qobject_cast<QQuickWindow *>(roots.first());
@@ -303,15 +332,231 @@ int main(int argc, char *argv[])
             w->show();
             w->raise();
             w->requestActivate();
+        };
+
+        // Tray double-click → main window.
+        QObject::connect(&tray, &fsnext::SystemTray::showWindowRequested,
+                         &app, raiseMainWindow);
+
+        // Tray single-click → toggle the persistent floating HUD widget
+        // (MiniHudWindow in pinned mode). The widget stays over other apps
+        // until toggled off — see Main.qml toggleHudWidget(). trayRect is
+        // passed for signature compatibility but unused (the widget uses its
+        // own saved/default top-right position, not a tray anchor).
+        QObject::connect(&tray, &fsnext::SystemTray::togglePopupRequested,
+                         &app, [&engine, &tray]() {
+            const auto roots = engine.rootObjects();
+            if (roots.isEmpty()) return;
+            const QRect rect = tray.trayGeometry();
+            QMetaObject::invokeMethod(roots.first(), "toggleHudWidget",
+                                      Q_ARG(QVariant, QVariant::fromValue(rect)));
         });
+
         QObject::connect(&tray, &fsnext::SystemTray::pauseAllRequested,
                          &app, [&context]() {
             // TransferService::pauseAll covers both download and upload queues
             // (it iterates m_tasks regardless of TransferType).
             if (auto *svc = context.transferService()) svc->pauseAll();
         });
+
+        // P3: tray menu → "Hiện mini HUD".  Invoke a QML method on root
+        // that pops the floating mini regardless of whether the main
+        // window is currently visible.
+        QObject::connect(&tray, &fsnext::SystemTray::showMiniRequested,
+                         &app, [&engine]() {
+            const auto roots = engine.rootObjects();
+            if (roots.isEmpty()) return;
+            QMetaObject::invokeMethod(roots.first(), "showMiniHud");
+        });
+
+        // P3: tray menu → "Cài đặt thông báo".  Open main + navigate to
+        // Settings page.  Pages.settings == 8 (see Pages.qml) — pass via
+        // setProperty so we don't depend on a QML enum import here.
+        QObject::connect(&tray, &fsnext::SystemTray::openSettingsRequested,
+                         &app, [&engine]() {
+            const auto roots = engine.rootObjects();
+            if (roots.isEmpty()) return;
+            auto *w = qobject_cast<QQuickWindow*>(roots.first());
+            if (!w) return;
+            w->show(); w->raise(); w->requestActivate();
+            QMetaObject::invokeMethod(roots.first(), "navigateToSettings");
+        });
+
         QObject::connect(&tray, &fsnext::SystemTray::quitRequested,
                          &app, &QApplication::quit);
+
+        // ── HUD ↔ tray wiring ────────────────────────────────────────────
+        // Tray icon colour + tooltip follow HUD VM counters.  countersChanged
+        // is throttled (250 ms debounce inside the VM) so this connection
+        // can't fire faster than the OS-level setIcon() can paint.
+        if (auto *hudVM = context.hudViewModel()) {
+            QObject::connect(hudVM, &fsnext::TransferHudViewModel::countersChanged,
+                             &app, [&tray, hudVM]() {
+                tray.setHudHint(hudVM->activeTotal(),
+                                hudVM->pendingTotal(),
+                                hudVM->failedTotal());
+            });
+            // Initial paint — without this the tray stays Idle until the
+            // first counter change.  Matters when a resumed in-flight task
+            // already shifted the VM to Active during AppContext::init.
+            tray.setHudHint(hudVM->activeTotal(),
+                            hudVM->pendingTotal(),
+                            hudVM->failedTotal());
+
+            // Balloon on terminal events — gated by SettingsService so
+            // users who find it noisy can turn it off without losing the
+            // (always-on) tray colour swap.  Setting is read at fire time
+            // so toggling it in Settings takes effect immediately.
+            //
+            // P3: the taskId is forwarded into showNotification's
+            // clickContextId so the user can click the balloon to jump
+            // straight to that task in the main window (balloonClicked
+            // wiring below).
+            // Helper: is the user actively LOOKING at the main window right
+            // now? Returns true only when the window is on-screen (not
+            // hidden-to-tray, not minimised) AND has focus. Anything else
+            // (minimised, hidden behind another app, tray-only) counts as
+            // "user not looking" — that's when a tray balloon is useful.
+            auto isUserLooking = [&engine]() -> bool {
+                const auto roots = engine.rootObjects();
+                if (roots.isEmpty()) return false;
+                auto *w = qobject_cast<QQuickWindow*>(roots.first());
+                if (!w) return false;
+                const auto v = w->visibility();
+                const bool onScreen =
+                       v == QWindow::Windowed
+                    || v == QWindow::Maximized
+                    || v == QWindow::FullScreen
+                    || v == QWindow::AutomaticVisibility;
+                return onScreen && w->isActive();
+            };
+
+            QObject::connect(hudVM, &fsnext::TransferHudViewModel::transferDone,
+                             &app, [&tray, &context, isUserLooking](
+                                                      const QString &taskId,
+                                                      const QString &fileName,
+                                                      bool success,
+                                                      const QString &errorMessage) {
+                auto *settings = context.settingsService();
+                if (settings && !settings->notifyOnTransferDone()) return;
+                // Skip the balloon when the user is already looking at the
+                // app — they'll see the in-app toast / list update without
+                // a redundant OS notification. Only fire when the window is
+                // hidden-to-tray, minimised, or behind another app.
+                if (isUserLooking()) return;
+
+                // Look up the task to differentiate the title by direction
+                // (download vs upload) and sync-vs-manual. Falls back to a
+                // generic title if findTask returns an empty record (rare —
+                // history sweep timer can race with the just-completed
+                // signal, especially for fast small files).
+                fsnext::TransferType type    = fsnext::TransferType::Download;
+                bool                 isSync  = false;
+                if (auto *svc = context.transferService()) {
+                    const auto t = svc->findTask(taskId);
+                    type   = t.type;
+                    isSync = t.isSyncTask;
+                }
+
+                if (success) {
+                    QString title;
+                    if (isSync)
+                        title = QObject::tr("Đã đồng bộ");
+                    else if (type == fsnext::TransferType::Upload)
+                        title = QObject::tr("Đã tải lên xong");
+                    else
+                        title = QObject::tr("Đã tải xuống xong");
+                    tray.showNotification(title, fileName,
+                                          /*isError=*/false, taskId);
+                } else {
+                    QString title;
+                    if (isSync)
+                        title = QObject::tr("Đồng bộ thất bại: ") + fileName;
+                    else if (type == fsnext::TransferType::Upload)
+                        title = QObject::tr("Tải lên thất bại: ") + fileName;
+                    else
+                        title = QObject::tr("Tải xuống thất bại: ") + fileName;
+                    tray.showNotification(title, errorMessage,
+                                          /*isError=*/true, taskId);
+                }
+            });
+
+            // P3: balloon click → focusTask.  Reuses the same QML path
+            // popup row-clicks take (Main.qml listens to hudVM's
+            // taskFocusRequested and dispatches to the destination page).
+            QObject::connect(&tray, &fsnext::SystemTray::balloonClicked,
+                             &app, [&engine, hudVM](const QString &taskId) {
+                // Bring main window forward first so the focus dispatch
+                // has somewhere to land — Loaders are inactive when the
+                // window is hidden.
+                const auto roots = engine.rootObjects();
+                if (!roots.isEmpty()) {
+                    if (auto *w = qobject_cast<QQuickWindow*>(roots.first())) {
+                        w->show(); w->raise(); w->requestActivate();
+                    }
+                }
+                // Empty id (older toasts / future non-task balloons) just
+                // raises the window — already done above.
+                if (!taskId.isEmpty()) hudVM->focusTask(taskId);
+            });
+        }
+    }
+
+    // ── Windows Taskbar Progress (spec v3) ──────────────────────────────────
+    // Native progress bar on the taskbar button, independent of the tray.
+    // Lives for the app lifetime (local in main()).  No-op on non-Windows /
+    // when ITaskbarList3 is unavailable.  Driven by the HUD VM's aggregate
+    // progress + state.
+    fsnext::TaskbarProgress taskbarProgress;
+    if (auto *hudVM = context.hudViewModel()) {
+        // Bind the main window handle once it exists.  winId() is stable
+        // after the window is created (engine.load already ran above).
+        auto bindTaskbarWindow = [&engine, &taskbarProgress]() {
+            const auto roots = engine.rootObjects();
+            if (roots.isEmpty()) return;
+            if (auto *w = qobject_cast<QQuickWindow *>(roots.first()))
+                taskbarProgress.setWindow(w->winId());
+        };
+        bindTaskbarWindow();
+
+        // Push state + progress whenever counters or progress shift.  Both
+        // signals are debounced inside the VM (250ms), so the COM calls
+        // stay bounded.  Gated by the showTaskbarProgress setting.
+        auto pushTaskbar = [hudVM, &context, &taskbarProgress]() {
+            auto *settings = context.settingsService();
+            if (settings && !settings->showTaskbarProgress()) {
+                taskbarProgress.setState(fsnext::TaskbarProgress::NoProgress);
+                return;
+            }
+            if (hudVM->failedTotal() > 0 && hudVM->activeTotal() == 0) {
+                taskbarProgress.setState(fsnext::TaskbarProgress::Error);
+            } else if (hudVM->runState() == QStringLiteral("paused")
+                       && hudVM->activeTotal() == 0) {
+                taskbarProgress.setState(fsnext::TaskbarProgress::Paused);
+            } else if (hudVM->activeTotal() > 0) {
+                taskbarProgress.setState(fsnext::TaskbarProgress::Normal);
+                const double p = hudVM->aggregateProgress();
+                if (p >= 0.0) taskbarProgress.setProgress(p);
+            } else {
+                taskbarProgress.setState(fsnext::TaskbarProgress::NoProgress);
+            }
+        };
+        // Receiver context is &taskbarProgress (not &app) so these
+        // connections auto-disconnect the instant taskbarProgress destructs
+        // at shutdown — closing the narrow window where a late hudVM emit
+        // (hudVM outlives taskbarProgress: it's owned by `context`, declared
+        // earlier in main → destructed later) could fire a lambda against a
+        // dangling &taskbarProgress reference.
+        QObject::connect(hudVM, &fsnext::TransferHudViewModel::countersChanged,
+                         &taskbarProgress, pushTaskbar);
+        QObject::connect(hudVM, &fsnext::TransferHudViewModel::aggregateProgressChanged,
+                         &taskbarProgress, pushTaskbar);
+        // React live if the user toggles the setting.
+        if (auto *settings = context.settingsService()) {
+            QObject::connect(settings, &fsnext::SettingsService::settingsChanged,
+                             &taskbarProgress, pushTaskbar);
+        }
+        pushTaskbar();  // initial
     }
 
     // ── Single-instance message routing ────────────────────────────────────
@@ -319,8 +564,15 @@ int main(int argc, char *argv[])
     // QLocalSocket, surface it through the existing window-level signal
     // `openDownloadWithLinks` that drag/drop and paste already use.  This
     // keeps the addDownloadDialog's pre-fill logic in one place.
+    //
+    // Connection target is `&engine` (not `&app`) on purpose: the lambda
+    // captures `&engine`, and `&engine` lives inside this scope while
+    // `&singleInstance` lives outside.  Once the scope exits and `engine`
+    // destructs, Qt auto-removes this connection — without that, a late
+    // message from a third FsNext.exe arriving during shutdown would fire
+    // the lambda against a freed QQmlApplicationEngine.
     QObject::connect(&singleInstance, &fsnext::SingleInstance::messageReceived,
-                     &app, [&engine](const QString &msg) {
+                     &engine, [&engine](const QString &msg) {
         const auto roots = engine.rootObjects();
         if (roots.isEmpty()) return;
         auto *w = qobject_cast<QQuickWindow *>(roots.first());
@@ -340,7 +592,27 @@ int main(int argc, char *argv[])
                                   Q_ARG(QString, msg));
     });
 
-    int result = app.exec();
+    result = app.exec();
+
+    // ── Shutdown drain ───────────────────────────────────────────────────────
+    // QtConcurrent::run lambdas across AuthService / FileService /
+    // OAuthService / FileSyncWorker / TransferService capture raw service
+    // pointers (m_api, m_http, m_refresh, db). Those services are owned by
+    // AppContext and would be destructed at the closing brace of this scope;
+    // any task still running at that moment would dereference a freed
+    // pointer.  Block until the global thread pool drains so every captured
+    // pointer is still valid when its lambda finishes.  5 s is the same
+    // bound TransferService uses for individual worker threads — long
+    // enough to let a typical in-flight HTTP request finish, short enough
+    // that a wedged network call doesn't keep the user staring at a frozen
+    // exit.
+    QThreadPool::globalInstance()->waitForDone(5000);
+    }   // ── end of "Main.qml loaded" else branch ─────────────────────────────
+    }   // ── End of application-context scope ───────────────────────────────
+    // AppContext, the QML engine, and the tray icon are now destructed.
+    // HttpClient::~HttpClient ran (curl_share_cleanup) WHILE the curl global
+    // state is still alive — that's the whole point of this block.  From
+    // here on we only touch process-global state (logger, curl global).
 
     // Uninstall logger first so any lingering qDebug() during shutdown goes to default handler
     qInstallMessageHandler(nullptr);

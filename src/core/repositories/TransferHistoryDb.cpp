@@ -14,6 +14,21 @@ namespace {
 constexpr int kTypeDownload = 0;
 constexpr int kTypeUpload   = 1;
 
+// Coerce a possibly-null QString to a non-null empty string.
+//
+// Every TEXT column in transfer_history is declared `NOT NULL DEFAULT ''`.
+// The DEFAULT only kicks in when the column is OMITTED from the INSERT — it
+// does NOT apply when we explicitly bind a value.  Qt's SQLite driver maps a
+// *null* QString (QString(), i.e. isNull()==true) to SQL NULL, which then
+// violates the NOT NULL constraint and the whole row INSERT fails with:
+//   "NOT NULL constraint failed: transfer_history.local_path".
+//
+// This bit uploads specifically: an upload TransferTask has no localPath
+// (downloads have no sourcePath), so the field is a null QString and EVERY
+// completed upload failed to persist to history (silent data loss — the row
+// just never appeared after restart).  Mirrors FileCacheDB::nonNullStr.
+inline QString nn(const QString &s) { return s.isNull() ? QString::fromLatin1("") : s; }
+
 int typeToInt(TransferType t) {
     return (t == TransferType::Upload) ? kTypeUpload : kTypeDownload;
 }
@@ -50,23 +65,27 @@ void bindTaskRow(QSqlQuery &q,
                  TransferType type,
                  const TransferTask &t)
 {
-    q.bindValue(QStringLiteral(":id"),            t.id);
-    q.bindValue(QStringLiteral(":user_id"),       userId);
+    // Every TEXT column is NOT NULL — wrap each in nn() so a null QString
+    // (e.g. localPath on an upload, sourcePath on a download) binds as '' not
+    // SQL NULL.  user_id / id come from non-null sources but are wrapped too
+    // for uniformity / future-proofing.
+    q.bindValue(QStringLiteral(":id"),            nn(t.id));
+    q.bindValue(QStringLiteral(":user_id"),       nn(userId));
     q.bindValue(QStringLiteral(":type"),          typeToInt(type));
     q.bindValue(QStringLiteral(":state"),         static_cast<int>(t.state));
-    q.bindValue(QStringLiteral(":file_name"),     t.fileName);
+    q.bindValue(QStringLiteral(":file_name"),     nn(t.fileName));
     q.bindValue(QStringLiteral(":file_size"),     static_cast<qint64>(t.fileSize));
-    q.bindValue(QStringLiteral(":linkcode"),      t.linkcode);
-    q.bindValue(QStringLiteral(":local_path"),    t.localPath);
-    q.bindValue(QStringLiteral(":source_path"),   t.sourcePath);
-    q.bindValue(QStringLiteral(":folder_id"),     t.folderId);
-    q.bindValue(QStringLiteral(":description"),   t.description);
+    q.bindValue(QStringLiteral(":linkcode"),      nn(t.linkcode));
+    q.bindValue(QStringLiteral(":local_path"),    nn(t.localPath));
+    q.bindValue(QStringLiteral(":source_path"),   nn(t.sourcePath));
+    q.bindValue(QStringLiteral(":folder_id"),     nn(t.folderId));
+    q.bindValue(QStringLiteral(":description"),   nn(t.description));
     q.bindValue(QStringLiteral(":secured"),       t.secured ? 1 : 0);
     q.bindValue(QStringLiteral(":direct_link"),   t.directLink ? 1 : 0);
     q.bindValue(QStringLiteral(":progress"),      t.progress);
-    q.bindValue(QStringLiteral(":error_message"), t.errorMessage);
-    q.bindValue(QStringLiteral(":group_id"),      t.groupId);
-    q.bindValue(QStringLiteral(":folder_path"),   t.folderPath);
+    q.bindValue(QStringLiteral(":error_message"), nn(t.errorMessage));
+    q.bindValue(QStringLiteral(":group_id"),      nn(t.groupId));
+    q.bindValue(QStringLiteral(":folder_path"),   nn(t.folderPath));
     q.bindValue(QStringLiteral(":completed_at"),  t.completedAt);
 }
 

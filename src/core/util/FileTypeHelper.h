@@ -15,11 +15,18 @@ public:
     FileTypeHelper() = delete;
 
     // Extract lowercase extension from a filename (e.g. "report.pdf" → "pdf").
-    // Returns an empty string when no dot is found or the name ends with a dot.
+    // Returns an empty string when:
+    //   • no dot is found
+    //   • the name starts with a dot and has no other dot (dotfiles like
+    //     ".bashrc" — Unix convention treats those as having no extension,
+    //     not the suffix "bashrc"; this also matches FileNameSanitizer's
+    //     handling).
+    //   • the name ends with a dot ("foo." — trailing-dot names that
+    //     Windows itself rejects).
     static QString extension(const QString &fileName)
     {
         const int dot = fileName.lastIndexOf(QLatin1Char('.'));
-        if (dot < 0 || dot == fileName.size() - 1) return {};
+        if (dot < 1 || dot == fileName.size() - 1) return {};
         return fileName.mid(dot + 1).toLower();
     }
 

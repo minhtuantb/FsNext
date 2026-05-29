@@ -6,6 +6,11 @@
 #include <QStorageInfo>
 #include <QDebug>
 #include <QThread>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QElapsedTimer>
+#include <chrono>
 
 #ifdef _WIN32
 #include <io.h>
@@ -45,6 +50,132 @@ static constexpr int64_t MIN_SEGMENTED_BYTES = 2LL * 1024 * 1024;
 // the full 16-way parallelism.
 static constexpr int64_t MIN_BYTES_PER_SEGMENT = 2LL * 1024 * 1024;
 
+// Per-segment transient-failure retry budget for multi-segment downloads.
+// A segment that errors (connection reset, CDN hiccup) is re-issued for its
+// REMAINING byte range up to this many times before the whole download is
+// declared failed.  Mirrors the single-segment retry budget below.
+static constexpr int MAX_SEGMENT_RETRIES = 5;
+// Retry budget for the single-segment path (transient curl errors only).
+static constexpr int MAX_SINGLE_RETRIES  = 5;
+// Flush the resume journal to disk at most this often during a transfer.
+static constexpr qint64 SIDECAR_FLUSH_MS = 1000;
+
+// Short Vietnamese description for the few HTTP statuses our error messages
+// surface. Anything outside the map falls back to "Mã HTTP %1".
+static QString httpCodeDescription(long httpCode)
+{
+    switch (httpCode) {
+    case 0:   return {};
+    case 401: return QStringLiteral("phiên đăng nhập hết hạn");
+    case 403: return QStringLiteral("bị từ chối truy cập — link tải có thể đã hết hạn");
+    case 404: return QStringLiteral("không tìm thấy file trên máy chủ");
+    case 408: return QStringLiteral("máy chủ hết thời gian chờ");
+    case 416: return QStringLiteral("máy chủ không hỗ trợ tiếp tục (range)");
+    case 429: return QStringLiteral("đã vượt quá giới hạn yêu cầu (rate-limit)");
+    case 500: return QStringLiteral("lỗi nội bộ máy chủ");
+    case 502: return QStringLiteral("cổng máy chủ trung gian lỗi (bad gateway)");
+    case 503: return QStringLiteral("dịch vụ máy chủ không khả dụng");
+    case 504: return QStringLiteral("gateway hết thời gian chờ");
+    default:  return {};
+    }
+}
+
+// Build a human-readable failure line that names both the underlying CURL
+// error (if any) AND the HTTP status. `segIdx` ≥ 0 includes "(segment #N)".
+static QString formatDownloadError(CURLcode curl, long httpCode, int segIdx = -1)
+{
+    QString out;
+    const QString httpDesc = httpCodeDescription(httpCode);
+    if (httpCode > 0) {
+        out = QStringLiteral("HTTP %1").arg(httpCode);
+        if (!httpDesc.isEmpty()) out += QStringLiteral(" — ") + httpDesc;
+    }
+    if (curl != CURLE_OK) {
+        const QString why = QString::fromUtf8(curl_easy_strerror(curl));
+        if (!out.isEmpty()) out += QStringLiteral("; ");
+        out += QStringLiteral("CURL: %1 (mã %2)").arg(why).arg(static_cast<int>(curl));
+    }
+    if (segIdx >= 0)
+        out += QStringLiteral(" [segment #%1]").arg(segIdx);
+    if (out.isEmpty())
+        out = QStringLiteral("Lỗi không xác định");
+    return out;
+}
+
+QString DownloadEngine::sidecarPath(const QString &localPath)
+{
+    return localPath + QStringLiteral(".fsdownload");
+}
+
+bool DownloadEngine::writeSidecar(const QString &localPath, int64_t fileSize,
+                                  const std::vector<SegmentContext> &ctx) const
+{
+    QJsonObject root;
+    root[QStringLiteral("v")]    = 1;
+    root[QStringLiteral("size")] = static_cast<double>(fileSize);
+    QJsonArray segs;
+    for (const SegmentContext &c : ctx) {
+        QJsonObject s;
+        s[QStringLiteral("s")] = static_cast<double>(c.segStart);
+        s[QStringLiteral("e")] = static_cast<double>(c.segEnd);
+        s[QStringLiteral("c")] = static_cast<double>(c.writeOffset);
+        segs.append(s);
+    }
+    root[QStringLiteral("segs")] = segs;
+
+    QFile f(sidecarPath(localPath));
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        return false;
+    f.write(QJsonDocument(root).toJson(QJsonDocument::Compact));
+    f.close();
+    return true;
+}
+
+bool DownloadEngine::readSidecar(const QString &localPath, int64_t fileSize,
+                                 std::vector<SegmentState> &out) const
+{
+    // The journal is only trustworthy if the pre-allocated data file still
+    // exists at exactly the expected size — otherwise the byte offsets in it
+    // point into a file that no longer matches, so we start fresh.
+    QFileInfo dataInfo(localPath);
+    if (!dataInfo.exists() || dataInfo.size() != fileSize)
+        return false;
+
+    QFile f(sidecarPath(localPath));
+    if (!f.open(QIODevice::ReadOnly))
+        return false;
+    const QByteArray raw = f.readAll();
+    f.close();
+
+    const QJsonDocument doc = QJsonDocument::fromJson(raw);
+    if (!doc.isObject())
+        return false;
+    const QJsonObject root = doc.object();
+    if (static_cast<int64_t>(root.value(QStringLiteral("size")).toDouble(0)) != fileSize)
+        return false;
+    const QJsonArray segs = root.value(QStringLiteral("segs")).toArray();
+    if (segs.isEmpty())
+        return false;
+
+    out.clear();
+    for (const QJsonValue &v : segs) {
+        const QJsonObject s = v.toObject();
+        SegmentState st;
+        st.start = static_cast<int64_t>(s.value(QStringLiteral("s")).toDouble(-1));
+        st.end   = static_cast<int64_t>(s.value(QStringLiteral("e")).toDouble(-1));
+        st.cur   = static_cast<int64_t>(s.value(QStringLiteral("c")).toDouble(-1));
+        // Reject anything malformed: ranges must be ordered, cur within
+        // [start, end+1].  A single bad entry voids the whole journal so we
+        // never seek to a garbage offset and corrupt the file.
+        if (st.start < 0 || st.end < st.start || st.cur < st.start || st.cur > st.end + 1) {
+            out.clear();
+            return false;
+        }
+        out.push_back(st);
+    }
+    return true;
+}
+
 DownloadEngine::DownloadEngine(QObject *parent)
     : QObject(parent)
 {
@@ -56,6 +187,12 @@ DownloadEngine::~DownloadEngine()
         fclose(m_file);
         m_file = nullptr;
     }
+}
+
+void DownloadEngine::applyProxy(CURL *curl) const
+{
+    if (!m_proxyUrl.isEmpty())
+        curl_easy_setopt(curl, CURLOPT_PROXY, m_proxyUrl.toUtf8().constData());
 }
 
 // ── Pause helper ─────────────────────────────────────────
@@ -133,7 +270,10 @@ size_t DownloadEngine::segmentWriteCallback(char *ptr, size_t size, size_t nmemb
         return 0;
     const size_t wrote = fwrite(ptr, 1, total, ctx->file);
     if (wrote > 0) {
-        fflush(ctx->file);   // commit to OS immediately — prevents stale buffer
+        // The stream is opened unbuffered (_IONBF), so every fwrite goes
+        // straight to the OS — an explicit fflush here is redundant syscall
+        // overhead. The kernel buffer is what makes the bytes visible to the
+        // resume journal / a subsequent reopen after an app crash.
         ctx->writeOffset += static_cast<int64_t>(wrote);
     }
     return wrote;
@@ -151,10 +291,13 @@ int DownloadEngine::segmentProgressCallback(void *clientp, int64_t /*dltotal*/, 
     if (ctx->engine->waitIfPaused())
         return 1;
 
-    // Update this segment's bytes
+    // Update this segment's ABSOLUTE downloaded bytes from the write offset
+    // (segStart + bytes written so far), not curl's per-request dlnow. On a
+    // resumed segment dlnow restarts at 0 for the remaining range, so dlnow
+    // alone would under-count by the bytes already on disk.
     const int idx = ctx->segIndex;
     if (idx >= 0 && idx < static_cast<int>(ctx->engine->m_segBytes.size())) {
-        ctx->engine->m_segBytes[idx] = dlnow;
+        ctx->engine->m_segBytes[idx] = ctx->writeOffset - ctx->segStart;
     }
 
     // Aggregate total bytes
@@ -186,6 +329,7 @@ DownloadEngine::FileProbe DownloadEngine::probeFileInfo(const QString &url)
     curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
     curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1L);
+    applyProxy(curl);
     // Discard body — we only need headers
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
         +[](char *, size_t s, size_t n, void *) -> size_t { return s * n; });
@@ -244,23 +388,36 @@ DownloadEngine::FileProbe DownloadEngine::probeFileInfo(const QString &url)
 bool DownloadEngine::downloadMultiSegment(const QString &url, const QString &localPath,
                                            int64_t fileSize, int nSegments)
 {
-    qDebug() << "[DownloadEngine] Multi-segment:" << nSegments
-             << "segments for" << fileSize << "bytes";
-
-    // Pre-allocate the file at full size
-    {
+    // ── Resume detection ────────────────────────────────────
+    // A valid journal next to a full-size pre-allocated file means we can pick
+    // each segment back up from its recorded offset instead of re-fetching the
+    // whole file. The segment layout comes from the journal in that case (it
+    // may differ from the current `nSegments` setting).
+    std::vector<SegmentState> resumeSegs;
+    const bool resuming = readSidecar(localPath, fileSize, resumeSegs);
+    if (resuming) {
+        nSegments = static_cast<int>(resumeSegs.size());
+        qDebug() << "[DownloadEngine] Multi-segment RESUME:" << nSegments
+                 << "segments for" << fileSize << "bytes";
+    } else {
+        qDebug() << "[DownloadEngine] Multi-segment:" << nSegments
+                 << "segments for" << fileSize << "bytes";
+        // Pre-allocate the file at full size and drop any stale journal.
         QFile qf(localPath);
         if (qf.exists()) qf.remove();
         if (!qf.open(QIODevice::WriteOnly)) {
-            emit failed(QStringLiteral("Cannot create output file"));
+            emit failed(QStringLiteral("Không thể tạo file đích: %1").arg(localPath));
             return false;
         }
         if (!qf.resize(fileSize)) {
             qf.close();
-            emit failed(QStringLiteral("Cannot allocate file size"));
+            // Phrasing kept aligned with TransferService::isTransientDownloadError
+            // so a permanent filesystem failure isn't retried in a loop.
+            emit failed(QStringLiteral("Không thể tạo file đích (cấp phát %1 byte thất bại)").arg(fileSize));
             return false;
         }
         qf.close();
+        QFile::remove(sidecarPath(localPath));
     }
 
     // Open in r+b for concurrent writes at offsets. Use Unicode-safe helper
@@ -272,64 +429,55 @@ bool DownloadEngine::downloadMultiSegment(const QString &url, const QString &loc
     }
     // Disable stdio buffering so fseek+fwrite in the write callback is
     // direct-to-OS. Without this, interleaved seeks from different HTTP/2
-    // streams can confuse stdio's internal buffer position tracking:
-    //   Stream 0: fseek(A) → fwrite(data) → data in stdio buffer at pos A
-    //   Stream 1: fseek(B) → flushes stream 0's buffer... but internal
-    //             position may have drifted → data lands at wrong offset
-    // With _IONBF every fwrite goes straight through to the kernel.
+    // streams can confuse stdio's internal buffer position tracking.
     setvbuf(m_file, nullptr, _IONBF, 0);
 
-    // Setup per-segment contexts
+    // Per-segment state. contexts hands pointers to curl, so it must NOT be
+    // resized after this point.
     m_segBytes.assign(nSegments, 0);
     std::vector<SegmentContext> contexts(nSegments);
-    std::vector<std::string> rangeBuffers(nSegments);  // each stores "start-end"
+    std::vector<std::string> rangeBuffers(nSegments);   // "start-end" per segment
     std::vector<CURL *> handles(nSegments, nullptr);
+    std::vector<int>     segRetries(nSegments, 0);
+    std::vector<qint64>  segRetryAtMs(nSegments, -1);    // >=0 → awaiting re-add
+
+    for (int i = 0; i < nSegments; ++i) {
+        int64_t s, e, c;
+        if (resuming) { s = resumeSegs[i].start; e = resumeSegs[i].end; c = resumeSegs[i].cur; }
+        else {
+            s = (static_cast<int64_t>(i) * fileSize) / nSegments;
+            e = (i == nSegments - 1) ? (fileSize - 1)
+                : (((static_cast<int64_t>(i) + 1) * fileSize) / nSegments - 1);
+            c = s;
+        }
+        contexts[i].engine = this;
+        contexts[i].file = m_file;
+        contexts[i].segStart = s;
+        contexts[i].segEnd = e;
+        contexts[i].writeOffset = c;
+        contexts[i].segIndex = i;
+        m_segBytes[i] = c - s;
+    }
 
     CURLM *multi = curl_multi_init();
     if (!multi) {
         fclose(m_file); m_file = nullptr;
-        emit failed(QStringLiteral("CURL multi init failed"));
+        emit failed(QStringLiteral("Khởi tạo libcurl multi thất bại"));
         return false;
     }
-
-    // ── HTTP/2 multiplexing ─────────────────────────────────
-    // Instead of 8 separate TCP connections (each with its own TLS handshake
-    // and TCP slow-start), multiplex all byte-range streams over a SINGLE TCP
-    // connection using HTTP/2 framing. This:
-    //
-    //   • Saves 7 × TLS handshakes (~200 ms each) = ~1.4 s start-up saved
-    //   • Single congestion window ramps faster than 8 independent windows
-    //   • CDN sees 1 connection → less likely to trigger per-connection shaping
-    //   • Header compression (HPACK) reduces overhead for repeated Range headers
-    //
-    // CURLPIPE_MULTIPLEX tells the multi-handle to reuse connections and
-    // interleave HTTP/2 streams when the server supports it. Falls back
-    // gracefully to HTTP/1.1 separate connections if server doesn't support h2.
+    // HTTP/2 multiplexing — all byte-range streams share ONE TCP connection
+    // (1 TLS handshake, single congestion window). Falls back to HTTP/1.1
+    // separate connections if the server doesn't speak h2.
     curl_multi_setopt(multi, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
 
-    QByteArray urlBytes = url.toUtf8();
+    const QByteArray urlBytes = url.toUtf8();
 
-    for (int i = 0; i < nSegments; ++i) {
-        const int64_t segStart = (static_cast<int64_t>(i) * fileSize) / nSegments;
-        const int64_t segEnd = (i == nSegments - 1) ? (fileSize - 1)
-            : (((static_cast<int64_t>(i) + 1) * fileSize) / nSegments - 1);
-
-        rangeBuffers[i] = std::to_string(segStart) + "-" + std::to_string(segEnd);
-
-        contexts[i].engine = this;
-        contexts[i].file = m_file;
-        contexts[i].writeOffset = segStart;
-        contexts[i].segIndex = i;
-
+    // Build a fresh easy handle for segment `i` covering [from .. segEnd].
+    auto makeHandle = [&](int i, int64_t from) -> CURL * {
         CURL *h = curl_easy_init();
-        if (!h) {
-            for (CURL *e : handles) if (e) { curl_multi_remove_handle(multi, e); curl_easy_cleanup(e); }
-            curl_multi_cleanup(multi);
-            fclose(m_file); m_file = nullptr;
-            emit failed(QStringLiteral("CURL handle init failed"));
-            return false;
-        }
-
+        if (!h) return nullptr;
+        rangeBuffers[i] = std::to_string(from) + "-" + std::to_string(contexts[i].segEnd);
+        contexts[i].writeOffset = from;
         curl_easy_setopt(h, CURLOPT_URL, urlBytes.constData());
         curl_easy_setopt(h, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(h, CURLOPT_RANGE, rangeBuffers[i].c_str());
@@ -342,77 +490,174 @@ bool DownloadEngine::downloadMultiSegment(const QString &url, const QString &loc
         curl_easy_setopt(h, CURLOPT_SSL_VERIFYHOST, 2L);
         curl_easy_setopt(h, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
         curl_easy_setopt(h, CURLOPT_CONNECTTIMEOUT, 30L);
-
-        // ── HTTP/2 per-handle settings ──────────────────────
-        // Request HTTP/2 (falls back to HTTP/1.1 if server/proxy doesn't
-        // support it — no failure mode). PIPEWAIT tells this handle to wait
-        // for the multiplexed connection from handle 0 instead of opening a
-        // new TCP socket, ensuring all streams share the same socket.
+        applyProxy(h);
+        // Request HTTP/2; PIPEWAIT makes this handle reuse handle-0's socket
+        // instead of opening a new TCP connection.
         curl_easy_setopt(h, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
         curl_easy_setopt(h, CURLOPT_PIPEWAIT, 1L);
-
-        // ── TCP / throughput tuning (match IDM behaviour) ───
         curl_easy_setopt(h, CURLOPT_BUFFERSIZE, 256L * 1024);
         curl_easy_setopt(h, CURLOPT_TCP_NODELAY, 1L);
         curl_easy_setopt(h, CURLOPT_TCP_KEEPALIVE, 1L);
         curl_easy_setopt(h, CURLOPT_TCP_KEEPIDLE, 120L);
         curl_easy_setopt(h, CURLOPT_TCP_KEEPINTVL, 60L);
+        return h;
+    };
 
+    // Initial handle set — skip segments already complete from a prior run.
+    bool initError = false;
+    for (int i = 0; i < nSegments; ++i) {
+        if (contexts[i].writeOffset > contexts[i].segEnd)
+            continue;
+        CURL *h = makeHandle(i, contexts[i].writeOffset);
+        if (!h) { initError = true; break; }
         curl_multi_add_handle(multi, h);
         handles[i] = h;
     }
+    if (initError) {
+        for (CURL *e : handles) if (e) { curl_multi_remove_handle(multi, e); curl_easy_cleanup(e); }
+        curl_multi_cleanup(multi);
+        fclose(m_file); m_file = nullptr;
+        emit failed(QStringLiteral("Khởi tạo handle libcurl cho luồng tải thất bại"));
+        return false;
+    }
 
-    // ── Multi-perform event loop ────────────────────────────
-    // Tight poll interval (10 ms) vs old 250 ms. The OS wakes us when data
-    // arrives on any socket, so 10 ms is not a busy-spin — it's just the
-    // maximum sleep between data-available checks. IDM and other accelerators
-    // use similarly tight loops. The 250 ms original value was measurably
-    // bottlenecking throughput on fast links: at 100 MB/s, 250 ms of latency
-    // per poll iteration = 25 MB of missed buffering.
+    QElapsedTimer clock; clock.start();
+    qint64 lastFlushMs = 0;
+    bool terminal    = false;   // a segment exhausted its retry budget
+    bool rangeBroken = false;   // server ignored Range (200 instead of 206)
+
+    // Diagnostics — captured from the last segment failure so the user-facing
+    // error message can name the actual cause (curl text + HTTP code +
+    // segment index) instead of a generic "tải đa luồng thất bại".
+    CURLcode lastFailCurl = CURLE_OK;
+    long     lastFailHttp = 0;
+    int      lastFailSeg  = -1;
+
+    auto anyPending = [&]() {
+        for (qint64 t : segRetryAtMs) if (t >= 0) return true;
+        return false;
+    };
+
     int still = 0;
-    bool hadError = false;
     do {
         if (m_abort.load()) break;
         curl_multi_perform(multi, &still);
 
-        // Drain finished messages
+        // Drain finished messages — classify each as success / retryable error.
         CURLMsg *msg = nullptr;
         int msgsLeft = 0;
         while ((msg = curl_multi_info_read(multi, &msgsLeft)) != nullptr) {
             if (msg->msg != CURLMSG_DONE) continue;
-            if (msg->data.result != CURLE_OK) {
-                qWarning() << "[DownloadEngine] Segment failed:" << curl_easy_strerror(msg->data.result);
-                hadError = true;
+            CURL *eh = msg->easy_handle;
+            const CURLcode res = msg->data.result;
+            long httpCode = 0;
+            curl_easy_getinfo(eh, CURLINFO_RESPONSE_CODE, &httpCode);
+            int idx = -1;
+            for (int i = 0; i < nSegments; ++i) if (handles[i] == eh) { idx = i; break; }
+            curl_multi_remove_handle(multi, eh);
+            curl_easy_cleanup(eh);
+            if (idx >= 0) handles[idx] = nullptr;
+
+            if (res == CURLE_OK) {
+                // A 200 (instead of 206) means the server served the whole file
+                // on a single stream and ignored Range — the parallel writes
+                // have corrupted each other. Bail to the single-stream fallback.
+                if (httpCode != 206 && httpCode != 200) {
+                    terminal = true;
+                    lastFailCurl = CURLE_OK;
+                    lastFailHttp = httpCode;
+                    lastFailSeg  = idx;
+                }
+                else if (httpCode == 200) { rangeBroken = true; terminal = true; }
+                continue;
+            }
+            if (idx < 0) { terminal = true; lastFailCurl = res; lastFailHttp = httpCode; continue; }
+            if (segRetries[idx] >= MAX_SEGMENT_RETRIES) {
+                qWarning() << "[DownloadEngine] Segment" << idx << "exhausted retries:"
+                           << curl_easy_strerror(res) << "HTTP" << httpCode;
+                terminal = true;
+                lastFailCurl = res;
+                lastFailHttp = httpCode;
+                lastFailSeg  = idx;
+                continue;
+            }
+            const int n = ++segRetries[idx];
+            const qint64 backoff = qMin<qint64>(1000LL << (n - 1), 16000);  // 1,2,4,8,16s
+            segRetryAtMs[idx] = clock.elapsed() + backoff;
+            qWarning() << "[DownloadEngine] Segment" << idx << "failed ("
+                       << curl_easy_strerror(res) << ") retry" << n << "in" << backoff << "ms";
+        }
+
+        // Re-arm segments whose backoff elapsed (over their remaining range).
+        if (!terminal && !m_abort.load()) {
+            const qint64 nowMs = clock.elapsed();
+            for (int i = 0; i < nSegments; ++i) {
+                if (segRetryAtMs[i] < 0 || nowMs < segRetryAtMs[i]) continue;
+                if (contexts[i].writeOffset > contexts[i].segEnd) { segRetryAtMs[i] = -1; continue; }
+                CURL *h = makeHandle(i, contexts[i].writeOffset);
+                if (!h) { terminal = true; break; }
+                curl_multi_add_handle(multi, h);
+                handles[i] = h;
+                segRetryAtMs[i] = -1;
             }
         }
 
-        if (still > 0)
-            curl_multi_wait(multi, nullptr, 0, 10, nullptr);
-    } while (still > 0 && !m_abort.load() && !hadError);
-
-    // Cleanup
-    for (CURL *h : handles) {
-        if (h) {
-            curl_multi_remove_handle(multi, h);
-            curl_easy_cleanup(h);
+        // Journal flush so a crash/kill resumes near the last committed offset.
+        const qint64 nowMs = clock.elapsed();
+        if (nowMs - lastFlushMs >= SIDECAR_FLUSH_MS) {
+            writeSidecar(localPath, fileSize, contexts);
+            lastFlushMs = nowMs;
         }
-    }
+
+        if (still > 0)        curl_multi_wait(multi, nullptr, 0, 10, nullptr);
+        else if (anyPending()) QThread::msleep(50);   // backoff wait — don't busy-spin
+    } while ((still > 0 || anyPending()) && !m_abort.load() && !terminal);
+
+    // Detach + free any still-attached handles.
+    for (CURL *h : handles)
+        if (h) { curl_multi_remove_handle(multi, h); curl_easy_cleanup(h); }
     curl_multi_cleanup(multi);
     fclose(m_file); m_file = nullptr;
 
-    if (m_abort.load()) return false;
-    if (hadError) {
-        QFile::remove(localPath);
+    // Aborted (pause-to-stop / cancel): keep file + journal for a later resume.
+    if (m_abort.load()) {
+        writeSidecar(localPath, fileSize, contexts);
         return false;
     }
 
-    // Verify final file size
+    if (terminal) {
+        int64_t got = 0; for (int64_t b : m_segBytes) got += b;
+        // Range genuinely unsupported, or a fresh attempt that got nowhere:
+        // discard and let startDownload fall back to a plain single stream.
+        if (rangeBroken || (!resuming && got == 0)) {
+            QFile::remove(localPath);
+            QFile::remove(sidecarPath(localPath));
+            return false;
+        }
+        // Otherwise keep the partial + journal so a later retry resumes, and
+        // tell startDownload NOT to truncate it via the single-segment path.
+        writeSidecar(localPath, fileSize, contexts);
+        m_skipSingleFallback = true;
+        const QString detail = formatDownloadError(lastFailCurl, lastFailHttp, lastFailSeg);
+        const int64_t mib = (got > 0) ? (got / (1024 * 1024)) : 0;
+        emit failed(QStringLiteral(
+            "Tải đa luồng thất bại sau %1 lần thử mỗi luồng — %2. "
+            "Đã giữ %3 MiB để tiếp tục lần sau.")
+                    .arg(MAX_SEGMENT_RETRIES)
+                    .arg(detail)
+                    .arg(mib));
+        return false;
+    }
+
+    // Success — verify exact size and drop the journal.
     QFileInfo fi(localPath);
-    if (!fi.exists() || fi.size() < fileSize) {
-        emit failed(QStringLiteral("File incomplete after multi-segment download"));
+    if (!fi.exists() || fi.size() != fileSize) {
+        emit failed(QStringLiteral(
+            "File tải về không đầy đủ: mong %1 byte, thực tế %2 byte.")
+                    .arg(fileSize).arg(fi.exists() ? fi.size() : qint64(0)));
         return false;
     }
-
+    QFile::remove(sidecarPath(localPath));
     return true;
 }
 
@@ -423,20 +668,21 @@ void DownloadEngine::startDownload(const TransferTask &task)
     m_task = task;
     m_abort.store(false);
     m_paused.store(false);
+    m_skipSingleFallback = false;
 
     QDir dir(QFileInfo(task.localPath).absolutePath());
     if (!dir.exists()) dir.mkpath(".");
 
     if (task.realUrl.isEmpty()) {
-        emit failed(QStringLiteral("No download URL available"));
+        emit failed(QStringLiteral("Không có URL tải xuống (tạo session thất bại)"));
         return;
     }
 
     // ── Probe the download URL for file size + Range support ─────
     // fileSize is typically 0 at this point (the Fshare createDownloadSession
-    // API only returns a URL, not metadata). We probe with a HEAD + Range:0-0
-    // request to discover both, which is the same technique IDM / legacy
-    // Fshare Tool use before starting a multi-part download.
+    // API only returns a URL, not metadata). probeFileInfo() issues a single
+    // HEAD request to read Content-Length + Accept-Ranges without consuming a
+    // single-use CDN token (a body-fetching probe could invalidate the URL).
     int64_t fileSize = task.fileSize;
     bool rangeSupported = false;
     {
@@ -464,7 +710,13 @@ void DownloadEngine::startDownload(const TransferTask &task)
     }
 
     QFileInfo fi(task.localPath);
-    const bool isResume = fi.exists() && fi.size() > 0 && fileSize > 0 && fi.size() < fileSize;
+    // A multi-segment resume is keyed off the journal, not the file size (the
+    // data file is pre-allocated to full size, so a size check can't detect it).
+    const bool hasSidecar = QFileInfo::exists(sidecarPath(task.localPath));
+    // Single-segment resume: a partial file shorter than the target with NO
+    // multi-segment journal beside it.
+    const bool isResume = !hasSidecar && fi.exists() && fi.size() > 0
+                          && fileSize > 0 && fi.size() < fileSize;
 
     // ── Disk-space preflight ───────────────────────────────────
     // Done AFTER probe so we know the real target size (task.fileSize is 0
@@ -474,7 +726,12 @@ void DownloadEngine::startDownload(const TransferTask &task)
     // We need (target - already-downloaded) bytes; on resume that is less
     // than the full fileSize.
     if (fileSize > 0) {
-        const qint64 needed = isResume ? (fileSize - fi.size()) : fileSize;
+        // On any resume the bytes already on disk don't need to be re-reserved.
+        // A multi-segment resume's file is pre-allocated to full size, so
+        // (fileSize - fi.size()) is ~0 there; a single-segment partial needs
+        // only the remainder.
+        const qint64 onDisk = (isResume || hasSidecar) ? static_cast<qint64>(fi.size()) : 0;
+        const qint64 needed = qMax<qint64>(0, fileSize - onDisk);
         const QString parentDir = QFileInfo(task.localPath).absolutePath();
         const QStorageInfo storage(parentDir);
         if (storage.isValid() && storage.isReady()) {
@@ -497,17 +754,16 @@ void DownloadEngine::startDownload(const TransferTask &task)
     }
 
     // ── Decide: multi-segment (IDM-style) or single ─────────────
-    // Multi-segment requires ALL of:
-    //   • not resuming an existing partial file
-    //   • user configured > 1 segment (default 16 in TransferTask)
-    //   • file >= 2 MB (too small = not worth the overhead)
-    //   • server supports HTTP Range (returns Accept-Ranges: bytes)
-    //   • file size is known (probe succeeded)
-    if (!isResume && effectiveSegments > 1
-        && fileSize >= MIN_SEGMENTED_BYTES && rangeSupported) {
-        qDebug() << "[DownloadEngine] Range supported, using" << effectiveSegments
-                 << "segments for" << fileSize << "bytes"
-                 << "(requested:" << requestedSegments << ")";
+    // Use multi-segment when:
+    //   • there is a multi-segment resume journal to continue (hasSidecar), OR
+    //   • a fresh start qualifies: not a single-segment resume, > 1 segment,
+    //     file >= 2 MB, server honours Range, and the size is known.
+    // downloadMultiSegment detects + continues the journal internally.
+    const bool freshMulti = !isResume && effectiveSegments > 1
+                            && fileSize >= MIN_SEGMENTED_BYTES && rangeSupported;
+    if (hasSidecar || freshMulti) {
+        qDebug() << "[DownloadEngine] Multi-segment (" << effectiveSegments
+                 << "seg, sidecar=" << hasSidecar << ") for" << fileSize << "bytes";
         m_isMultiSegment.store(true);
         success = downloadMultiSegment(task.realUrl, task.localPath, fileSize, effectiveSegments);
     } else {
@@ -517,9 +773,13 @@ void DownloadEngine::startDownload(const TransferTask &task)
                  << "/" << requestedSegments;
     }
 
-    if (!success && !m_abort.load()) {
+    // Fall back to a single stream only when the multi-segment attempt left no
+    // resumable partial (m_skipSingleFallback guards against truncating one).
+    // Pass the PROBED fileSize (task.fileSize is usually 0 here) so the
+    // single-segment path can detect + continue a partial via Range.
+    if (!success && !m_abort.load() && !m_skipSingleFallback) {
         m_isMultiSegment.store(false);
-        success = downloadSingleSegment(task.realUrl, task.localPath, task.fileSize);
+        success = downloadSingleSegment(task.realUrl, task.localPath, fileSize);
     }
 
     if (m_file) { fclose(m_file); m_file = nullptr; }
@@ -537,64 +797,98 @@ void DownloadEngine::startDownload(const TransferTask &task)
 
 bool DownloadEngine::downloadSingleSegment(const QString &url, const QString &localPath, int64_t fileSize)
 {
-    m_file = openFileUnicode(localPath, "wb");
-    if (!m_file) {
-        emit failed(QStringLiteral("Không thể tạo file: %1").arg(localPath));
-        return false;
-    }
-
-    CURL *curl = curl_easy_init();
-    if (!curl) {
-        emit failed(QStringLiteral("CURL init failed"));
-        return false;
-    }
-
-    QByteArray urlBytes = url.toUtf8();
-    curl_easy_setopt(curl, CURLOPT_URL, urlBytes.constData());
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
-    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
-    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, this);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
-    curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30L);
-    // TCP tuning — same as multi-segment
-    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 256L * 1024);
-    curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1L);
-    curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
-    curl_easy_setopt(curl, CURLOPT_TCP_KEEPIDLE, 120L);
-    curl_easy_setopt(curl, CURLOPT_TCP_KEEPINTVL, 60L);
-
     m_totalBytes.store(fileSize);
-    m_resumeOffset.store(0);
+    const QByteArray urlBytes = url.toUtf8();
 
-    QFileInfo fi(localPath);
-    if (fi.exists() && fi.size() > 0 && fi.size() < fileSize) {
-        fclose(m_file);
-        m_file = openFileUnicode(localPath, "ab");
-        curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, static_cast<curl_off_t>(fi.size()));
-        m_resumeOffset.store(fi.size());
+    // Retry transient failures from the current on-disk offset with exponential
+    // backoff. A still-valid URL recovers here; an expired CDN URL fails with a
+    // permanent HTTP code and is handled one level up (TransferService re-resolves
+    // the session and re-dispatches).
+    for (int attempt = 0; attempt <= MAX_SINGLE_RETRIES && !m_abort.load(); ++attempt) {
+        const QFileInfo fi(localPath);
+        const int64_t resumeFrom =
+            (fi.exists() && fi.size() > 0 && fileSize > 0 && fi.size() < fileSize)
+                ? static_cast<int64_t>(fi.size()) : 0;
+        m_resumeOffset.store(resumeFrom);
+
+        // Open BEFORE deciding the mode — opening "wb" would truncate an
+        // existing partial, so only use it for a genuine fresh start.
+        m_file = openFileUnicode(localPath, resumeFrom > 0 ? "ab" : "wb");
+        if (!m_file) {
+            emit failed(QStringLiteral("Không thể tạo file: %1").arg(localPath));
+            return false;
+        }
+
+        CURL *curl = curl_easy_init();
+        if (!curl) {
+            fclose(m_file); m_file = nullptr;
+            emit failed(QStringLiteral("Khởi tạo libcurl thất bại"));
+            return false;
+        }
+        curl_easy_setopt(curl, CURLOPT_URL, urlBytes.constData());
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progressCallback);
+        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, this);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+        curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30L);
+        applyProxy(curl);
+        curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 256L * 1024);
+        curl_easy_setopt(curl, CURLOPT_TCP_NODELAY, 1L);
+        curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+        curl_easy_setopt(curl, CURLOPT_TCP_KEEPIDLE, 120L);
+        curl_easy_setopt(curl, CURLOPT_TCP_KEEPINTVL, 60L);
+        if (resumeFrom > 0)
+            curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, static_cast<curl_off_t>(resumeFrom));
+
+        const CURLcode res = curl_easy_perform(curl);
+        long httpCode = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+        curl_easy_cleanup(curl);
+        fclose(m_file); m_file = nullptr;
+
+        // Paused-to-stop / cancelled — leave the partial for a later resume.
+        if (m_abort.load() || res == CURLE_ABORTED_BY_CALLBACK)
+            return false;
+
+        if (res == CURLE_OK) {
+            if (httpCode == 206 || (httpCode == 200 && resumeFrom == 0))
+                return true;
+            if (httpCode == 200 && resumeFrom > 0) {
+                // Server ignored the resume offset and streamed the whole file,
+                // which got appended after the existing partial → corrupt.
+                // Discard and let the next attempt start clean from byte 0.
+                QFile::remove(localPath);
+                qWarning() << "[DownloadEngine] Server ignored resume (HTTP 200);"
+                              " restarting single-segment from scratch.";
+            } else if (httpCode == 403 || httpCode == 404 ||
+                       httpCode == 416 || httpCode == 401) {
+                // Permanent — retrying the same URL won't help.
+                emit failed(formatDownloadError(CURLE_OK, httpCode));
+                return false;
+            }
+        }
+
+        if (attempt >= MAX_SINGLE_RETRIES) {
+            emit failed(QStringLiteral("Tải xuống thất bại sau %1 lần thử — %2")
+                        .arg(MAX_SINGLE_RETRIES + 1)
+                        .arg(formatDownloadError(res, httpCode)));
+            return false;
+        }
+
+        // Interruptible exponential backoff (1,2,4,8,16s) so pause/cancel during
+        // the wait stays responsive.
+        const int delayMs = qMin(1000 << attempt, 16000);
+        qWarning() << "[DownloadEngine] Single-segment attempt" << (attempt + 1)
+                   << "failed; retry in" << delayMs << "ms";
+        for (int slept = 0; slept < delayMs && !m_abort.load(); slept += 100)
+            QThread::msleep(100);
     }
-
-    CURLcode res = curl_easy_perform(curl);
-    long httpCode = 0;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-    curl_easy_cleanup(curl);
-
-    if (res == CURLE_ABORTED_BY_CALLBACK) return false;
-    if (res != CURLE_OK) {
-        emit failed(QString::fromUtf8(curl_easy_strerror(res)));
-        return false;
-    }
-    if (httpCode != 200 && httpCode != 206) {
-        emit failed(QStringLiteral("HTTP error: %1").arg(httpCode));
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 void DownloadEngine::pause()

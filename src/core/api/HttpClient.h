@@ -3,6 +3,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QMap>
+#include <QMutex>
 #include <functional>
 #include <memory>
 
@@ -25,6 +26,10 @@ public:
 
     // Configuration
     void setProxy(const QString &host, int port);
+    // Set a complete proxy spec ("host:port" or "scheme://host:port"). Empty
+    // string clears the proxy. Used by the central settings→proxy wiring so
+    // system-proxy URLs (which already embed a scheme) pass through verbatim.
+    void setProxyUrl(const QString &proxyUrl);
     void clearProxy();
     void setCaPath(const QString &path);
     void setDefaultHeader(const QString &key, const QString &value);
@@ -47,8 +52,23 @@ private:
     static size_t writeCallback(char *ptr, size_t size, size_t nmemb, void *userdata);
     static size_t headerCallback(char *ptr, size_t size, size_t nmemb, void *userdata);
 
-    QString m_proxyHost;
-    int m_proxyPort = 0;
+    // ── Concurrency ──────────────────────────────────────────────────────
+    // Every QString/QMap field below is touched by both worker threads
+    // (executeAuthed lambdas running on QtConcurrent) AND by mutators that
+    // can fire from the GUI thread or from RefreshTokenCoordinator after a
+    // silent token rotation. QString is implicit-shared with non-atomic
+    // d-pointer assignment — concurrent read/write races on a refcount
+    // pointer swap, which has caused crashes in the field.
+    //
+    // We snapshot under the lock at the start of every request (see
+    // applyHeaders / applyProxy / createHandle) so the network call itself
+    // stays lock-free; only the brief copy is serialised.
+    mutable QMutex m_mutex;
+
+    // Full proxy spec passed straight to CURLOPT_PROXY ("host:port" or
+    // "scheme://host:port"). Empty = no proxy. Snapshotted under m_mutex at
+    // request time so a concurrent settings change can't tear the QString.
+    QString m_proxyUrl;
     QString m_caPath;
     QString m_cookie;
     QMap<QString, QString> m_defaultHeaders;

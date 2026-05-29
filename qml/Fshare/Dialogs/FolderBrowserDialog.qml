@@ -31,7 +31,9 @@ Item {
     function open()  { root.visible = true; root.forceActiveFocus(); }
     function close() {
         root.visible = false;
-        if (vm) vm.close();
+        // vm.close() is the host's responsibility (Main.qml). See
+        // FileDetailSheet.close() for the same rationale — keeps the
+        // folder→file→folder roundtrip possible.
         root.closed();
     }
 
@@ -216,6 +218,71 @@ Item {
                         font.pixelSize: 11
                         color: AuroraTheme.ink4
                     }
+
+                    // "Select all files" chip — small, appears whenever
+                    // we have at least one file row in view (folders only
+                    // would make the chip useless because selectAllFiles
+                    // skips them).
+                    Rectangle {
+                        Layout.preferredWidth: selAllRow.implicitWidth + AuroraTheme.sp3 * 2
+                        Layout.preferredHeight: 24
+                        radius: AuroraTheme.radiusPill
+                        color: selAllMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
+                        border.width: 1
+                        border.color: AuroraTheme.border
+                        visible: vm && vm.totalCount > 0
+                        RowLayout {
+                            id: selAllRow
+                            anchors.centerIn: parent
+                            spacing: 4
+                            Aurora.FsIcon { name: "check"; sizePx: 11; color: AuroraTheme.ink2 }
+                            Text {
+                                text: qsTr("Chọn tất cả file")
+                                font.family: AuroraTheme.fontSans
+                                font.pixelSize: 11
+                                color: AuroraTheme.ink2
+                            }
+                        }
+                        MouseArea {
+                            id: selAllMa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: if (vm) vm.selectAllFiles()
+                        }
+                    }
+                }
+                Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AuroraTheme.divider }
+            }
+
+            // ── Selection toolbar (visible only when 1+ files selected) ─
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: vm && vm.hasSelection ? 40 : 0
+                visible: vm && vm.hasSelection
+                color: AuroraTheme.accentTint10
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: AuroraTheme.sp6
+                    anchors.rightMargin: AuroraTheme.sp4
+                    spacing: AuroraTheme.sp3
+
+                    Aurora.FsIcon { name: "check"; sizePx: 14; color: AuroraTheme.accent }
+                    Text {
+                        Layout.fillWidth: true
+                        text: vm ? qsTr("Đã chọn %1 file").arg(vm.selectedCount) : ""
+                        font.family: AuroraTheme.fontSans
+                        font.pixelSize: 12
+                        font.weight: Font.DemiBold
+                        color: AuroraTheme.accent
+                    }
+                    IconBtn { icon: "x";        tooltip: qsTr("Bỏ chọn")
+                        onActivated: if (vm) vm.clearSelection()
+                    }
+                    IconBtn { icon: "download"; tooltip: qsTr("Tải các file đã chọn")
+                        onActivated: if (vm) vm.downloadSelected("")
+                    }
                 }
                 Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: AuroraTheme.divider }
             }
@@ -258,11 +325,57 @@ Item {
                         required property bool   hasPassword
                         required property string fileCategory
 
+                        // Live binding to the VM's selection set. selectionChanged
+                        // fires whenever the set membership changes; we re-query
+                        // isSelected for THIS row. We don't bind to vm.selectedCount
+                        // (which would fire for every row on every change) — checking
+                        // isSelected per-row scales linearly with visible rows only.
+                        property bool _selected: vm ? vm.isSelected(rowItem.linkcode) : false
+                        Connections {
+                            target: vm
+                            function onSelectionChanged() {
+                                rowItem._selected = vm.isSelected(rowItem.linkcode);
+                            }
+                        }
+
                         RowLayout {
                             anchors.fill: parent
                             anchors.leftMargin: AuroraTheme.sp3
                             anchors.rightMargin: AuroraTheme.sp3
                             spacing: AuroraTheme.sp3
+
+                            // Per-row checkbox — only meaningful for files
+                            // (folders aren't multi-selectable). A spacer
+                            // replaces it on folder rows to keep alignment.
+                            Rectangle {
+                                Layout.preferredWidth: 18
+                                Layout.preferredHeight: 18
+                                radius: 4
+                                border.width: 1
+                                border.color: rowItem._selected
+                                              ? AuroraTheme.accent
+                                              : AuroraTheme.borderStrong
+                                color: rowItem._selected
+                                       ? AuroraTheme.accent
+                                       : "transparent"
+                                visible: !rowItem.isFolder
+                                Aurora.FsIcon {
+                                    anchors.centerIn: parent
+                                    visible: rowItem._selected
+                                    name: "check"; sizePx: 10
+                                    color: "#FFFFFF"
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: if (vm) vm.toggleSelection(rowItem.linkcode)
+                                }
+                            }
+                            Item {
+                                visible: rowItem.isFolder
+                                Layout.preferredWidth: 18
+                                Layout.preferredHeight: 18
+                            }
 
                             FsFileTypeIcon {
                                 fileName: rowItem.name

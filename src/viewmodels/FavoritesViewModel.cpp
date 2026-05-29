@@ -249,6 +249,15 @@ void FavoritesViewModel::clearSelection()
     emit selectionChanged();
 }
 
+void FavoritesViewModel::setSelected(const QStringList &linkcodes)
+{
+    QSet<QString> next(linkcodes.cbegin(), linkcodes.cend());
+    next.remove(QString());   // drop empty entries
+    if (next == m_selected) return;
+    m_selected = std::move(next);
+    emit selectionChanged();
+}
+
 // ── File actions ─────────────────────────────────────────────────────────────
 
 void FavoritesViewModel::copyLinks(const QStringList &linkcodes)

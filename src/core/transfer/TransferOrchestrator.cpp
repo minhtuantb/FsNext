@@ -5,6 +5,7 @@
 #include <QMutexLocker>
 #include <QHash>
 #include <QDebug>
+#include <atomic>
 
 namespace fsnext {
 
@@ -26,6 +27,15 @@ struct TransferOrchestrator::Impl {
     QMutex             inflightMx;
     QHash<QString,Grant> inflight;     // id → (cls, prio) of active grants
 
+    // Set in the dtor before quit/wait so any enqueue/release call that
+    // arrives mid-shutdown can early-return instead of posting a queued lambda
+    // to an event loop that's about to die.  Belt-and-braces: with main.cpp's
+    // QThreadPool::globalInstance()->waitForDone() drain happening before
+    // AppContext (and hence this orchestrator) destructs, producers shouldn't
+    // race the dtor — but if a Qt::QueuedConnection emit slipped through the
+    // gap, this flag is the last line of defence.
+    std::atomic<bool> shuttingDown{false};
+
     Impl() = default;
 };
 
@@ -43,8 +53,14 @@ TransferOrchestrator::TransferOrchestrator(QObject *parent)
 
 TransferOrchestrator::~TransferOrchestrator()
 {
-    // Shut down the worker thread BEFORE the pimpl dies — otherwise pending
-    // queued events could touch freed state.
+    // Flip the gate first so any producer call already in flight
+    // (enqueue/release) bails out instead of queueing more work to a dying
+    // event loop.  Disconnect outbound signals so listeners stop seeing
+    // dispatchReady fire mid-teardown.  Only then quit+wait the worker
+    // thread; the wait() drains queued lambdas that were posted before the
+    // gate closed — those run against a still-valid pimpl.
+    d->shuttingDown.store(true);
+    disconnect();
     d->thread.quit();
     d->thread.wait();
 }
@@ -105,10 +121,12 @@ void TransferOrchestrator::enqueue(const QString &id, TransferClass cls,
                                    TransferPriority prio)
 {
     if (id.isEmpty()) return;   // empty ids reserved for internal ticks
+    if (d->shuttingDown.load()) return;   // dtor in progress — drop silently
     // Always marshal to the orchestrator thread so dispatchReady fires from
     // that thread, not from the caller's stack.  Producers who connect with
     // Qt::AutoConnection get a clean queued delivery to their own thread.
     QMetaObject::invokeMethod(this, [this, id, cls, prio]() {
+        if (d->shuttingDown.load()) return;
         if (!d->schedulers[static_cast<int>(cls)].enqueue(id, prio)) return;
         scheduleTick();
     }, Qt::QueuedConnection);
@@ -116,7 +134,9 @@ void TransferOrchestrator::enqueue(const QString &id, TransferClass cls,
 
 void TransferOrchestrator::release(const QString &id)
 {
+    if (d->shuttingDown.load()) return;
     QMetaObject::invokeMethod(this, [this, id]() {
+        if (d->shuttingDown.load()) return;
         Impl::Grant g{};
         bool found = false;
         {

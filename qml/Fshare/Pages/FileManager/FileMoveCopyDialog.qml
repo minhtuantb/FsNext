@@ -214,8 +214,8 @@ FsDialog {
             }
             Item { Layout.fillWidth: true }
 
-            FsButton { text: qsTr("Cancel"); variant: "ghost"; onClicked: root.close() }
-            FsButton {
+            Aurora.FsButton { text: qsTr("Cancel"); variant: "ghost"; onClicked: root.close() }
+            Aurora.FsButton {
                 text: root.mode === "move" ? qsTr("Move Here") : qsTr("Copy Here")
                 variant: "primary"
                 enabled: root.pendingLinkcodes.length > 0

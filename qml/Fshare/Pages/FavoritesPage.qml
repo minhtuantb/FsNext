@@ -306,143 +306,85 @@ Item {
         // ═════════════════════════════════════════════════
         //  EDITORIAL HEADER PANEL
         // ═════════════════════════════════════════════════
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: favHeaderCol.implicitHeight + AuroraTheme.sp6 * 2
-            radius: AuroraTheme.radiusLg
-            color: AuroraTheme.panel
-            border.width: 1
-            border.color: AuroraTheme.border
+        Aurora.FsPageHeader {
+            framed: true
+            kicker: qsTr("Bộ sưu tập cá nhân")
+            title: qsTr("Yêu")
+            accentWord: qsTr("thích.")
+            titlePixelSize: 56
+            titleLetterSpacing: -1.8
+            subtitle: {
+                if (!favoritesViewModel) return "—";
+                const n = favoritesViewModel.totalCount;
+                if (n === 0) return qsTr("Chưa có mục nào");
+                return qsTr("%1 mục đã gắn sao").arg(n);
+            }
 
-            ColumnLayout {
-                id: favHeaderCol
-                anchors.fill: parent
-                anchors.margins: AuroraTheme.sp6
-                spacing: AuroraTheme.sp4
+            // Filter textbox
+            Rectangle {
+                Layout.preferredWidth: 260
+                Layout.preferredHeight: 36
+                Layout.alignment: Qt.AlignVCenter
+                radius: AuroraTheme.radiusMd
+                color: AuroraTheme.bg
+                border.width: 1
+                border.color: extFilterInput.activeFocus ? AuroraTheme.accent : AuroraTheme.border
+                Behavior on border.color { enabled: !AuroraTheme.reduceMotion
+                    ColorAnimation { duration: AuroraTheme.durFast } }
 
                 RowLayout {
-                    Layout.fillWidth: true
-                    spacing: AuroraTheme.sp6
+                    anchors.fill: parent
+                    anchors.leftMargin: AuroraTheme.sp3
+                    anchors.rightMargin: AuroraTheme.sp3
+                    spacing: AuroraTheme.sp2
 
-                    ColumnLayout {
-                        spacing: 2
-                        Layout.alignment: Qt.AlignVCenter
+                    Aurora.FsIcon { name: "search"; sizePx: 14; color: AuroraTheme.ink4 }
+                    TextInput {
+                        id: extFilterInput
+                        Layout.fillWidth: true
+                        verticalAlignment: TextInput.AlignVCenter
+                        font.family: AuroraTheme.fontSans
+                        font.pixelSize: 13
+                        color: AuroraTheme.ink1
+                        text: favoritesViewModel ? favoritesViewModel.extFilter : ""
+                        onAccepted: {
+                            if (favoritesViewModel) favoritesViewModel.extFilter = text;
+                        }
 
                         Text {
-                            text: "━━ Bộ sưu tập cá nhân"
+                            visible: parent.text.length === 0
+                            text: qsTr("Lọc theo đuôi file (vd: mp4, pdf)...")
                             color: AuroraTheme.ink4
-                            font.family: AuroraTheme.fontMono
-                            font.pixelSize: 11
-                            font.letterSpacing: 2.0
-                            font.capitalization: Font.AllUppercase
-                        }
-
-                        RowLayout {
-                            spacing: 8
-                            Layout.bottomMargin: 2
-
-                            Text {
-                                text: qsTr("Yêu")
-                                color: AuroraTheme.ink1
-                                font.family: AuroraTheme.fontSerif
-                                font.pixelSize: 56
-                                font.letterSpacing: -1.8
-                                lineHeight: 1.0
-                            }
-                            Text {
-                                text: qsTr("thích.")
-                                color: AuroraTheme.accent
-                                font.family: AuroraTheme.fontSerif
-                                font.italic: true
-                                font.pixelSize: 56
-                                font.letterSpacing: -1.8
-                                lineHeight: 1.0
-                            }
-                        }
-
-                        Text {
-                            Layout.topMargin: 4
-                            text: {
-                                if (!favoritesViewModel) return "—";
-                                const n = favoritesViewModel.totalCount;
-                                if (n === 0) return qsTr("Chưa có mục nào");
-                                return qsTr("%1 mục đã gắn sao").arg(n);
-                            }
-                            color: AuroraTheme.ink3
-                            font.family: AuroraTheme.fontMono
-                            font.pixelSize: 12
+                            font: parent.font
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 
-                    Item { Layout.fillWidth: true }
-
-                    // Filter textbox
                     Rectangle {
-                        Layout.preferredWidth: 260
-                        Layout.preferredHeight: 36
-                        Layout.alignment: Qt.AlignVCenter
-                        radius: AuroraTheme.radiusMd
-                        color: AuroraTheme.bg
-                        border.width: 1
-                        border.color: extFilterInput.activeFocus ? AuroraTheme.accent : AuroraTheme.border
-                        Behavior on border.color { enabled: !AuroraTheme.reduceMotion
-                            ColorAnimation { duration: AuroraTheme.durFast } }
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: AuroraTheme.sp3
-                            anchors.rightMargin: AuroraTheme.sp3
-                            spacing: AuroraTheme.sp2
-
-                            Aurora.FsIcon { name: "search"; sizePx: 14; color: AuroraTheme.ink4 }
-                            TextInput {
-                                id: extFilterInput
-                                Layout.fillWidth: true
-                                verticalAlignment: TextInput.AlignVCenter
-                                font.family: AuroraTheme.fontSans
-                                font.pixelSize: 13
-                                color: AuroraTheme.ink1
-                                text: favoritesViewModel ? favoritesViewModel.extFilter : ""
-                                onAccepted: {
-                                    if (favoritesViewModel) favoritesViewModel.extFilter = text;
-                                }
-
-                                Text {
-                                    visible: parent.text.length === 0
-                                    text: qsTr("Lọc theo đuôi file (vd: mp4, pdf)...")
-                                    color: AuroraTheme.ink4
-                                    font: parent.font
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                            }
-
-                            Rectangle {
-                                visible: extFilterInput.text.length > 0
-                                width: 20; height: 20; radius: 10
-                                color: clearFilterMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
-                                Aurora.FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink3 }
-                                MouseArea {
-                                    id: clearFilterMa
-                                    anchors.fill: parent; hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        extFilterInput.text = "";
-                                        if (favoritesViewModel) favoritesViewModel.extFilter = "";
-                                    }
-                                }
+                        visible: extFilterInput.text.length > 0
+                        width: 20; height: 20; radius: 10
+                        color: clearFilterMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
+                        Aurora.FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink3 }
+                        MouseArea {
+                            id: clearFilterMa
+                            anchors.fill: parent; hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                extFilterInput.text = "";
+                                if (favoritesViewModel) favoritesViewModel.extFilter = "";
                             }
                         }
-                    }
-
-                    Aurora.FsButton {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: qsTr("Làm mới")
-                        icon: "refresh"
-                        variant: "ghost"
-                        size: "md"
-                        onClicked: if (favoritesViewModel) favoritesViewModel.loadFavorites()
                     }
                 }
+            }
+
+            Aurora.FsButton {
+                Layout.alignment: Qt.AlignVCenter
+                text: qsTr("Làm mới")
+                icon: "refresh"
+                variant: "ghost"
+                size: "md"
+                onClicked: if (favoritesViewModel) favoritesViewModel.loadFavorites()
             }
         }
 

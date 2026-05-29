@@ -1103,7 +1103,7 @@ Item {
                                 spacing: AuroraTheme.sp1
 
                                 // Folder: Open
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     visible: page.selectedFileData && page.selectedFileData.isFolder
                                     text: qsTr("Mở thư mục"); variant: "primary"; size: "sm"
@@ -1120,7 +1120,7 @@ Item {
                                 // Media (video / audio): Play.
                                 // "Phát" when the file is already downloaded (local open),
                                 // "Xem trực tiếp" when it's still remote (stream via player).
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     visible: page.selectedFileData
                                              && page._isMediaFile(page.selectedFileData)
@@ -1158,7 +1158,7 @@ Item {
                                 visible: detailPanel.active
                                 spacing: AuroraTheme.sp1
 
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     text: qsTr("Di chuyển"); variant: "ghost"; size: "sm"
                                     onClicked: {
@@ -1167,7 +1167,7 @@ Item {
                                         moveCopyDialog.open();
                                     }
                                 }
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     text: qsTr("Sao chép"); variant: "ghost"; size: "sm"
                                     onClicked: {
@@ -1179,7 +1179,7 @@ Item {
                             }
 
                             // Row 2: [Sao chép link] full-width
-                            FsButton {
+                            Aurora.FsButton {
                                 Layout.fillWidth: true
                                 Layout.leftMargin: AuroraTheme.sp3
                                 Layout.rightMargin: AuroraTheme.sp3
@@ -1193,7 +1193,7 @@ Item {
                             }
 
                             // Row 3: [Đặt mật khẩu] full-width
-                            FsButton {
+                            Aurora.FsButton {
                                 Layout.fillWidth: true
                                 Layout.leftMargin: AuroraTheme.sp3
                                 Layout.rightMargin: AuroraTheme.sp3
@@ -1212,7 +1212,7 @@ Item {
                             }
 
                             // Row 4 (single): [Bật/Tắt bảo mật] based on current state
-                            FsButton {
+                            Aurora.FsButton {
                                 Layout.fillWidth: true
                                 Layout.leftMargin: AuroraTheme.sp3
                                 Layout.rightMargin: AuroraTheme.sp3
@@ -1238,7 +1238,7 @@ Item {
                                 visible: detailPanel.isMulti
                                 spacing: AuroraTheme.sp1
 
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     text: qsTr("Bật bảo mật"); variant: "ghost"; size: "sm"
                                     onClicked: {
@@ -1246,7 +1246,7 @@ Item {
                                             fileManagerViewModel.changeSecure(page.selectedFiles, true);
                                     }
                                 }
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     text: qsTr("Tắt bảo mật"); variant: "ghost"; size: "sm"
                                     onClicked: {
@@ -1270,7 +1270,7 @@ Item {
                                 spacing: AuroraTheme.sp1
 
                                 // Share (same as copy link for Fshare)
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     text: qsTr("Chia sẻ"); variant: "ghost"; size: "sm"
                                     onClicked: {
@@ -1297,7 +1297,7 @@ Item {
                                          && !page.selectedFileData.isDownloaded
                                 spacing: AuroraTheme.sp1
 
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     text: qsTr("Sao chép link xem trực tiếp")
                                     variant: "ghost"; size: "sm"
@@ -1502,7 +1502,7 @@ Item {
                                     font.family: AuroraTheme.fontSans; font.pixelSize: 11
                                     color: AuroraTheme.ink2
                                 }
-                                FsButton {
+                                Aurora.FsButton {
                                     text: (page.selectedFileData && page.selectedFileData.directlink) ? qsTr("Tắt") : qsTr("Bật")
                                     variant: "ghost"; size: "sm"
                                     onClicked: {
@@ -1534,7 +1534,7 @@ Item {
                                 Layout.bottomMargin: AuroraTheme.sp4
                                 spacing: AuroraTheme.sp1
 
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     visible: detailPanel.isSingle
                                     text: qsTr("Đổi tên"); variant: "ghost"; size: "sm"
@@ -1549,7 +1549,7 @@ Item {
                                 }
 
                                 // Downloaded file actions (single only)
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     visible: detailPanel.isSingle && page.selectedFileData && page.selectedFileData.isDownloaded
                                     text: qsTr("Mở file"); variant: "ghost"; size: "sm"
@@ -1558,7 +1558,7 @@ Item {
                                             fileManagerViewModel.openLocalFile(page.selectedFileData.localPath);
                                     }
                                 }
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     visible: detailPanel.isSingle && page.selectedFileData && page.selectedFileData.isDownloaded
                                     text: qsTr("Mở thư mục chứa"); variant: "ghost"; size: "sm"
@@ -1570,7 +1570,7 @@ Item {
 
                                 // Xoá — works for both single and multi. Falls back to the
                                 // full selectedFiles array so a multi-select delete is one click.
-                                FsButton {
+                                Aurora.FsButton {
                                     Layout.fillWidth: true
                                     visible: detailPanel.active
                                     text: detailPanel.isMulti
@@ -1969,11 +1969,11 @@ Item {
                 anchors.rightMargin: AuroraTheme.sp6
                 spacing: AuroraTheme.sp2
                 Item { Layout.fillWidth: true }
-                FsButton {
+                Aurora.FsButton {
                     text: qsTr("Hủy"); variant: "ghost"
                     onClicked: newFolderDialog.close()
                 }
-                FsButton {
+                Aurora.FsButton {
                     text: qsTr("Tạo thư mục"); variant: "primary"
                     enabled: newFolderDialog.folderName.trim().length > 0
                     onClicked: newFolderDialog._submit()

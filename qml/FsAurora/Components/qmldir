@@ -9,4 +9,10 @@ FsProgressBar 1.0 FsProgressBar.qml
 FsSwitch 1.0 FsSwitch.qml
 FsSidebar 1.0 FsSidebar.qml
 FsFontLoader 1.0 FsFontLoader.qml
+FsPageHeader 1.0 FsPageHeader.qml
+FsScrollPage 1.0 FsScrollPage.qml
+FsToastHost 1.0 FsToastHost.qml
 HomeSearchOverlay 1.0 HomeSearchOverlay.qml
+TransferHudPanel 1.0 TransferHudPanel.qml
+Sparkline 1.0 Sparkline.qml
+FsMiniHud 1.0 FsMiniHud.qml

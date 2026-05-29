@@ -2,11 +2,14 @@
 #include "BadWordFilter.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRegularExpression>
+#include <QStandardPaths>
 #include <QStringList>
 
 namespace fsnext {
@@ -92,6 +95,69 @@ QString BadWordFilter::normalizeSpaces(const QString &s)
 }
 
 // ---------------------------------------------------------------------------
+// applyOverridesFromAppData — read %APPDATA%/<org>/FsNext/badwords-
+// overrides.json and apply its add/remove lists on top of the bundled
+// dictionary. Compliance team can ship this file independently of an
+// installer update. Failures (missing file, malformed JSON) are
+// non-fatal — they just leave the bundled dictionary intact.
+// ---------------------------------------------------------------------------
+int BadWordFilter::applyOverridesFromAppData()
+{
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if (dir.isEmpty()) return 0;
+    const QString path = dir + QStringLiteral("/badwords-overrides.json");
+    QFile f(path);
+    if (!f.exists()) return 0;     // override file absent — normal case
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning() << "[BadWordFilter] override file present but unreadable:" << path
+                   << f.errorString();
+        return 0;
+    }
+    const QByteArray bytes = f.readAll();
+    f.close();
+
+    QJsonParseError err{};
+    const QJsonDocument doc = QJsonDocument::fromJson(bytes, &err);
+    if (err.error != QJsonParseError::NoError || !doc.isObject()) {
+        qWarning() << "[BadWordFilter] override parse error:" << err.errorString();
+        return 0;
+    }
+    const QJsonObject obj = doc.object();
+
+    int adds = 0, removes = 0;
+    const auto applyOne = [&](const QString &word, bool add) -> bool {
+        const QString key = normalizeSpaces(word.toLower().trimmed());
+        if (key.isEmpty()) return false;
+        const QString stripped = stripDiacritics(key);
+        if (add) {
+            m_raw.insert(key);
+            m_stripped.insert(stripped.isEmpty() ? key : stripped);
+            return true;
+        } else {
+            const bool r1 = m_raw.remove(key);
+            const bool r2 = m_stripped.remove(stripped.isEmpty() ? key : stripped);
+            return r1 || r2;
+        }
+    };
+
+    if (obj.contains(QStringLiteral("add")) && obj.value(QStringLiteral("add")).isArray()) {
+        for (const auto &v : obj.value(QStringLiteral("add")).toArray()) {
+            if (v.isString() && applyOne(v.toString(), /*add=*/true)) ++adds;
+        }
+    }
+    if (obj.contains(QStringLiteral("remove")) && obj.value(QStringLiteral("remove")).isArray()) {
+        for (const auto &v : obj.value(QStringLiteral("remove")).toArray()) {
+            if (v.isString() && applyOne(v.toString(), /*add=*/false)) ++removes;
+        }
+    }
+
+    qInfo() << "[BadWordFilter] applied overrides from" << path
+            << "(added=" << adds << "removed=" << removes
+            << "total raw=" << m_raw.size() << "stripped=" << m_stripped.size() << ")";
+    return adds + removes;
+}
+
+// ---------------------------------------------------------------------------
 // check — tokenize the keyword, build 1..3-gram joins, look up in the two
 // sets. We test both the raw (diacritic-preserving) and stripped form of
 // the input so a user typing "phim sex" hits "phim_sex" and "địt" hits the
@@ -139,6 +205,39 @@ QString BadWordFilter::checkHit(const QString &keyword) const
     QString hit;
     if (check(keyword, &hit) == Blocked) return hit;
     return {};
+}
+
+// ---------------------------------------------------------------------------
+// checkExactPhrase — single-key membership lookup, no tokenisation.
+//
+// Used by the homepage "quoted-mode" search. The caller has already detected
+// that the user wrapped the keyword in "…" and stripped the surrounding
+// quotes; here we just normalise the inner phrase the same way the dictionary
+// is normalised (lower + collapse whitespace runs to '_' + diacritic-strip
+// variant) and ask: does this exact key appear in the dictionary?
+//
+// Contrast with check(): there we tokenise on word boundaries and try every
+// 1..3-token n-gram, which makes "phim sex" hit "phim_sex" but also means
+// the matcher can't distinguish "Lồng tiếng" (a legitimate VN phrase) from
+// a token that happens to share a stem with a 1-token bad word in the dict.
+// Quoting opts out of that splitting.
+// ---------------------------------------------------------------------------
+int BadWordFilter::checkExactPhrase(const QString &phrase, QString *hitWord) const
+{
+    if (m_raw.isEmpty() && m_stripped.isEmpty()) return Clean;
+
+    const QString lowered = normalizeSpaces(phrase.toLower().trimmed());
+    if (lowered.isEmpty()) return Clean;
+
+    const QString stripped = stripDiacritics(lowered);
+
+    if (m_raw.contains(lowered)
+        || m_stripped.contains(stripped)
+        || (!stripped.isEmpty() && m_raw.contains(stripped))) {
+        if (hitWord) *hitWord = lowered;
+        return Blocked;
+    }
+    return Clean;
 }
 
 } // namespace fsnext

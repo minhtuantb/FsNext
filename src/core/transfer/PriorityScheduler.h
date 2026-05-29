@@ -14,6 +14,7 @@
 // TransferOrchestrator thread and is poked by enqueue / release events.
 
 #include "TransferPriority.h"
+#include <QHash>
 #include <QString>
 #include <deque>
 #include <mutex>
@@ -49,6 +50,12 @@ private:
     mutable std::mutex  m_mx;
     // Four FIFO queues, indexed by TransferPriority int value.
     std::deque<QString> m_queues[4];
+    // Side index of every id currently queued, regardless of priority.
+    // Maps id → priority of the queue it sits in.  Lets enqueue() do an
+    // O(1) "already queued?" check instead of scanning all four deques
+    // (O(N) per enqueue, O(N²) for a 1000-link paste).  removeById and
+    // popFront keep this index in sync.
+    QHash<QString, int> m_indexed;
 };
 
 } // namespace fsnext

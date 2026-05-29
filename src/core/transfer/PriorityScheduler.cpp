@@ -6,13 +6,13 @@ namespace fsnext {
 bool PriorityScheduler::enqueue(const QString &id, TransferPriority prio)
 {
     std::lock_guard<std::mutex> lk(m_mx);
-    // Duplicate across ALL priority queues
-    for (int p = 0; p < 4; ++p) {
-        for (const auto &q : m_queues[p]) {
-            if (q == id) return false;
-        }
-    }
-    m_queues[static_cast<int>(prio)].push_back(id);
+    // O(1) dup-check via the side index — the old linear scan across all
+    // four deques was the bottleneck when bulk-pasting (folder expander) or
+    // bulk-resuming a session with thousands of queued items.
+    if (m_indexed.contains(id)) return false;
+    const int p = static_cast<int>(prio);
+    m_queues[p].push_back(id);
+    m_indexed.insert(id, p);
     return true;
 }
 
@@ -23,21 +23,21 @@ std::optional<QString> PriorityScheduler::popFront(TransferPriority prio)
     if (q.empty()) return std::nullopt;
     QString id = std::move(q.front());
     q.pop_front();
+    m_indexed.remove(id);
     return id;
 }
 
 bool PriorityScheduler::removeById(const QString &id)
 {
     std::lock_guard<std::mutex> lk(m_mx);
-    for (int p = 0; p < 4; ++p) {
-        auto &q = m_queues[p];
-        auto it = std::find(q.begin(), q.end(), id);
-        if (it != q.end()) {
-            q.erase(it);
-            return true;
-        }
-    }
-    return false;
+    const auto it = m_indexed.constFind(id);
+    if (it == m_indexed.cend()) return false;
+    const int p = it.value();
+    m_indexed.erase(it);
+    auto &q = m_queues[p];
+    const auto dit = std::find(q.begin(), q.end(), id);
+    if (dit != q.end()) q.erase(dit);
+    return true;
 }
 
 void PriorityScheduler::pendingCounts(int out[4]) const

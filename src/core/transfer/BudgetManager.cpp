@@ -68,12 +68,25 @@ bool BudgetManager::tryAcquire(TransferClass cls, TransferPriority prio,
             if (poolActive(cls) >= cap - floor) return false;
         }
     }
-    if (cls == TransferClass::Metadata) {
-        // Metadata-priority floor for metadata pool.
-        if (prioInt < metaInt && lowerPriorityWaiting[metaInt] > 0) {
-            const int floor = m_cfg.metadataFloorGlobal;
-            if (poolActive(cls) >= cap - floor) return false;
-        }
+
+    // (3b) Metadata floor — reservation against the GLOBAL cap so a queued
+    // metadata crawl is never starved by Download/Upload work hogging every
+    // slot. Applies to non-Metadata acquires only; Metadata itself draws from
+    // the reserve. Disabled when the global cap is off (per-class caps alone
+    // can't express a cross-pool reservation).
+    //
+    // Previously this block keyed on cls==Metadata and prio<Metadata, which is
+    // unreachable (Metadata acquires use TransferPriority::Metadata, never a
+    // lower one) — the floor was effectively dead code, letting DL/UL fill the
+    // whole global cap and starve metadata.
+    if (cls != TransferClass::Metadata
+        && m_cfg.metadataFloorGlobal > 0
+        && m_cfg.maxGlobalSlots > 0
+        && lowerPriorityWaiting[metaInt] > 0) {
+        const int metaActive    = m_active[static_cast<int>(TransferClass::Metadata)];
+        const int nonMetaActive = m_activeGlobal - metaActive;
+        if (nonMetaActive >= m_cfg.maxGlobalSlots - m_cfg.metadataFloorGlobal)
+            return false;
     }
 
     // Grant

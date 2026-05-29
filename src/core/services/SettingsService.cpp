@@ -154,6 +154,25 @@ void SettingsService::setDarkMode(bool value)
     emit settingsChanged();
 }
 
+bool SettingsService::sidebarCollapsed() const     { return m_settings.sidebarCollapsed; }
+void SettingsService::setSidebarCollapsed(bool value)
+{
+    if (m_settings.sidebarCollapsed == value) return;
+    m_settings.sidebarCollapsed = value;
+    if (m_repo) m_repo->setBool(QStringLiteral("UI/sidebarCollapsed"), value);
+    emit settingsChanged();
+}
+
+int  SettingsService::sidebarHudVariant() const    { return m_settings.sidebarHudVariant; }
+void SettingsService::setSidebarHudVariant(int value)
+{
+    const int clamped = qBound(0, value, 3);
+    if (m_settings.sidebarHudVariant == clamped) return;
+    m_settings.sidebarHudVariant = clamped;
+    if (m_repo) m_repo->setInt(QStringLiteral("UI/sidebarHudVariant"), clamped);
+    emit settingsChanged();
+}
+
 QString SettingsService::language() const          { return m_settings.language; }
 void SettingsService::setLanguage(const QString &code)
 {
@@ -188,6 +207,66 @@ void SettingsService::setMinimizeToTray(bool value)
     if (m_settings.minimizeToTray == value) return;
     m_settings.minimizeToTray = value;
     if (m_repo) m_repo->setBool(QStringLiteral("General/minimizeToTray"), value);
+    emit settingsChanged();
+}
+
+bool SettingsService::confirmOnClose() const       { return m_settings.confirmOnClose; }
+void SettingsService::setConfirmOnClose(bool value)
+{
+    if (m_settings.confirmOnClose == value) return;
+    m_settings.confirmOnClose = value;
+    if (m_repo) m_repo->setBool(QStringLiteral("General/confirmOnClose"), value);
+    emit settingsChanged();
+}
+
+bool SettingsService::notifyOnTransferDone() const { return m_settings.notifyOnTransferDone; }
+void SettingsService::setNotifyOnTransferDone(bool value)
+{
+    if (m_settings.notifyOnTransferDone == value) return;
+    m_settings.notifyOnTransferDone = value;
+    if (m_repo) m_repo->setBool(QStringLiteral("Hud/notifyOnTransferDone"), value);
+    emit settingsChanged();
+}
+
+bool SettingsService::showOnHideToTray() const { return m_settings.showOnHideToTray; }
+void SettingsService::setShowOnHideToTray(bool value)
+{
+    if (m_settings.showOnHideToTray == value) return;
+    m_settings.showOnHideToTray = value;
+    if (m_repo) m_repo->setBool(QStringLiteral("Hud/showOnHideToTray"), value);
+    emit settingsChanged();
+}
+
+bool SettingsService::showTaskbarProgress() const { return m_settings.showTaskbarProgress; }
+void SettingsService::setShowTaskbarProgress(bool value)
+{
+    if (m_settings.showTaskbarProgress == value) return;
+    m_settings.showTaskbarProgress = value;
+    if (m_repo) m_repo->setBool(QStringLiteral("Hud/showTaskbarProgress"), value);
+    emit settingsChanged();
+}
+
+int     SettingsService::miniWindowX()      const { return m_settings.miniWindowX; }
+int     SettingsService::miniWindowY()      const { return m_settings.miniWindowY; }
+QString SettingsService::miniWindowScreen() const { return m_settings.miniWindowScreen; }
+
+void SettingsService::setMiniWindowPosition(int x, int y, const QString &screen)
+{
+    // Coalesce: if every component matches the cached state, skip the
+    // disk write.  The Mini window calls this every drag-release, so
+    // the no-op check guards against thrashing QSettings on idle window
+    // activity (focus changes can also trip onXChanged in QML).
+    if (m_settings.miniWindowX == x &&
+        m_settings.miniWindowY == y &&
+        m_settings.miniWindowScreen == screen) return;
+    m_settings.miniWindowX = x;
+    m_settings.miniWindowY = y;
+    m_settings.miniWindowScreen = screen;
+    if (m_repo) {
+        m_repo->setInt   (QStringLiteral("Hud/miniWindowX"),      x);
+        m_repo->setInt   (QStringLiteral("Hud/miniWindowY"),      y);
+        m_repo->setString(QStringLiteral("Hud/miniWindowScreen"), screen);
+    }
     emit settingsChanged();
 }
 

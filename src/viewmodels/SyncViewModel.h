@@ -64,6 +64,12 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
 
+    // QML-facing row accessor mirroring ListModel.get(): returns a map of
+    // role-name → value so callers can read `folders.get(i).fileCount`.
+    // QAbstractListModel has no built-in get(); without this QML throws
+    // "get is not a function". Out-of-range rows return an empty map.
+    Q_INVOKABLE QVariantMap get(int row) const;
+
     // `state` maps folderId → SyncFolderUiState (cast to int).  The VM
     // computes it once per refresh so the QML role read is O(1) hash lookup.
     // Empty hash falls back to Idle for every row — matches v5 behaviour

@@ -3,6 +3,7 @@
 
 #include <QDateTime>
 #include <QLocale>
+#include <cmath>
 
 namespace fsnext::FormatUtil {
 
@@ -29,7 +30,13 @@ QString humanBytes(qint64 bytes, bool emptyOnZero)
 
 QString humanSpeed(double bps)
 {
-    if (bps <= 0.0) return {};
+    // Reject NaN / +inf BEFORE the qint64 cast — converting a non-finite
+    // double to an integral type is undefined behaviour in C++ (and on MSVC
+    // produces INT_MIN, which the formatter then prints as "-8 EiB/s").
+    // SpeedMeter currently never produces non-finite values, but humanSpeed
+    // is exposed via FormatUtil to other call-sites (QML helper, future
+    // bandwidth metrics) where the invariant is harder to enforce.
+    if (!std::isfinite(bps) || bps <= 0.0) return {};
     return humanBytes(static_cast<qint64>(bps)) + QStringLiteral("/s");
 }
 

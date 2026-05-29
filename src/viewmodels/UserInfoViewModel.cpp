@@ -40,6 +40,14 @@ QString UserInfoViewModel::levelLabel() const
     return levelToLabel(u.level, u.accountType);
 }
 
+bool UserInfoViewModel::isVip() const
+{
+    // Free tier is level 0-2 ("Thành viên thường"). Levels 3+ map to VIP,
+    // Promo, Bundle, FSUB*, Forever, Storage etc. — any of those is a paid
+    // tier and warrants the gradient VIP card treatment.
+    return m_auth && m_auth->currentUser().level >= 3;
+}
+
 QString UserInfoViewModel::accountType() const
 {
     return m_auth ? m_auth->currentUser().accountType : QString{};

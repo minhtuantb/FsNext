@@ -10,6 +10,8 @@
 #include <QClipboard>
 #include <QDateTime>
 #include <QDebug>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QDir>
 #include <QGuiApplication>
 #include <QMimeData>
@@ -292,6 +294,52 @@ void DownloadViewModel::clearHistory()
 void DownloadViewModel::dismissCompleted(const QString &taskId)
 {
     archiveCompleted(taskId);
+}
+
+void DownloadViewModel::revealInFolder(const QString &localPath) const
+{
+    if (localPath.isEmpty()) return;
+    PlatformUtils::openInExplorer(localPath);
+}
+
+void DownloadViewModel::openLocalFile(const QString &localPath) const
+{
+    if (localPath.isEmpty()) return;
+    PlatformUtils::openFile(localPath);
+}
+
+QString DownloadViewModel::normalizeShareUrl(const QString &linkcodeOrUrl)
+{
+    // Download tasks store the FULL share URL in `linkcode` (e.g.
+    // "http://www.fshare.vn/file/IBO7PP5CYKN9"); uploads store a bare
+    // 12-char code. Prefixing unconditionally produced the double-domain
+    // bug ".../file/http://...". Detect "is this already a URL" first —
+    // same guard UploadViewModel::openShareLinkInBrowser uses. Also
+    // normalise http → https for the canonical share page.
+    if (linkcodeOrUrl.startsWith(QStringLiteral("http://"),  Qt::CaseInsensitive)
+        || linkcodeOrUrl.startsWith(QStringLiteral("https://"), Qt::CaseInsensitive)) {
+        QString s = linkcodeOrUrl;
+        if (s.startsWith(QStringLiteral("http://"), Qt::CaseInsensitive))
+            s.replace(0, 7, QStringLiteral("https://"));
+        return s;
+    }
+    return QStringLiteral("https://www.fshare.vn/file/") + linkcodeOrUrl;
+}
+
+void DownloadViewModel::openShareUrl(const QString &linkcodeOrUrl) const
+{
+    if (linkcodeOrUrl.isEmpty()) return;
+    const QUrl url(normalizeShareUrl(linkcodeOrUrl));
+    if (url.isValid()) QDesktopServices::openUrl(url);
+}
+
+void DownloadViewModel::copyShareLink(const QString &linkcodeOrUrl)
+{
+    if (linkcodeOrUrl.isEmpty()) return;
+    const QString url = normalizeShareUrl(linkcodeOrUrl);
+    if (QClipboard *cb = QGuiApplication::clipboard())
+        cb->setText(url);
+    emit shareLinkCopied(url);
 }
 
 void DownloadViewModel::archiveCompleted(const QString &id)
