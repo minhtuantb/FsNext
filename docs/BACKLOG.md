@@ -27,7 +27,10 @@
   - ✅ `RefreshTokenCoordinator` **single-flight + hard/soft classification** (2026-05-29): virtual hóa
     `HttpClient::post/setCookie` → `FakeHttpClient` (canned response + semaphore gate). Test: success rotate token,
     hard-fail wipe session, soft-fail keep token, single-flight collapse 7 caller đồng thời → đúng 1 network call.
-- ⬜ **i18n**: chạy `lupdate`, audit chuỗi hardcode trong `qml/`, quyết định danh sách ngôn ngữ.
+- 🔄 **i18n** (audit xong 2026-05-29 — xem [i18n-audit.md](i18n-audit.md)): đã chạy `lupdate` (819 source text,
+  +44 mới), wrap đã phủ tốt (728 qsTr + 140 tr). **Phát hiện: bản EN ~91% chưa dịch** → app thực tế hiển thị VI dù
+  chọn EN. **Quyết định sản phẩm còn lại**: (a) giao translator điền 748 entry + wrap nốt số ít production, HOẶC
+  (b) tạm ẩn lựa chọn English. Quy ước: chạy lupdate trước release + code-review chặn chuỗi mới thiếu qsTr.
 
 ### P3
 - ⬜ **SecureStore non-Windows** (Keychain/libsecret) khi port macOS/Linux.
