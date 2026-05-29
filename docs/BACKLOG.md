@@ -20,6 +20,24 @@
 - ⬜ **SecureStore non-Windows** (Keychain/libsecret) khi port macOS/Linux.
 - ⬜ **Quy ước tài liệu sống vs snapshot** để tránh drift tái diễn (xem ASSESSMENT §7).
 
+### Crash-audit residual (không crash — từ đợt close 2026-05-29, xem docs/CRASH_AUDIT.md + FILE_MANAGER_CRASH_AUDIT.md)
+> Mọi finding crash nghiêm trọng đã FIXED/mitigated. Đây là các mục robustness/UX/perf còn lại:
+- ⬜ **H11** (P2): bọc `context.init()` (main.cpp) trong try-catch → hiện dialog "Init failed" thay vì abort.
+- ⬜ **M4** (P2): `SyncService::pauseFolder/resumeFolder` đọc `m_folderToTasks` không lock — thêm `Q_ASSERT` thread hoặc lock.
+- ⬜ **M18** (P2): `SyncService::scanFolderInternal` gọi `QFileInfo::isDir()`/`entryInfoList()` blocking trên main thread (freeze nếu network mount) → chuyển sang background.
+- ⬜ **M13** (P3): `FileCacheDB::queryFiles` ghép `sortKey` vào ORDER BY — callers hardcoded nên an toàn, thêm whitelist switch để phòng thủ.
+- ⬜ **M21** (P3): `SystemTray` — `QMenu` không có parent (rò rỉ nhẹ); tray icon đã an toàn.
+- ⬜ **M20** (P3, perf): `BadWordFilter::stripDiacritics` chạy 2 lần — cache normalized form lúc load.
+- ⬜ **M3** (P3, minor): `FileSyncWorker::onDispatchReady` đọc `m_userMap` sau khi unlock — userId rỗng nếu cancelAll chen vào (sync fail, không crash).
+- ⬜ **H9** (P3): `FolderExpander::crawl` có depth-cap 20 nhưng thiếu cycle-detect (thêm `visited` set như `FolderTreeModel`).
+- ⬜ **FM-M4** (P3, UX): context menu ở Medium-card view lệch vị trí (`mapToGlobal` vs `mapToItem`).
+- ⬜ **FM-M5** (P2, data): `FileCacheService::m_settingsInFlight` leak nếu settings op fail/timeout không emit signal → write op sau bị "ăn" event, list không refresh. Dùng per-request id hoặc timeout.
+
+### Phòng ngừa hệ thống (từ audit §8)
+- ⬜ Quy ước: **mọi lambda async (QtConcurrent::run / SingleShotConnection / QTimer::singleShot) phải capture QPointer cho TẤT CẢ QObject pointer** (đã ghi trong CLAUDE.md gotchas).
+- ⬜ Crash reporter (Sentry/Crashpad) — hiện chỉ log local + WER.
+- ⬜ CI: clang-tidy (`bugprone-*`, `cert-*`) + script check `Q_INVOKABLE` khớp giữa `.h` và call site `.qml`.
+
 ---
 
 ## Đã giải quyết trong FsNext (vấn đề của codebase legacy v5.3.0)

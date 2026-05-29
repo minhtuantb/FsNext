@@ -74,6 +74,9 @@ qmllint.exe -I qml qml/Fshare/Pages/<Page>.qml
 - **MVVM**: QML chỉ binding + display logic; business logic ở Service; ViewModel là cầu nối (Q_PROPERTY/Q_INVOKABLE).
 - ViewModel mới phải được tạo + wire trong `AppContext::init()` và đăng ký trong `AppContext::registerQml()`.
 - **Không hardcode màu/size trong QML** — dùng token `FsAurora.Theme` (`AuroraTheme`, `AuroraColors`).
+- **Lambda async** (`QtConcurrent::run`, `SingleShotConnection`, `QTimer::singleShot`): capture `QPointer` cho
+  QObject pointer + check `if (!guard) return;` đầu callback (bug-class số 1 theo crash-audit). Shutdown đã có
+  `QThreadPool::globalInstance()->waitForDone(5000)` ở `main.cpp` để drain pool trước khi hủy service.
 - Thêm file nguồn: cập nhật `CMakeLists.txt` (danh sách source) tương ứng. QML bundle qua GLOB (CONFIGURE_DEPENDS).
 - Bí mật OAuth: `src/core/api/OAuthSecrets.h` **gitignored** — chỉ commit bản `.example` nếu có.
 

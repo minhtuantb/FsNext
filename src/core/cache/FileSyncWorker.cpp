@@ -243,7 +243,7 @@ void FileSyncWorker::startCrawl(const QString &folderId)
 
             QMetaObject::invokeMethod(guard.data(),
                 [guard, db, folderId, userId, batch, firstBatch]() {
-                    if (!guard) return;
+                    if (!guard || !db) return;
                     db->upsertFiles(userId, batch);
                     if (firstBatch)
                         emit guard->firstBatchSynced(folderId);
@@ -265,7 +265,7 @@ void FileSyncWorker::startCrawl(const QString &folderId)
         // showing an empty pane until kStaleSecs (60 s) expires.
         QMetaObject::invokeMethod(guard.data(),
             [guard, db, folderId, userId, totalItems]() {
-                if (!guard) return;
+                if (!guard || !db) return;
                 auto *self = guard.data();
                 if (totalItems > 0)
                     db->setFolderSyncComplete(userId, folderId);

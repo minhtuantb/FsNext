@@ -1,5 +1,35 @@
 # Báo cáo Audit Nguy cơ Crash — FsNext (v6.0, branch `main`)
 
+> ## ✅ CLOSURE — Đối chiếu lại với code ngày 2026-05-29
+>
+> Toàn bộ finding đã được verify lại với code hiện tại (sau các đợt WIP v6.x). **Kết luận: không còn
+> crash bug nghiêm trọng nào chưa được mitigate.** Các mục robustness/UX/perf còn lại đã chuyển sang
+> [BACKLOG.md](BACKLOG.md). Phần điều tra gốc bên dưới giữ nguyên làm tham chiếu.
+>
+> **HIGH:**
+> | ID | Trạng thái | Ghi chú |
+> |---|---|---|
+> | H1 | ✅ FIXED | QtConcurrent lambda đã guard `this` bằng QPointer; service pointer thuộc AppContext + shutdown-drain (`main.cpp` `waitForDone(5000)`) bảo vệ |
+> | H2 | ✅ FIXED | Multi-segment dùng `m_fileWriteMutex`; single-segment chỉ 1 CURL handle (không concurrent) |
+> | H3 | ✅ FIXED | Callback chạy trên 1 thread của curl-multi event loop → không torn read |
+> | H4 | ✅ FIXED | `TransferOrchestrator` có `shuttingDown` atomic + `disconnect()` trong dtor + check ở enqueue |
+> | H5 | ✅ FIXED | `FSEEKO64` fail → `break` trước fread |
+> | H6 | ✅ FIXED | Resume offset validate `lastByte >= 0 && < totalSize` |
+> | H7 | ✅ FIXED | Đã thêm null-check `db` (2026-05-29); thực tế đã an toàn nhờ vòng đời chung + shutdown-drain |
+> | H8 | ✅ NOT-A-BUG | Check `m_cancelled` ở trong cùng critical section + lambda early-bail khi cancel |
+> | H9 | 🔶 MITIGATED | `FolderExpander` có depth-cap 20 (chặn stack overflow); thiếu cycle-detect → BACKLOG (P3) |
+> | H10 | ✅ NOT-A-BUG | `kMaxMessageBytes` cap; `quint32` không âm |
+> | H11 | ⬜ OPEN | `context.init()` chưa bọc try-catch (abort thay vì dialog) → BACKLOG (P2, robustness) |
+>
+> **MEDIUM:** M1 ✅ · M2 ✅notabug · M3 🔶minor→BACKLOG · M4 ⬜→BACKLOG · M5 ✅ · M6 ✅ · M7 ✅ · M8 ✅notabug ·
+> M9 ✅ · M10 ✅ · M11 ✅ · M12 ✅ · M13 🔶 (SQL ORDER BY — callers hardcoded, thêm whitelist → BACKLOG) · M14 ✅ ·
+> M15 ✅ · M16 🔶 (đã có `requestedUserId` guard) · M17 ✅ (hash dedup) · M18 ⬜ (blocking isDir → BACKLOG) ·
+> M19 ✅ (cap 50k) · M20 ⬜perf→BACKLOG · M21 🔶 (tray an toàn, menu thiếu parent → BACKLOG) · M22 ✅ (`main.cpp` shutdown-drain).
+>
+> **LOW:** L1 ✅ · L2 ✅ · L3 ✅ · L5 ✅notabug · L8 ✅ · L9 ✅ · L10 ✅ (còn lại: hygiene, không crash).
+>
+> Mục còn mở (không crash) → BACKLOG: H11, M3, M4, M13, M18, M20, M21.
+
 **Ngày:** 2026-05-26
 **Phương pháp:** Chia codebase (`src/`) thành 5 nhóm (network/API, transfer engines, viewmodels, services/cache, app+platform+util). 5 sub-agent quét song song, sau đó audit chính tay xác minh từng finding quan trọng để loại false positive.
 **Phạm vi:** ~50 cặp `.cpp/.h` trong `src/` (không bao gồm `qml/`, `tests/`, `lib/`).

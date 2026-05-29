@@ -1,5 +1,18 @@
 # Báo cáo Audit Crash — Chức năng File Manager / My Files
 
+> ## ✅ CLOSURE — Đối chiếu lại với code ngày 2026-05-29
+>
+> | ID | Trạng thái | Ghi chú |
+> |---|---|---|
+> | FM-H1 | ✅ FIXED | `setSelected()` đã là `Q_INVOKABLE` trong `FileManagerViewModel.h` + `FavoritesViewModel.h` |
+> | FM-H2 | ✅ FIXED | `FileCacheService` nhánh SingleShot đã dùng `QPointer guard` + `if (!guard) return` |
+> | FM-H3 | ✅ FIXED | `FolderTreeModel::rebuildVisible` đã có `visited` set + `kMaxDepth` + cảnh báo cycle |
+> | FM-M1/M2/M3, L1/L2 | ✅ NOT-A-BUG | Đã xác nhận lại đúng như mục 5 bên dưới |
+> | FM-M4 | ⬜ OPEN | Context menu `mapToGlobal` vs `mapToItem` lệch tọa độ (UX, không crash) → [BACKLOG.md](BACKLOG.md) |
+> | FM-M5 | ⬜ OPEN | `m_settingsInFlight` leak nếu request settings fail/timeout không emit signal → BACKLOG (data-consistency) |
+>
+> **Toàn bộ 3 finding HIGH (crash) đã được fix.** Phần điều tra gốc bên dưới giữ nguyên làm tham chiếu.
+
 **Ngày:** 2026-05-28
 **Phạm vi:** Hành vi crash app khi click vào file/folder trong trang File Manager (My Files).
 **Phương pháp:** Đọc trực tiếp các file `.cpp/.h/.qml` liên quan + verify từng claim bằng Grep/Read, KHÔNG dựa thuần vào sub-agent (đã bị false positive cao trong audit trước).
