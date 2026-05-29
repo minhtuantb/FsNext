@@ -127,12 +127,12 @@ ScrollView {
         SectionTitle { titleText: "Badges" }
         RowLayout {
             spacing: AuroraTheme.sp2
-            FsBadge { text: "Default" }
-            FsBadge { text: "Accent";  variant: "accent"; dot: true }
-            FsBadge { text: "Synced";  variant: "success"; dot: true }
-            FsBadge { text: "Warn";    variant: "warn"; dot: true }
-            FsBadge { text: "Error";   variant: "danger"; dot: true }
-            FsBadge { text: "Info";    variant: "info"; dot: true }
+            Fsh.FsBadge { text: "Default" }
+            Fsh.FsBadge { text: "Accent";  variant: "accent"; dot: true }
+            Fsh.FsBadge { text: "Synced";  variant: "success"; dot: true }
+            Fsh.FsBadge { text: "Warn";    variant: "warn"; dot: true }
+            Fsh.FsBadge { text: "Error";   variant: "danger"; dot: true }
+            Fsh.FsBadge { text: "Info";    variant: "info"; dot: true }
             Item { Layout.fillWidth: true }
         }
 
@@ -140,16 +140,16 @@ ScrollView {
         SectionTitle { titleText: "Progress & Switch" }
         RowLayout {
             spacing: AuroraTheme.sp4
-            FsProgressBar { Layout.preferredWidth: 220; value: 0.15 }
-            FsProgressBar { Layout.preferredWidth: 220; value: 0.55 }
-            FsProgressBar { Layout.preferredWidth: 220; value: 0.92 }
+            Fsh.FsProgressBar { Layout.preferredWidth: 220; value: 0.15 }
+            Fsh.FsProgressBar { Layout.preferredWidth: 220; value: 0.55 }
+            Fsh.FsProgressBar { Layout.preferredWidth: 220; value: 0.92 }
             Item { Layout.fillWidth: true }
         }
         RowLayout {
             spacing: AuroraTheme.sp4
-            FsProgressBar { Layout.preferredWidth: 220; indeterminate: true }
-            FsSwitch { label: "Bật đồng bộ"; checked: true }
-            FsSwitch { label: "Xoá local sau khi tải"; checked: false }
+            Fsh.FsProgressBar { Layout.preferredWidth: 220; indeterminate: true }
+            Fsh.FsSwitch { label: "Bật đồng bộ"; checked: true }
+            Fsh.FsSwitch { label: "Xoá local sau khi tải"; checked: false }
             Item { Layout.fillWidth: true }
         }
 
@@ -180,8 +180,8 @@ ScrollView {
                     Item { Layout.fillHeight: true }
                     RowLayout {
                         spacing: AuroraTheme.sp1
-                        FsBadge { text: "Đã đồng bộ"; variant: "success"; dot: true }
-                        FsBadge { text: "Riêng tư" }
+                        Fsh.FsBadge { text: "Đã đồng bộ"; variant: "success"; dot: true }
+                        Fsh.FsBadge { text: "Riêng tư" }
                     }
                 }
             }
@@ -207,7 +207,7 @@ ScrollView {
                         color: AuroraTheme.ink3
                     }
                     Item { Layout.fillHeight: true }
-                    FsProgressBar { Layout.fillWidth: true; value: 0.82 }
+                    Fsh.FsProgressBar { Layout.fillWidth: true; value: 0.82 }
                 }
             }
             Item { Layout.fillWidth: true }

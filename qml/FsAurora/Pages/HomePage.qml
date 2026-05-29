@@ -1216,7 +1216,7 @@ Item {
                     color: AuroraTheme.accent
                 }
 
-                Aurora.FsProgressBar {
+                FsProgressBar {
                     Layout.fillWidth: true
                     value: Math.max(0, Math.min(1, tCard.tProgress / 100.0))
                     trackHeight: 4

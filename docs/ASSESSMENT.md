@@ -30,15 +30,14 @@ phải lỗi thiết kế nền tảng.
 
 ### P1 — Nên xử lý sớm
 
-**1. Hai design-system QML song song (`FsAurora` + `Fshare`).** 🔄 ĐANG XỬ LÝ
-`FsAurora.Theme` là theme đang chạy, nhưng UI từng import lẫn lộn atom của cả 2 bộ (7 atom trùng tên). Đã chốt
-hướng + tài liệu hóa ([docs/design-system.md](design-system.md)): **`Fshare.Components` là bộ atom chuẩn**,
+**1. Hai design-system QML song song (`FsAurora` + `Fshare`).** ✅ PHẦN LỚN ĐÃ XỬ LÝ
+Đã chốt + tài liệu hóa ([docs/design-system.md](design-system.md)): **`Fshare.Components` là bộ atom chuẩn**,
 `FsAurora.Theme` = token, `FsAurora` = shell/HUD.
-- ✅ **Stage 1 (2026-05-29)**: hợp nhất 3 atom API-tương thích `FsIcon`, `FsTextField`, `FsCard` về Fshare (xóa bản
-  Aurora, repoint call site, build+runtime verified).
-- ⏳ **Stage 2**: 4 atom diverge `FsButton` (77 call site), `FsBadge`, `FsSwitch`, `FsProgressBar` — cần gộp
-  visual(Aurora)+a11y(Fshare) + verify thị giác từng surface. Đã ghi BACKLOG.
-- ⏳ Dọn artifact thiết kế (`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`, `uploads/`) khỏi cây source.
+- ✅ **Stage 1 + 2 (2026-05-29)**: **cả 7 atom trùng tên** (`FsIcon`, `FsTextField`, `FsCard`, `FsButton`,
+  `FsBadge`, `FsSwitch`, `FsProgressBar`) đã hợp nhất về `Fshare.Components` (gộp visual Aurora + a11y Fshare,
+  repoint mọi call site, build + runtime verified). `FsAurora.Components` giờ chỉ còn shell/HUD/utility.
+- ⏳ Cleanup nhỏ còn lại (BACKLOG): bỏ alias `Aurora.` thừa, cân nhắc chuyển `FsGradientRect` sang Fshare, dọn
+  artifact thiết kế (`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`, `uploads/`) khỏi cây source.
 
 **2. Hai crash-audit chưa đóng.**
 [docs/CRASH_AUDIT.md](CRASH_AUDIT.md) (47 findings) và [docs/FILE_MANAGER_CRASH_AUDIT.md](FILE_MANAGER_CRASH_AUDIT.md)

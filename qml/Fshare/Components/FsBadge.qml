@@ -37,6 +37,7 @@ Rectangle {
         case "warn":           return AuroraTheme.warnSoft
         case "blue":           // alias
         case "info":           return AuroraTheme.infoSoft
+        case "danger":         return AuroraTheme.dangerSoft
         case "solid-red":      // alias
         case "solid-accent":   return AuroraTheme.accent
         case "solid-amber":    // alias
@@ -57,6 +58,7 @@ Rectangle {
         case "warn":     return Qt.rgba(AuroraTheme.warn.r, AuroraTheme.warn.g, AuroraTheme.warn.b, 0.25)
         case "blue":
         case "info":     return Qt.rgba(AuroraTheme.info.r, AuroraTheme.info.g, AuroraTheme.info.b, 0.20)
+        case "danger":   return Qt.rgba(AuroraTheme.danger.r, AuroraTheme.danger.g, AuroraTheme.danger.b, 0.25)
         default:         return AuroraTheme.border
         }
     }
@@ -71,6 +73,7 @@ Rectangle {
         case "warn":           return AuroraTheme.warn
         case "blue":
         case "info":           return AuroraTheme.info
+        case "danger":         return AuroraTheme.danger
         case "solid-red":
         case "solid-accent":   return AuroraTheme.textOnAccent
         case "solid-amber":

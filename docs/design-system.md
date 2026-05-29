@@ -32,11 +32,17 @@ module từng có atom trùng tên, quy tắc:
 | FsTextField | ✅ Stage 1 | Fshare | Superset (shake + token font); xóa bản Aurora, LoginView/Showcase dùng `Fsh.FsTextField` |
 | FsCard | ✅ Stage 1 | Fshare | Superset (lift hover); xóa bản Aurora |
 | FsButton | ✅ Stage 2 (2026-05-29) | Fshare | Merge: impl Aurora (gradient/glow/FsIcon/loading/link/lift) + a11y/keyboard/focus-ring Fshare; union variant (+success), size "default"=md; dùng `Aurora.FsGradientRect`. Repoint 77 `Aurora.FsButton`→`FsButton` |
-| FsBadge | ⏳ Stage 2 | Fshare (dự kiến) | Diverge: hợp nhất variant (Aurora 6 vs Fshare solid+alias) |
-| FsSwitch | ⏳ Stage 2 | Fshare (dự kiến) | Diverge: label+gradient(Aurora) vs focus-ring/keyboard(Fshare) |
-| FsProgressBar | ⏳ Stage 2 | (cân nhắc) | Aurora=gradient+indeterminate, Fshare=semantic status — có thể giữ 2 tên khác nhau |
+| FsBadge | ✅ Stage 2 (2026-05-29) | Fshare | Fshare superset (variant + alias); đã thêm `danger` cho đủ bộ |
+| FsSwitch | ✅ Stage 2 | Fshare | Fshare a11y/keyboard/focus-ring + thêm `label` optional (Aurora) |
+| FsProgressBar | ✅ Stage 2 | Fshare | Union: `value`/`indeterminate`/`trackHeight` (Aurora gradient) + `status`/`barHeight` (Fshare semantic); gradient khi status="default", solid khi status set |
 
-Khi cả 7 đã về Fshare → cân nhắc bỏ hẳn alias `Aurora.` cho atom (giữ alias chỉ cho shell `FsAurora.*`).
+**✅ Cả 7 atom đã ở `Fshare.Components`** (2026-05-29). `FsAurora.Components` giờ chỉ còn shell/HUD/utility:
+FsGradientRect, FsSidebar, FsFontLoader, FsPageHeader, FsScrollPage, FsToastHost, HomeSearchOverlay,
+TransferHudPanel, Sparkline, FsMiniHud.
+
+**Còn lại (cleanup, không gấp):** (1) bỏ alias `Aurora.` cho atom ở các file không còn dùng atom Aurora (giữ
+alias chỉ cho shell `Aurora.FsGradientRect`/`FsSidebar`...); (2) cân nhắc chuyển `FsGradientRect` sang
+`Fshare.Components` để cắt phụ thuộc ngược Fshare→FsAurora; (3) dọn artifact thiết kế trong `qml/FsAurora/`.
 
 ## Verify khi đụng atom
 

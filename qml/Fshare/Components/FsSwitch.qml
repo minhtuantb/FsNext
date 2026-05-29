@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: Proprietary
-// FsSwitch — On/off toggle (Aurora-native, 44×24 pill with sliding thumb)
+// FsSwitch — on/off toggle (design-system canonical, Fshare.Components).
+//
+// Merged (design-system Stage 2, 2026-05-29): Fshare a11y/keyboard/focus-ring +
+// solid accent track, plus the former Aurora `label` (optional text to the right).
 //
 // Usage:
 //   FsSwitch { checked: true; onToggled: console.log(checked) }
+//   FsSwitch { label: "Bật đồng bộ"; checked: true }
 
 import QtQuick
 import FsAurora.Theme 1.0
@@ -12,21 +16,20 @@ Item {
 
     property bool checked: false
     property bool enabled: true
+    property string label: ""           // optional trailing label
     signal toggled(bool checked)
 
-    implicitWidth: 44
+    implicitWidth: sw.width + (label !== "" ? lbl.implicitWidth + AuroraTheme.sp2 : 0)
     implicitHeight: 24
     opacity: enabled ? 1.0 : 0.45
 
     Accessible.role: Accessible.CheckBox
+    Accessible.name: label
     Accessible.checkable: true
     Accessible.checked: root.checked
 
-    // ── Keyboard support (v6.0+) ────────────────────────────────────────────
-    // Tab in, Space toggles — matches HTML <input type="checkbox"> + WAI-ARIA
-    // "switch" role.  Return/Enter are NOT bound because the switch isn't a
-    // form submitter; binding them would steal Enter from the dialog's
-    // primary action when the switch happens to be focused.
+    // Tab in, Space toggles — WAI-ARIA "switch". Return/Enter intentionally
+    // unbound so they don't steal a dialog's primary action when focused.
     activeFocusOnTab: enabled
     Keys.onPressed: function(event) {
         if (!enabled) return;
@@ -37,40 +40,54 @@ Item {
         }
     }
 
-    // Focus ring — same accent halo as FsButton/FsTextField so the visual
-    // language is consistent.  Sits one pixel out so the ring doesn't fight
-    // the track color animation.
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -3
-        radius: (parent.height + 6) / 2
-        color: "transparent"
-        border.width: 2
-        border.color: Qt.rgba(AuroraTheme.accent.r, AuroraTheme.accent.g,
-                               AuroraTheme.accent.b, 0.55)
-        visible: root.activeFocus
-        z: -1
+    // ── Switch graphic (fixed 44×24) ─────────────────────
+    Item {
+        id: sw
+        width: 44; height: 24
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+
+        // Focus ring — accent halo matching FsButton/FsTextField.
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: -3
+            radius: (parent.height + 6) / 2
+            color: "transparent"
+            border.width: 2
+            border.color: Qt.rgba(AuroraTheme.accent.r, AuroraTheme.accent.g,
+                                   AuroraTheme.accent.b, 0.55)
+            visible: root.activeFocus
+            z: -1
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: height / 2
+            color: root.checked ? AuroraTheme.accent : AuroraTheme.borderStrong
+            Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
+
+            Rectangle {
+                width: parent.height - 4
+                height: parent.height - 4
+                radius: width / 2
+                color: AuroraTheme.panel
+                anchors.verticalCenter: parent.verticalCenter
+                x: root.checked ? parent.width - width - 2 : 2
+                Behavior on x { enabled: !AuroraTheme.reduceMotion; NumberAnimation { duration: AuroraTheme.durFast; easing.type: Easing.OutCubic } }
+            }
+        }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        radius: height / 2
-        // Track: accent gradient feel via accentTint when off (subtle vs flat grey),
-        // solid accent when on. Aurora doesn't expose bg3-equivalent so we use
-        // borderStrong for the off state — visually identical and palette-correct.
-        color: root.checked ? AuroraTheme.accent : AuroraTheme.borderStrong
-        Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
-
-        // Thumb
-        Rectangle {
-            width: parent.height - 4
-            height: parent.height - 4
-            radius: width / 2
-            color: AuroraTheme.panel
-            anchors.verticalCenter: parent.verticalCenter
-            x: root.checked ? parent.width - width - 2 : 2
-            Behavior on x { enabled: !AuroraTheme.reduceMotion; NumberAnimation { duration: AuroraTheme.durFast; easing.type: Easing.OutCubic } }
-        }
+    Text {
+        id: lbl
+        visible: root.label !== ""
+        anchors.left: sw.right
+        anchors.leftMargin: AuroraTheme.sp2
+        anchors.verticalCenter: parent.verticalCenter
+        text: root.label
+        font.family: AuroraTheme.fontSans
+        font.pixelSize: 13
+        color: AuroraTheme.ink1
     }
 
     MouseArea {
