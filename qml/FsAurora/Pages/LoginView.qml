@@ -500,7 +500,7 @@ Item {
             }
 
             // ── Login button ────────────────────────────────
-            FsButton {
+            Fsh.FsButton {
                 Layout.topMargin: 22
                 Layout.fillWidth: true
                 text: (root.authVm && root.authVm.isLoading) ? "Đang đăng nhập…" : "Đăng nhập  ›"

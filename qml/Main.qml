@@ -417,19 +417,19 @@ ApplicationWindow {
                 spacing: AuroraTheme.sp2
                 height: 64
 
-                // Aurora.FsButton — flagship atom of the design system,
+                // FsButton — flagship atom of the design system,
                 // hand-tuned with the brand 135° gradient + orange glow
                 // shadow on primary. The legacy Fshare.Components.FsButton
                 // existed mostly for back-compat; this dialog should use
                 // the canonical Aurora variant like every other modern
                 // surface in the shell.
-                Aurora.FsButton {
+                FsButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Huỷ")
                     variant: "ghost"
                     onClicked: closeConfirmDialog.close()
                 }
-                Aurora.FsButton {
+                FsButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Thu nhỏ vào khay")
                     icon: "arrow-down"
@@ -454,7 +454,7 @@ ApplicationWindow {
                         }
                     }
                 }
-                Aurora.FsButton {
+                FsButton {
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Thoát hẳn")
                     icon: "power"

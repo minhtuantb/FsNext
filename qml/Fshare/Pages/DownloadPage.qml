@@ -239,7 +239,7 @@ Item {
                         spacing: AuroraTheme.sp2
 
                         // Pause/Resume all — only when there's active work
-                        Aurora.FsButton {
+                        FsButton {
                             readonly property string _run: downloadViewModel ? downloadViewModel.runState : "idle"
                             visible: !page.showHistory && _run !== "idle"
                             text: _run === "running" ? qsTr("Tạm dừng tất cả") : qsTr("Tiếp tục tất cả")
@@ -254,7 +254,7 @@ Item {
                         }
 
                         // Clear history — only on History tab with rows
-                        Aurora.FsButton {
+                        FsButton {
                             visible: page.showHistory && page.historyCount > 0
                             text: qsTr("Xoá lịch sử")
                             variant: "ghost"
@@ -262,7 +262,7 @@ Item {
                             onClicked: if (downloadViewModel) downloadViewModel.clearHistory()
                         }
 
-                        Aurora.FsButton {
+                        FsButton {
                             visible: !page.showHistory
                             text: qsTr("Thêm URL")
                             icon: "plus"
@@ -352,7 +352,7 @@ Item {
                     }
                 }
 
-                Aurora.FsButton {
+                FsButton {
                     text: qsTr("Huỷ")
                     variant: "ghost"
                     size: "sm"
@@ -757,12 +757,12 @@ Item {
 
                 Item { Layout.fillWidth: true }
 
-                Aurora.FsButton {
+                FsButton {
                     text: qsTr("Huỷ")
                     variant: "ghost"
                     onClicked: addDialog.close()
                 }
-                Aurora.FsButton {
+                FsButton {
                     id: downloadBtn
                     text: qsTr("Tải xuống")
                     variant: "primary"

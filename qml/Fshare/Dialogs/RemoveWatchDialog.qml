@@ -107,13 +107,13 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            Aurora.FsButton {
+            FsButton {
                 id: cancelBtn
                 text: qsTr("Hủy")
                 variant: "ghost"
                 onClicked: root.close()
             }
-            Aurora.FsButton {
+            FsButton {
                 text: qsTr("Xóa")
                 variant: "danger"
                 onClicked: {

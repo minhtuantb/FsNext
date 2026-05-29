@@ -271,7 +271,7 @@ Item {
                     Layout.fillWidth: true
                     spacing: AuroraTheme.sp2
 
-                    Aurora.FsButton {
+                    FsButton {
                         Layout.fillWidth: true
                         visible: root._isMedia
                         variant: "primary"
@@ -279,7 +279,7 @@ Item {
                         enabled: !root._hasPwd || passwordInput.text.length > 0
                         onClicked: if (vm) vm.playCurrentFile(passwordInput.text)
                     }
-                    Aurora.FsButton {
+                    FsButton {
                         Layout.fillWidth: true
                         variant: root._isMedia ? "secondary" : "primary"
                         text: qsTr("⬇  Tải về máy")
@@ -290,13 +290,13 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: AuroraTheme.sp2
-                        Aurora.FsButton {
+                        FsButton {
                             Layout.fillWidth: true
                             variant: "ghost"
                             text: qsTr("⎘  Sao chép link")
                             onClicked: if (vm) vm.copyCurrentFileLink()
                         }
-                        Aurora.FsButton {
+                        FsButton {
                             Layout.fillWidth: true
                             variant: "ghost"
                             text: qsTr("↗  Mở trên fshare.vn")

@@ -363,31 +363,31 @@ Rectangle {
             Item { Layout.fillWidth: true }
 
             // Primary action (varies by status)
-            Aurora.FsButton {
+            FsButton {
                 visible: root.status === 0
                 text: qsTr("Quét lại")
                 variant: "ghost"; size: "sm"
                 onClicked: root.rescanClicked()
             }
-            Aurora.FsButton {
+            FsButton {
                 visible: root.isActive
                 text: qsTr("Tạm dừng")
                 variant: "ghost"; size: "sm"
                 onClicked: root.pauseClicked()
             }
-            Aurora.FsButton {
+            FsButton {
                 visible: root.isPaused
                 text: qsTr("Tiếp tục")
                 variant: "secondary"; size: "sm"
                 onClicked: root.resumeClicked()
             }
-            Aurora.FsButton {
+            FsButton {
                 visible: root.isError
                 text: qsTr("Thử lại")
                 variant: "secondary"; size: "sm"
                 onClicked: root.retryClicked()
             }
-            Aurora.FsButton {
+            FsButton {
                 visible: root.status === 5
                 text: qsTr("Bật lại")
                 variant: "secondary"; size: "sm"
@@ -395,7 +395,7 @@ Rectangle {
             }
 
             // Settings
-            Aurora.FsButton {
+            FsButton {
                 text: qsTr("Cài đặt")
                 variant: "ghost"; size: "sm"
                 onClicked: root.settingsClicked()

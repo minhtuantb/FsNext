@@ -143,8 +143,8 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            Aurora.FsButton { text: qsTr("Cancel"); variant: "ghost"; onClicked: root.close() }
-            Aurora.FsButton {
+            FsButton { text: qsTr("Cancel"); variant: "ghost"; onClicked: root.close() }
+            FsButton {
                 id: confirmBtn
                 text: root.removeMode ? qsTr("Remove Password") : qsTr("Set Password")
                 variant: "primary"

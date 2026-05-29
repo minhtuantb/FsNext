@@ -398,12 +398,12 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            Aurora.FsButton {
+            FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Hủy"); variant: "ghost"
                 onClicked: root.close()
             }
-            Aurora.FsButton {
+            FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Bắt đầu tải lên"); variant: "primary"
                 enabled: root.pendingFiles.length > 0

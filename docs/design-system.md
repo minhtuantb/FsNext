@@ -31,7 +31,7 @@ module từng có atom trùng tên, quy tắc:
 | FsIcon | ✅ Stage 1 (2026-05-29) | Fshare | Render giống hệt + a11y; `Aurora.FsIcon`→`FsIcon`, đã xóa bản Aurora |
 | FsTextField | ✅ Stage 1 | Fshare | Superset (shake + token font); xóa bản Aurora, LoginView/Showcase dùng `Fsh.FsTextField` |
 | FsCard | ✅ Stage 1 | Fshare | Superset (lift hover); xóa bản Aurora |
-| FsButton | ⏳ Stage 2 | Fshare (dự kiến) | **Diverge**: gộp gradient+loading(Aurora) vào bản Fshare có a11y; repoint 77 `Aurora.FsButton` |
+| FsButton | ✅ Stage 2 (2026-05-29) | Fshare | Merge: impl Aurora (gradient/glow/FsIcon/loading/link/lift) + a11y/keyboard/focus-ring Fshare; union variant (+success), size "default"=md; dùng `Aurora.FsGradientRect`. Repoint 77 `Aurora.FsButton`→`FsButton` |
 | FsBadge | ⏳ Stage 2 | Fshare (dự kiến) | Diverge: hợp nhất variant (Aurora 6 vs Fshare solid+alias) |
 | FsSwitch | ⏳ Stage 2 | Fshare (dự kiến) | Diverge: label+gradient(Aurora) vs focus-ring/keyboard(Fshare) |
 | FsProgressBar | ⏳ Stage 2 | (cân nhắc) | Aurora=gradient+indeterminate, Fshare=semantic status — có thể giữ 2 tên khác nhau |

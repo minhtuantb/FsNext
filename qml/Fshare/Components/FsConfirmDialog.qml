@@ -69,14 +69,14 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            Aurora.FsButton {
+            FsButton {
                 id: cancelConfirmBtn
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.cancelLabel
                 variant: "ghost"
                 onClicked: { root.cancelled(); root.close(); }
             }
-            Aurora.FsButton {
+            FsButton {
                 id: primaryConfirmBtn
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.primaryLabel

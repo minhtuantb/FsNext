@@ -70,7 +70,7 @@ FsDialog {
                         text: root.shareUrl
                         readOnly: true
                     }
-                    Aurora.FsButton {
+                    FsButton {
                         Layout.alignment: Qt.AlignBottom
                         text: qsTr("Sao chép")
                         variant: "secondary"
@@ -97,7 +97,7 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            Aurora.FsButton {
+            FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Đóng"); variant: "ghost"
                 onClicked: root.close()

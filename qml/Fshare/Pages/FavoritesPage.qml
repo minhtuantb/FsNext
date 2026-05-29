@@ -378,7 +378,7 @@ Item {
                 }
             }
 
-            Aurora.FsButton {
+            FsButton {
                 Layout.alignment: Qt.AlignVCenter
                 text: qsTr("Làm mới")
                 icon: "refresh"
@@ -1046,7 +1046,7 @@ Item {
                                                  || (page.selectedFileData.isDownloaded))
                                     spacing: AuroraTheme.sp2
 
-                                    Aurora.FsButton {
+                                    FsButton {
                                         Layout.fillWidth: true
                                         visible: page.selectedFileData && page.selectedFileData.isFolder
                                         text: qsTr("Mở thư mục"); variant: "primary"; size: "sm"
@@ -1059,7 +1059,7 @@ Item {
                                         }
                                     }
 
-                                    Aurora.FsButton {
+                                    FsButton {
                                         Layout.fillWidth: true
                                         visible: page.selectedFileData
                                                  && !page.selectedFileData.isFolder
@@ -1068,7 +1068,7 @@ Item {
                                         onClicked: page._playMediaFile(page.selectedFileData)
                                     }
 
-                                    Aurora.FsButton {
+                                    FsButton {
                                         Layout.fillWidth: true
                                         visible: page.selectedFileData
                                                  && !page.selectedFileData.isFolder
@@ -1096,7 +1096,7 @@ Item {
                                     color: AuroraTheme.ink4
                                 }
 
-                                Aurora.FsButton {
+                                FsButton {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: AuroraTheme.sp3
                                     Layout.rightMargin: AuroraTheme.sp3
@@ -1108,7 +1108,7 @@ Item {
                                     }
                                 }
 
-                                Aurora.FsButton {
+                                FsButton {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: AuroraTheme.sp3
                                     Layout.rightMargin: AuroraTheme.sp3
@@ -1120,7 +1120,7 @@ Item {
                                     }
                                 }
 
-                                Aurora.FsButton {
+                                FsButton {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: AuroraTheme.sp3
                                     Layout.rightMargin: AuroraTheme.sp3
@@ -1270,7 +1270,7 @@ Item {
                                     Layout.bottomMargin: AuroraTheme.sp4
                                     spacing: AuroraTheme.sp2
 
-                                    Aurora.FsButton {
+                                    FsButton {
                                         Layout.fillWidth: true
                                         visible: detailPanel.isSingle && page.selectedFileData && page.selectedFileData.isDownloaded
                                         text: qsTr("Mở thư mục chứa"); variant: "ghost"; size: "sm"
@@ -1280,7 +1280,7 @@ Item {
                                         }
                                     }
 
-                                    Aurora.FsButton {
+                                    FsButton {
                                         Layout.fillWidth: true
                                         visible: detailPanel.active
                                                  && favoritesViewModel

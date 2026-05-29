@@ -358,7 +358,7 @@ FsDialog {
 
             Item { Layout.fillWidth: true }
 
-            Aurora.FsButton {
+            FsButton {
                 text: root.step === 1 ? qsTr("Hủy") : qsTr("Quay lại")
                 variant: "ghost"
                 onClicked: {
@@ -367,7 +367,7 @@ FsDialog {
                 }
             }
 
-            Aurora.FsButton {
+            FsButton {
                 id: primaryBtn
                 text: root.step === 1 ? qsTr("Tiếp tục") : qsTr("Thêm")
                 variant: "primary"

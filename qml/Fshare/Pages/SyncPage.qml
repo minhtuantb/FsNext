@@ -435,7 +435,7 @@ Item {
                         }
                     }
 
-                    Aurora.FsButton {
+                    FsButton {
                         Layout.alignment: Qt.AlignVCenter
                         text: qsTr("Thêm folder sync")
                         icon: "plus"

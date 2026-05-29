@@ -367,7 +367,7 @@ Item {
                         Layout.alignment: Qt.AlignVCenter
                         spacing: AuroraTheme.sp2
 
-                        Aurora.FsButton {
+                        FsButton {
                             readonly property string _run: uploadViewModel ? uploadViewModel.runState : "idle"
                             visible: !page.showHistory && _run !== "idle"
                             text: _run === "running" ? qsTr("Tạm dừng tất cả") : qsTr("Tiếp tục tất cả")
@@ -381,7 +381,7 @@ Item {
                             }
                         }
 
-                        Aurora.FsButton {
+                        FsButton {
                             visible: page.showHistory && page.historyCount > 0
                             text: qsTr("Xoá lịch sử")
                             variant: "ghost"
@@ -389,7 +389,7 @@ Item {
                             onClicked: if (uploadViewModel) uploadViewModel.clearHistory()
                         }
 
-                        Aurora.FsButton {
+                        FsButton {
                             text: qsTr("Thêm file")
                             icon: "plus"
                             variant: "primary"
@@ -472,7 +472,7 @@ Item {
                     }
                 }
 
-                Aurora.FsButton {
+                FsButton {
                     text:    qsTr("Tiếp tục")
                     variant: "primary"
                     size:    "sm"
@@ -482,7 +482,7 @@ Item {
                         uploadDialog.open();
                     }
                 }
-                Aurora.FsButton {
+                FsButton {
                     text:    qsTr("Bỏ")
                     variant: "ghost"
                     size:    "sm"

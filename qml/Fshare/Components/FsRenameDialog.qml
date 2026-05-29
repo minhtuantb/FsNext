@@ -63,12 +63,12 @@ FsDialog {
             spacing: AuroraTheme.sp2
             height: 64
 
-            Aurora.FsButton {
+            FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Hủy"); variant: "ghost"
                 onClicked: root.close()
             }
-            Aurora.FsButton {
+            FsButton {
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("Đổi tên"); variant: "primary"
                 onClicked: root.applyRename()

@@ -77,25 +77,25 @@ ScrollView {
         SectionTitle { titleText: "Buttons" }
         RowLayout {
             spacing: AuroraTheme.sp2
-            FsButton { text: "Primary";   variant: "primary" }
-            FsButton { text: "Secondary"; variant: "secondary" }
-            FsButton { text: "Ghost";     variant: "ghost" }
-            FsButton { text: "Danger";    variant: "danger" }
-            FsButton { text: "Link";      variant: "link" }
+            Fsh.FsButton { text: "Primary";   variant: "primary" }
+            Fsh.FsButton { text: "Secondary"; variant: "secondary" }
+            Fsh.FsButton { text: "Ghost";     variant: "ghost" }
+            Fsh.FsButton { text: "Danger";    variant: "danger" }
+            Fsh.FsButton { text: "Link";      variant: "link" }
         }
         RowLayout {
             spacing: AuroraTheme.sp2
-            FsButton { text: "Small";   variant: "primary"; size: "sm" }
-            FsButton { text: "Medium";  variant: "primary"; size: "md" }
-            FsButton { text: "Large";   variant: "primary"; size: "lg" }
-            FsButton { text: "Loading"; variant: "primary"; loading: true }
-            FsButton { text: "Disabled"; variant: "primary"; enabled: false }
+            Fsh.FsButton { text: "Small";   variant: "primary"; size: "sm" }
+            Fsh.FsButton { text: "Medium";  variant: "primary"; size: "md" }
+            Fsh.FsButton { text: "Large";   variant: "primary"; size: "lg" }
+            Fsh.FsButton { text: "Loading"; variant: "primary"; loading: true }
+            Fsh.FsButton { text: "Disabled"; variant: "primary"; enabled: false }
         }
         RowLayout {
             spacing: AuroraTheme.sp2
-            FsButton { text: "Tải lên";   variant: "primary";   icon: "arrow-up" }
-            FsButton { text: "Tải xuống"; variant: "secondary"; icon: "arrow-down" }
-            FsButton { text: "Chia sẻ";   variant: "ghost";     icon: "link" }
+            Fsh.FsButton { text: "Tải lên";   variant: "primary";   icon: "arrow-up" }
+            Fsh.FsButton { text: "Tải xuống"; variant: "secondary"; icon: "arrow-down" }
+            Fsh.FsButton { text: "Chia sẻ";   variant: "ghost";     icon: "link" }
         }
 
         // ── Inputs ──────────────────────────────────
