@@ -17,16 +17,17 @@
 > | H6 | ✅ FIXED | Resume offset validate `lastByte >= 0 && < totalSize` |
 > | H7 | ✅ FIXED | Đã thêm null-check `db` (2026-05-29); thực tế đã an toàn nhờ vòng đời chung + shutdown-drain |
 > | H8 | ✅ NOT-A-BUG | Check `m_cancelled` ở trong cùng critical section + lambda early-bail khi cancel |
-> | H9 | 🔶 MITIGATED | `FolderExpander` có depth-cap 20 (chặn stack overflow); thiếu cycle-detect → BACKLOG (P3) |
+> | H9 | ✅ FIXED (2026-05-29) | `FolderExpander` có depth-cap 20 + nay thêm `m_visited` cycle-detect (skip linkcode đã crawl) |
 > | H10 | ✅ NOT-A-BUG | `kMaxMessageBytes` cap; `quint32` không âm |
 > | H11 | ✅ FIXED (2026-05-29) | `context.init()` đã bọc try-catch trong main.cpp → QMessageBox "Khởi tạo thất bại" thay vì abort |
 >
 > **MEDIUM:** M1 ✅ · M2 ✅notabug · M3 🔶minor→BACKLOG · M4 ✅ (2026-05-29: Q_ASSERT thread-affinity — không có
 > race thật, SyncService main-thread-only) · M5 ✅ · M6 ✅ · M7 ✅ · M8 ✅notabug · M9 ✅ · M10 ✅ · M11 ✅ · M12 ✅ ·
-> M13 🔶 (SQL ORDER BY — callers hardcoded, thêm whitelist → BACKLOG) · M14 ✅ · M15 ✅ · M16 🔶 (đã có
-> `requestedUserId` guard) · M17 ✅ (hash dedup) · M18 🔶 HOÃN (perf trên network-mount; chuyển scan async là
-> refactor lõi sync rủi ro — làm có chủ đích, BACKLOG) · M19 ✅ (cap 50k) · M20 ⬜perf→BACKLOG · M21 🔶 (tray an
-> toàn, menu thiếu parent → BACKLOG) · M22 ✅ (`main.cpp` shutdown-drain).
+> M13 ✅ NOT-A-BUG (2026-05-29: `sortKey` chọn nhánh if/else cột cố định, `dir`=ASC/DESC từ bool — KHÔNG interpolate
+> vào SQL, đã là whitelist) · M14 ✅ · M15 ✅ · M16 🔶 (đã có `requestedUserId` guard) · M17 ✅ (hash dedup) ·
+> M18 🔶 HOÃN (perf trên network-mount; chuyển scan async là refactor lõi sync rủi ro — làm có chủ đích, BACKLOG) ·
+> M19 ✅ (cap 50k) · M20 ⬜perf→BACKLOG · M21 ✅ FIXED (2026-05-29: `~SystemTray` delete m_menu — setContextMenu
+> không sở hữu) · M22 ✅ (`main.cpp` shutdown-drain).
 >
 > **LOW:** L1 ✅ · L2 ✅ · L3 ✅ · L5 ✅notabug · L8 ✅ · L9 ✅ · L10 ✅ (còn lại: hygiene, không crash).
 >

@@ -44,12 +44,12 @@
 - ✅ **M4** (2026-05-29): thêm `Q_ASSERT` thread-affinity ở `pauseFolder/resumeFolder` (không có race thật — SyncService main-thread-only; assert tài liệu hóa invariant).
 - ✅ **FM-M5** (verified NOT-A-BUG 2026-05-29): FileService settings-op luôn emit complete/failed → `m_settingsInFlight` luôn cân bằng.
 - 🔶 **M18** (HOÃN — P2): `SyncService::scanFolderInternal` blocking `isDir/entryInfoList` trên main thread → freeze chỉ khi sync folder là network mount (edge case). Chuyển scan sang background là refactor lõi sync (đụng enqueue/state/subdir-create) → làm có chủ đích + review kỹ, không tự ý rewrite.
-- ⬜ **M13** (P3): `FileCacheDB::queryFiles` ghép `sortKey` vào ORDER BY — callers hardcoded nên an toàn, thêm whitelist switch để phòng thủ.
-- ⬜ **M21** (P3): `SystemTray` — `QMenu` không có parent (rò rỉ nhẹ); tray icon đã an toàn.
+- ✅ **H9** (2026-05-29): `FolderExpander::crawl` thêm `m_visited` cycle-detect (skip linkcode đã crawl) bên cạnh depth-cap 20.
+- ✅ **M13** (verified NOT-A-BUG 2026-05-29): `queryFiles` chọn nhánh if/else cột cố định + `dir` từ bool — không interpolate sortKey vào SQL, đã là whitelist.
+- ✅ **M21** (2026-05-29): `~SystemTray` delete m_menu (setContextMenu không sở hữu) — hết rò rỉ.
 - ⬜ **M20** (P3, perf): `BadWordFilter::stripDiacritics` chạy 2 lần — cache normalized form lúc load.
 - ⬜ **M3** (P3, minor): `FileSyncWorker::onDispatchReady` đọc `m_userMap` sau khi unlock — userId rỗng nếu cancelAll chen vào (sync fail, không crash).
-- ⬜ **H9** (P3): `FolderExpander::crawl` có depth-cap 20 nhưng thiếu cycle-detect (thêm `visited` set như `FolderTreeModel`).
-- ⬜ **FM-M4** (P3, UX): context menu ở Medium-card view lệch vị trí (`mapToGlobal` vs `mapToItem`).
+- ⬜ **FM-M4** (P3, UX): context menu ở Medium-card view lệch vị trí (`mapToGlobal` vs `mapToItem`) — cần verify thị giác.
 
 ### Phòng ngừa hệ thống (từ audit §8)
 - ⬜ Quy ước: **mọi lambda async (QtConcurrent::run / SingleShotConnection / QTimer::singleShot) phải capture QPointer cho TẤT CẢ QObject pointer** (đã ghi trong CLAUDE.md gotchas).

@@ -19,6 +19,7 @@
 #include "core/models/FileItem.h"
 #include "core/models/TransferTask.h"
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QVector>
 #include <atomic>
@@ -81,6 +82,8 @@ private:
 
     QVector<TransferTask> m_tasks;
     int m_foldersScanned = 0;
+    // Linkcodes already descended into — cycle guard for crawl() (CRASH_AUDIT H9).
+    QSet<QString> m_visited;
 
     std::atomic<bool> m_abort{false};
 };

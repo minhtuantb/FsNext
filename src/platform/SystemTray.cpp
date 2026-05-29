@@ -30,7 +30,14 @@ SystemTray::SystemTray(QQmlApplicationEngine *engine, QObject *parent)
             &SystemTray::togglePopupRequested);
 }
 
-SystemTray::~SystemTray() = default;
+SystemTray::~SystemTray()
+{
+    // QSystemTrayIcon::setContextMenu() does NOT take ownership and the menu
+    // was created without a parent, so free it explicitly (CRASH_AUDIT M21).
+    // Deleting the menu also deletes its QActions (parented via addAction).
+    delete m_menu;
+    m_menu = nullptr;
+}
 
 // Paint one tray icon size from scratch: a rounded-square fill in `color`
 // with a white "F" centred.  Used for all three IconState families so the

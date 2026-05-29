@@ -120,6 +120,16 @@ bool FolderExpander::crawl(const QString &folderUrl, const QString &relPath, int
             if (item.isFile()) {
                 m_tasks.append(makeTask(item, relPath));
             } else if (item.isFolder() && !item.linkcode.isEmpty()) {
+                // Cycle guard (CRASH_AUDIT H9): a self-referencing or looping
+                // share tree (server quirk / tampered data) would otherwise
+                // re-crawl the same folder until the depth cap, wasting API
+                // round-trips. Skip any linkcode we've already descended into.
+                if (m_visited.contains(item.linkcode)) {
+                    qWarning() << "[FolderExpander] cycle detected, skipping" << item.linkcode;
+                    continue;
+                }
+                m_visited.insert(item.linkcode);
+
                 // Propagate the share-access `?token=` (if any) from the root
                 // share URL to sub-folder listings — the API requires the same
                 // token to authorize crawling any level of the share tree.
