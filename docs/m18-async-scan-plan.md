@@ -210,8 +210,12 @@ clear ở applyScanResult) → không cần mutex.
   main-only). Phương án đúng là tách walk-thuần như §4.
 
 ## 10. Định nghĩa hoàn thành (DoD)
-- [ ] `scanFilesystem` thuần + `applyScanResult` + guard reentrancy; `scanFolderInternal` async; callers không đổi.
-- [ ] `previewScan` dùng chung lõi walk (hoặc ghi chú rõ vì sao tách).
-- [ ] `test_sync_scan` xanh + full ctest xanh.
-- [ ] Manual: UI không đơ khi quét network mount; folder local hành vi không đổi.
-- [ ] Cập nhật `docs/CRASH_AUDIT.md` (M18 → ✅) + `docs/BACKLOG.md`.
+- [x] `scanFilesystem` thuần + `applyScanResult` + guard reentrancy; `scanFolderInternal` async; callers không đổi.
+      → walk + skip-list + parse tách hẳn ra TU mới **`src/core/services/SyncScanner.{h,cpp}`** (free functions, chỉ
+      phụ thuộc Qt6::Core) thay vì static member trong SyncService — lý do: §7 yêu cầu test link Qt6::Core/Test mà
+      KHÔNG kéo curl/moc; nếu để trong SyncService.cpp thì test buộc phải link cả FshareApi/TransferService/SQLite.
+- [x] `previewScan` dùng chung lõi walk (gọi thẳng `scanFilesystem`, loại oversized khỏi count — đúng hành vi cũ).
+- [x] `test_sync_scan` xanh + full ctest xanh (12/12).
+- [~] Manual: chưa verify trên network mount thật (môi trường này chưa đăng nhập + không có ổ mạng). Smoke local:
+      app khởi động/thoát sạch, log không lỗi. Walk-correctness phủ bởi unit test + giữ nguyên logic diff.
+- [x] Cập nhật `docs/CRASH_AUDIT.md` (M18 → ✅) + `docs/BACKLOG.md`.

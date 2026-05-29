@@ -43,10 +43,10 @@
 - ✅ **H11** (2026-05-29): `context.init()` đã bọc try-catch + QMessageBox "Khởi tạo thất bại".
 - ✅ **M4** (2026-05-29): thêm `Q_ASSERT` thread-affinity ở `pauseFolder/resumeFolder` (không có race thật — SyncService main-thread-only; assert tài liệu hóa invariant).
 - ✅ **FM-M5** (verified NOT-A-BUG 2026-05-29): FileService settings-op luôn emit complete/failed → `m_settingsInFlight` luôn cân bằng.
-- 🔶 **M18** (P2 — có kế hoạch chi tiết: **[m18-async-scan-plan.md](m18-async-scan-plan.md)**): `scanFolderInternal`
-  walk filesystem blocking trên main → freeze UI khi sync folder ở network mount. Phạm vi thực hẹp hơn audit ngụ ý
-  (phần network ĐÃ async; chỉ cần tách vòng walk ra background + apply state ở main + guard reentrancy). Để session
-  riêng thực thi theo plan (ước lượng 0.5–1 ngày + test).
+- ✅ **M18** (2026-05-29 — theo plan **[m18-async-scan-plan.md](m18-async-scan-plan.md)**): tách vòng walk filesystem
+  ra `SyncScanner::scanFilesystem()` (TU riêng, Qt6::Core-only) chạy off-main qua `QtConcurrent::run`; `applyScanResult()`
+  làm diff/persist/enqueue ở main; guard reentrancy per-folder (`m_scanInFlight`/`m_scanDirty`) coalesce watcher/timer
+  storms. `scanFolderInternal` giữ chữ ký → callers không đổi. Unit test `test_sync_scan` (QTemporaryDir) + full ctest xanh.
 - ✅ **H9** (2026-05-29): `FolderExpander::crawl` thêm `m_visited` cycle-detect (skip linkcode đã crawl) bên cạnh depth-cap 20.
 - ✅ **M13** (verified NOT-A-BUG 2026-05-29): `queryFiles` chọn nhánh if/else cột cố định + `dir` từ bool — không interpolate sortKey vào SQL, đã là whitelist.
 - ✅ **M21** (2026-05-29): `~SystemTray` delete m_menu (setContextMenu không sở hữu) — hết rò rỉ.
