@@ -43,7 +43,10 @@
 - ✅ **H11** (2026-05-29): `context.init()` đã bọc try-catch + QMessageBox "Khởi tạo thất bại".
 - ✅ **M4** (2026-05-29): thêm `Q_ASSERT` thread-affinity ở `pauseFolder/resumeFolder` (không có race thật — SyncService main-thread-only; assert tài liệu hóa invariant).
 - ✅ **FM-M5** (verified NOT-A-BUG 2026-05-29): FileService settings-op luôn emit complete/failed → `m_settingsInFlight` luôn cân bằng.
-- 🔶 **M18** (HOÃN — P2): `SyncService::scanFolderInternal` blocking `isDir/entryInfoList` trên main thread → freeze chỉ khi sync folder là network mount (edge case). Chuyển scan sang background là refactor lõi sync (đụng enqueue/state/subdir-create) → làm có chủ đích + review kỹ, không tự ý rewrite.
+- 🔶 **M18** (P2 — có kế hoạch chi tiết: **[m18-async-scan-plan.md](m18-async-scan-plan.md)**): `scanFolderInternal`
+  walk filesystem blocking trên main → freeze UI khi sync folder ở network mount. Phạm vi thực hẹp hơn audit ngụ ý
+  (phần network ĐÃ async; chỉ cần tách vòng walk ra background + apply state ở main + guard reentrancy). Để session
+  riêng thực thi theo plan (ước lượng 0.5–1 ngày + test).
 - ✅ **H9** (2026-05-29): `FolderExpander::crawl` thêm `m_visited` cycle-detect (skip linkcode đã crawl) bên cạnh depth-cap 20.
 - ✅ **M13** (verified NOT-A-BUG 2026-05-29): `queryFiles` chọn nhánh if/else cột cố định + `dir` từ bool — không interpolate sortKey vào SQL, đã là whitelist.
 - ✅ **M21** (2026-05-29): `~SystemTray` delete m_menu (setContextMenu không sở hữu) — hết rò rỉ.
