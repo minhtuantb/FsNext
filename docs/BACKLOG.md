@@ -17,7 +17,9 @@
   với code hiện tại, đánh dấu Fixed/Won't-fix/Open. Ưu tiên race click-nhanh + `FolderTreeModel` đệ quy không cap depth.
 
 ### P2
-- ⬜ **Thiết kế lại session/cookie trong `HttpClient`** (đang vá mutex band-aid) khi có dịp refactor.
+- ✅ **HttpClient session/cookie thread-safety** (verify 2026-05-29): KHÔNG phải band-aid — đã là pattern
+  snapshot-under-lock đúng đắn (mutator khóa m_mutex; reader snapshot dưới lock rồi network lock-free). Không cần
+  redesign; tương lai mở rộng theo cùng pattern. Xem ASSESSMENT §P2.3.
 - 🔄 **Test phần lõi**:
   - ✅ `TransferOrchestrator` (2026-05-29): `test_transfer_orchestrator` — dispatch theo slot cap, release→next,
     cancel-before-dispatch, ưu tiên priority, duplicate enqueue no-op.

@@ -49,11 +49,13 @@ với code 2026-05; đánh dấu Fixed / Won't-fix / Still-open ngay trong file;
 
 ### P2 — Nên xử lý trong vài sprint tới
 
-**3. Thread-safety HttpClient/cookie là bản vá tạm.**
-Cookie/session trong `HttpClient` được bảo vệ bằng mutex theo kiểu band-aid. Hoạt động, nhưng nếu sau này refactor
-session/cookie (vd. multi-account, đổi cách lưu cookie) thì mô hình hiện tại dễ vỡ.
-→ *Khuyến nghị*: Khi chạm tới session/cookie, thiết kế lại sở hữu rõ ràng (một owner, truy cập qua snapshot
-bất biến giống cách `RefreshTokenCoordinator` làm với token) thay vì khóa rải rác.
+**3. Thread-safety HttpClient/cookie.** ✅ ĐÃ VERIFY — KHÔNG cần redesign (2026-05-29)
+Đọc lại `HttpClient.cpp`: mọi mutator (`setCookie/setProxyUrl/setProxy/clearProxy/setCaPath/setDefaultHeader/
+removeDefaultHeader`) đều khóa `m_mutex`; mọi reader lúc request **snapshot dưới lock rồi dùng bản copy lock-free**
+(caPath, merged headers + cookie, proxyUrl). Đây **chính là** pattern "snapshot bất biến" mà bản đánh giá từng đề
+xuất — code đã đạt đích, không phải "band-aid". Crash-audit cũng xác nhận thread-safety = FIXED.
+→ *Kết luận*: không rewrite lớp mạng lõi đang đúng (chỉ rước rủi ro hồi quy). Nếu sau này thêm multi-account / đổi
+cookie store thì **mở rộng theo cùng pattern snapshot-under-lock**, không cần thay đổi gì bây giờ.
 
 **4. Test chưa phủ phần lõi rủi ro cao.** 🔄 ĐANG XỬ LÝ (2026-05-29: thêm `test_transfer_orchestrator` +
 `test_refresh_coordinator` non-network; còn single-flight cần seam mock — xem BACKLOG)
