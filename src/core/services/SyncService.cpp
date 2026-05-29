@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <QThread>
 #include <QPointer>
 #include <QRegularExpression>
 #include <QUuid>
@@ -536,6 +537,11 @@ void SyncService::forgetFolderTasks(const QString &folderId)
 
 void SyncService::pauseFolder(const QString &folderId)
 {
+    // CRASH_AUDIT M4: m_folderToTasks is only ever touched on the object's
+    // thread — TransferService progress signals are delivered queued (main),
+    // and pause/resume come from QML (main).  Assert the invariant so any
+    // future cross-thread caller trips in a debug build instead of racing.
+    Q_ASSERT(QThread::currentThread() == this->thread());
     if (!m_transfer) return;
     const auto tasks = m_folderToTasks.value(folderId);
     for (const QString &id : tasks) m_transfer->pauseTask(id);
@@ -543,6 +549,7 @@ void SyncService::pauseFolder(const QString &folderId)
 
 void SyncService::resumeFolder(const QString &folderId)
 {
+    Q_ASSERT(QThread::currentThread() == this->thread());   // see pauseFolder (M4)
     if (!m_transfer) return;
     const auto tasks = m_folderToTasks.value(folderId);
     for (const QString &id : tasks) m_transfer->resumeTask(id);

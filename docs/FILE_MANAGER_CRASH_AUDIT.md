@@ -9,7 +9,7 @@
 > | FM-H3 | ✅ FIXED | `FolderTreeModel::rebuildVisible` đã có `visited` set + `kMaxDepth` + cảnh báo cycle |
 > | FM-M1/M2/M3, L1/L2 | ✅ NOT-A-BUG | Đã xác nhận lại đúng như mục 5 bên dưới |
 > | FM-M4 | ⬜ OPEN | Context menu `mapToGlobal` vs `mapToItem` lệch tọa độ (UX, không crash) → [BACKLOG.md](BACKLOG.md) |
-> | FM-M5 | ⬜ OPEN | `m_settingsInFlight` leak nếu request settings fail/timeout không emit signal → BACKLOG (data-consistency) |
+> | FM-M5 | ✅ NOT-A-BUG (verified 2026-05-29) | `FileService` settings-op chạy `api->X()` (Result đồng bộ) và LUÔN emit operationComplete HOẶC operationFailed — kể cả timeout (→ error Result). `m_settingsInFlight` luôn cân bằng; không có path không-emit |
 >
 > **Toàn bộ 3 finding HIGH (crash) đã được fix.** Phần điều tra gốc bên dưới giữ nguyên làm tham chiếu.
 

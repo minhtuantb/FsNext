@@ -10,6 +10,7 @@
 #include "viewmodels/TransferHudViewModel.h"
 
 #include <QApplication>          // QSystemTrayIcon needs QApplication, not QGuiApplication
+#include <QMessageBox>           // friendly "init failed" dialog (CRASH_AUDIT H11)
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -243,10 +244,25 @@ int main(int argc, char *argv[])
     // undefined behaviour.
     int result = 0;
     {
-    // Create dependency injection container
+    // Create dependency injection container.
+    // Wrap init in try/catch (CRASH_AUDIT H11): if a service constructor throws
+    // mid-wiring, show a friendly dialog and exit cleanly instead of letting the
+    // exception reach std::terminate (which only writes a log line then aborts).
+    // The `if (result == 0)` guard below skips engine setup on failure so the
+    // scope still unwinds AppContext BEFORE the post-scope curl cleanup.
     fsnext::AppContext context;
-    context.init();
+    try {
+        context.init();
+    } catch (const std::exception &ex) {
+        qCritical() << "[FsNext] AppContext init failed:" << ex.what();
+        QMessageBox::critical(nullptr,
+            QObject::tr("FsNext — Khởi tạo thất bại"),
+            QObject::tr("Không thể khởi tạo ứng dụng:\n\n%1")
+                .arg(QString::fromUtf8(ex.what())));
+        result = -1;
+    }
 
+    if (result == 0) {
     // Create QML engine
     QQmlApplicationEngine engine;
     // Add the QML resource root so module imports (Fshare.Theme, Fshare.Components, Fshare.Pages)
@@ -608,6 +624,7 @@ int main(int argc, char *argv[])
     // exit.
     QThreadPool::globalInstance()->waitForDone(5000);
     }   // ── end of "Main.qml loaded" else branch ─────────────────────────────
+    }   // ── end of "init succeeded" guard (CRASH_AUDIT H11) ──────────────────
     }   // ── End of application-context scope ───────────────────────────────
     // AppContext, the QML engine, and the tray icon are now destructed.
     // HttpClient::~HttpClient ran (curl_share_cleanup) WHILE the curl global
