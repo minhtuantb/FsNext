@@ -94,7 +94,7 @@ Item {
         Behavior on color { enabled: !AuroraTheme.reduceMotion
             ColorAnimation { duration: AuroraTheme.durFast } }
 
-        Aurora.FsIcon {
+        FsIcon {
             anchors.centerIn: parent
             name: ib.iconName
             sizePx: 16
@@ -411,7 +411,7 @@ Item {
                             anchors.rightMargin: AuroraTheme.sp4
                             spacing: AuroraTheme.sp2
 
-                            Aurora.FsIcon {
+                            FsIcon {
                                 name: "power"
                                 sizePx: 14
                                 color: page.hasVM && syncViewModel.autoSyncEnabled
@@ -587,7 +587,7 @@ Item {
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: AuroraTheme.sp2
-                                Aurora.FsIcon {
+                                FsIcon {
                                     name: "folder"
                                     sizePx: 15
                                     color: pair.enabled ? AuroraTheme.ink2 : AuroraTheme.ink4
@@ -609,13 +609,13 @@ Item {
                         ColumnLayout {
                             Layout.preferredWidth: 24
                             spacing: 2
-                            Aurora.FsIcon {
+                            FsIcon {
                                 Layout.alignment: Qt.AlignHCenter
                                 name: "arrow-up"
                                 sizePx: 12
                                 color: pair.status === 1 ? AuroraTheme.accent : AuroraTheme.ink4   // 1 = Uploading
                             }
-                            Aurora.FsIcon {
+                            FsIcon {
                                 Layout.alignment: Qt.AlignHCenter
                                 name: "arrow-down"
                                 sizePx: 12
@@ -642,7 +642,7 @@ Item {
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: AuroraTheme.sp2
-                                Aurora.FsIcon {
+                                FsIcon {
                                     name: "upload"
                                     sizePx: 15
                                     color: AuroraTheme.accent
@@ -827,7 +827,7 @@ Item {
 
                     RowLayout {
                         spacing: AuroraTheme.sp2
-                        Aurora.FsIcon { name: "power"; sizePx: 14; color: AuroraTheme.ink2 }
+                        FsIcon { name: "power"; sizePx: 14; color: AuroraTheme.ink2 }
                         Text {
                             text: qsTr("Bật đồng bộ")
                             font.family: AuroraTheme.fontSans
@@ -844,7 +844,7 @@ Item {
 
                     RowLayout {
                         spacing: AuroraTheme.sp2
-                        Aurora.FsIcon { name: "trash"; sizePx: 14; color: AuroraTheme.ink2 }
+                        FsIcon { name: "trash"; sizePx: 14; color: AuroraTheme.ink2 }
                         Text {
                             text: qsTr("Xoá local sau khi tải")
                             font.family: AuroraTheme.fontSans
@@ -963,7 +963,7 @@ Item {
                                 anchors.rightMargin: AuroraTheme.sp5
                                 spacing: AuroraTheme.sp3
 
-                                Aurora.FsIcon {
+                                FsIcon {
                                     name: {
                                         switch (rowDelegate.fileState) {
                                         case 2: return "check"     // Synced

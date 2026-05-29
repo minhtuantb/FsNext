@@ -519,7 +519,7 @@ Item {
             Layout.bottomMargin: AuroraTheme.sp4
             spacing: AuroraTheme.sp1
 
-            Aurora.FsIcon {
+            FsIcon {
                 Layout.alignment: Qt.AlignHCenter
                 name: "sparkle"
                 sizePx: 32

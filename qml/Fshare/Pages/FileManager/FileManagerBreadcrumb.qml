@@ -22,6 +22,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import FsAurora.Theme 1.0
 import FsAurora.Components 1.0 as Aurora
+import Fshare.Components 1.0
 
 RowLayout {
     id: root
@@ -87,7 +88,7 @@ RowLayout {
                 border.color: Qt.rgba(AuroraTheme.accent.r, AuroraTheme.accent.g,
                                        AuroraTheme.accent.b, 0.55)
 
-                Aurora.FsIcon {
+                FsIcon {
                     anchors.centerIn: parent
                     name: "house"
                     sizePx: 16
@@ -120,7 +121,7 @@ RowLayout {
                     spacing: AuroraTheme.sp1
                     anchors.verticalCenter: parent.verticalCenter
 
-                    Aurora.FsIcon {
+                    FsIcon {
                         name: "chevron-right"; sizePx: 14; color: AuroraTheme.ink3
                         anchors.verticalCenter: parent.verticalCenter
                     }

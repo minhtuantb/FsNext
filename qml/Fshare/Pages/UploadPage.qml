@@ -443,7 +443,7 @@ Item {
                 anchors.margins: AuroraTheme.sp4
                 spacing: AuroraTheme.sp3
 
-                Aurora.FsIcon {
+                FsIcon {
                     Layout.preferredWidth:  24
                     Layout.preferredHeight: 24
                     name: "history"
@@ -538,7 +538,7 @@ Item {
                     Layout.preferredWidth: 64
                     Layout.preferredHeight: 64
                     Aurora.FsGradientRect { anchors.fill: parent; radius: AuroraTheme.radiusLg }
-                    Aurora.FsIcon {
+                    FsIcon {
                         anchors.centerIn: parent
                         name: "upload"
                         sizePx: 28

@@ -96,7 +96,7 @@ Aurora.FsScrollPage {
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: AuroraTheme.sp2
-                            Aurora.FsIcon {
+                            FsIcon {
                                 name: "sparkle"
                                 sizePx: 12
                                 color: AuroraTheme.accent2
@@ -233,7 +233,7 @@ Aurora.FsScrollPage {
                         border.color: Qt.rgba(1, 1, 1, 0.15)
                         Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
 
-                        Aurora.FsIcon {
+                        FsIcon {
                             anchors.centerIn: parent
                             name: "refresh"
                             sizePx: 15
@@ -300,7 +300,7 @@ Aurora.FsScrollPage {
                                         width: 28; height: 28
                                         radius: AuroraTheme.radiusSm
                                         color: AuroraTheme.accentTint10
-                                        Aurora.FsIcon {
+                                        FsIcon {
                                             anchors.centerIn: parent
                                             name: modelData.icon
                                             sizePx: 14
@@ -922,7 +922,7 @@ Aurora.FsScrollPage {
                                     Layout.preferredHeight: 32
                                     radius: AuroraTheme.radiusSm
                                     color: AuroraTheme.accentTint10
-                                    Aurora.FsIcon {
+                                    FsIcon {
                                         anchors.centerIn: parent
                                         name: link.iconName
                                         sizePx: 16

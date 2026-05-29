@@ -289,7 +289,7 @@ Item {
                     anchors.rightMargin: AuroraTheme.sp3
                     spacing: AuroraTheme.sp2
 
-                    Aurora.FsIcon {
+                    FsIcon {
                         name: "search"
                         sizePx: 15
                         color: searchInput.activeFocus ? AuroraTheme.accent : AuroraTheme.ink3
@@ -399,7 +399,7 @@ Item {
                 RowLayout {
                     anchors.centerIn: parent
                     spacing: 6
-                    Aurora.FsIcon {
+                    FsIcon {
                         name: "upload"
                         sizePx: 14
                         color: "#FFFFFF"
@@ -841,7 +841,7 @@ Item {
                                 width: 56; height: 56
                                 radius: 28
                                 color: AuroraTheme.accentTint10
-                                Aurora.FsIcon {
+                                FsIcon {
                                     anchors.centerIn: parent
                                     name: "folder-open"
                                     sizePx: 24
@@ -890,7 +890,7 @@ Item {
         Behavior on border.color { enabled: !AuroraTheme.reduceMotion
             ColorAnimation { duration: AuroraTheme.durFast } }
 
-        Aurora.FsIcon {
+        FsIcon {
             anchors.centerIn: parent
             name: tib.icon
             sizePx: 16
@@ -962,7 +962,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                     radius: AuroraTheme.radiusMd
                     color: AuroraTheme.accentTint10
-                    Aurora.FsIcon {
+                    FsIcon {
                         anchors.centerIn: parent
                         name: card.icon
                         // Bumped 18 → 20 so the icon fills more of the 40px
@@ -975,10 +975,10 @@ Item {
                     }
                 }
                 Item { Layout.fillWidth: true }
-                Aurora.FsIcon {
+                FsIcon {
                     name: "chevron-right"
                     sizePx: 14
-                    // Explicit vertical-centre. Aurora.FsIcon's recent
+                    // Explicit vertical-centre. FsIcon's recent
                     // `opacity: root.color.a` binding led to inconsistent
                     // default alignment in a few Qt 6.8 builds; this kills
                     // the ambiguity.
@@ -1185,7 +1185,7 @@ Item {
                     color: pauseMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
                     border.width: 1
                     border.color: AuroraTheme.border
-                    Aurora.FsIcon {
+                    FsIcon {
                         anchors.centerIn: parent
                         name: tCard._paused ? "play" : "pause"
                         sizePx: 12
@@ -1400,7 +1400,7 @@ Item {
         width: 28; height: 28
         radius: AuroraTheme.radiusSm
         color: iaMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
-        Aurora.FsIcon {
+        FsIcon {
             anchors.centerIn: parent
             name: ia.icon
             sizePx: 14

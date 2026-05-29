@@ -260,7 +260,7 @@ Item {
 
                         // Open / preview chevron — same affordance as the
                         // FavoritesPage row clicks.
-                        Aurora.FsIcon {
+                        FsIcon {
                             name: "chevron-right"
                             sizePx: 14
                             color: rowItem._highlight ? AuroraTheme.accent : AuroraTheme.ink4

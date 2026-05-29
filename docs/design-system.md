@@ -1,0 +1,45 @@
+# FsNext — Design System & QML Module Convention
+
+> Quyết định kiến trúc cho lớp QML, để chấm dứt tình trạng 2 bộ component song song (xem `docs/ASSESSMENT.md` P1).
+> Cập nhật 2026-05-29.
+
+## Quyết định
+
+- **`Fshare.Components` là nhà của MỌI atom UI tái sử dụng** (button, icon, textfield, badge, switch, card,
+  progressbar, dialog, list item...). Thư viện này có a11y/keyboard (ship v6.0) + semantic variants.
+- **`FsAurora.Theme` là design token** (`AuroraTheme`, `AuroraColors`) — singleton dùng khắp nơi. **Không** đổi.
+- **`FsAurora`** chỉ giữ **shell / layout / HUD / trang khung**: `FsSidebar`, `FsFontLoader`, `FsGradientRect`,
+  `FsPageHeader`, `FsScrollPage`, `FsToastHost`, `HomeSearchOverlay`, `TransferHudPanel`, `Sparkline`, `FsMiniHud`,
+  `FsAurora.Windows.MiniHudWindow`, `FsAurora.Pages` (HomePage, LoginView, ShowcasePage).
+- **Không tạo atom mới trong `FsAurora.Components`.** Atom mới → `Fshare.Components`.
+
+## Quy tắc import (tránh "ambiguous type")
+
+Nhiều file import CẢ `Fshare.Components` (unqualified) LẪN `FsAurora.Components 1.0 as Aurora` (aliased). Vì hai
+module từng có atom trùng tên, quy tắc:
+- Atom dùng **unqualified** (`FsButton {`) → resolve về `Fshare.Components`.
+- Mảnh shell chỉ-có-ở-Aurora dùng **`Aurora.`** (`Aurora.FsSidebar`).
+- **Trong file thuộc `FsAurora.Components`** (vd `FsButton.qml`, `FsSidebar.qml`) cần atom Fshare → import
+  `import Fshare.Components 1.0 as Fsh` rồi viết `Fsh.FsIcon` (KHÔNG import unqualified — sẽ làm các atom Aurora
+  cùng-module bị ambiguous khi chúng còn trùng tên).
+- File ở thư mục con của `Fshare.Components` resolve sibling atom qua **same-module** (không cần import).
+
+## Bảng ánh xạ 7 atom trùng tên
+
+| Atom | Trạng thái | Bản chuẩn | Ghi chú |
+|---|---|---|---|
+| FsIcon | ✅ Stage 1 (2026-05-29) | Fshare | Render giống hệt + a11y; `Aurora.FsIcon`→`FsIcon`, đã xóa bản Aurora |
+| FsTextField | ✅ Stage 1 | Fshare | Superset (shake + token font); xóa bản Aurora, LoginView/Showcase dùng `Fsh.FsTextField` |
+| FsCard | ✅ Stage 1 | Fshare | Superset (lift hover); xóa bản Aurora |
+| FsButton | ⏳ Stage 2 | Fshare (dự kiến) | **Diverge**: gộp gradient+loading(Aurora) vào bản Fshare có a11y; repoint 77 `Aurora.FsButton` |
+| FsBadge | ⏳ Stage 2 | Fshare (dự kiến) | Diverge: hợp nhất variant (Aurora 6 vs Fshare solid+alias) |
+| FsSwitch | ⏳ Stage 2 | Fshare (dự kiến) | Diverge: label+gradient(Aurora) vs focus-ring/keyboard(Fshare) |
+| FsProgressBar | ⏳ Stage 2 | (cân nhắc) | Aurora=gradient+indeterminate, Fshare=semantic status — có thể giữ 2 tên khác nhau |
+
+Khi cả 7 đã về Fshare → cân nhắc bỏ hẳn alias `Aurora.` cho atom (giữ alias chỉ cho shell `FsAurora.*`).
+
+## Verify khi đụng atom
+
+QML resolve type lúc **runtime** → build PASS chưa đủ. Phải chạy `output/FsNext.exe` và mở các surface dùng atom
+đó, soi stderr/`%APPDATA%/FPT/FsNext/fsnext.log` tìm `"X is not a type"`. Static check nhanh: file dùng bare atom
+phải hoặc ở cùng `Fshare/Components/` (same-module) hoặc `import Fshare.Components 1.0` (unqualified).

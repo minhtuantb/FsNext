@@ -20,6 +20,7 @@ import QtQuick
 import QtQuick.Layouts
 import FsAurora.Theme
 import FsAurora.Components
+import Fshare.Components 1.0 as Fsh
 import Fshare.Utils 1.0
 
 Item {
@@ -405,7 +406,7 @@ Item {
             }
 
             // ── Fields ──────────────────────────────────────
-            FsTextField {
+            Fsh.FsTextField {
                 id: emailField
                 Layout.fillWidth: true
                 label: "EMAIL HOẶC TÊN ĐĂNG NHẬP"
@@ -415,7 +416,7 @@ Item {
                     if (root.authVm && root.authVm.email !== text) root.authVm.email = text
             }
             Item { Layout.preferredHeight: 14 }
-            FsTextField {
+            Fsh.FsTextField {
                 id: passwordField
                 Layout.fillWidth: true
                 label: "MẬT KHẨU"

@@ -8,6 +8,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import FsAurora.Theme
 import FsAurora.Components
+import Fshare.Components 1.0 as Fsh
 
 ScrollView {
     id: root
@@ -101,18 +102,18 @@ ScrollView {
         SectionTitle { titleText: "Inputs" }
         RowLayout {
             spacing: AuroraTheme.sp4
-            FsTextField {
+            Fsh.FsTextField {
                 Layout.preferredWidth: 240
                 label: "Email"
                 placeholder: "ten@fshare.vn"
             }
-            FsTextField {
+            Fsh.FsTextField {
                 Layout.preferredWidth: 240
                 label: "Mật khẩu"
                 placeholder: "••••••••"
                 echoMode: TextInput.Password
             }
-            FsTextField {
+            Fsh.FsTextField {
                 Layout.preferredWidth: 240
                 label: "Có lỗi"
                 placeholder: "user@…"
@@ -156,7 +157,7 @@ ScrollView {
         SectionTitle { titleText: "Cards" }
         RowLayout {
             spacing: AuroraTheme.sp3
-            FsCard {
+            Fsh.FsCard {
                 Layout.preferredWidth: 260
                 Layout.preferredHeight: 130
                 ColumnLayout {
@@ -184,7 +185,7 @@ ScrollView {
                     }
                 }
             }
-            FsCard {
+            Fsh.FsCard {
                 accent: true
                 Layout.preferredWidth: 260
                 Layout.preferredHeight: 130

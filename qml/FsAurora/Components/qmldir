@@ -1,9 +1,6 @@
 module FsAurora.Components
 FsGradientRect 1.0 FsGradientRect.qml
-FsIcon 1.0 FsIcon.qml
 FsButton 1.0 FsButton.qml
-FsCard 1.0 FsCard.qml
-FsTextField 1.0 FsTextField.qml
 FsBadge 1.0 FsBadge.qml
 FsProgressBar 1.0 FsProgressBar.qml
 FsSwitch 1.0 FsSwitch.qml

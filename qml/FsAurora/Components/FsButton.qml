@@ -13,6 +13,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import FsAurora.Theme
+import Fshare.Components 1.0 as Fsh
 
 Item {
     id: root
@@ -114,7 +115,7 @@ Item {
         spacing: root.icon !== "" || root.loading ? AuroraTheme.sp2 : 0
         z: 2
 
-        FsIcon {
+        Fsh.FsIcon {
             visible: root.icon !== "" && !root.loading
             name: root.icon
             sizePx: root.size === "lg" ? AuroraTheme.iconMd : AuroraTheme.iconSm

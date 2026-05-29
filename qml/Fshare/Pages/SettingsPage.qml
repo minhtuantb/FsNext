@@ -283,7 +283,7 @@ Aurora.FsScrollPage {
                         anchors.leftMargin: AuroraTheme.sp4; anchors.rightMargin: AuroraTheme.sp4
                         spacing: AuroraTheme.sp3
 
-                        Aurora.FsIcon {
+                        FsIcon {
                             name: "sparkle"
                             sizePx: 16
                             color: AuroraTheme.accent

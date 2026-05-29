@@ -602,19 +602,19 @@ Item {
                                         // Folders ignore secure/password/direct-link
                                         // flags and the icons clutter the Name column,
                                         // so suppress them for folder rows.
-                                        Aurora.FsIcon {
+                                        FsIcon {
                                             visible: fileDelegate.secure && !fileDelegate.isFolder
                                             name: "shield"
                                             sizePx: 13
                                             color: AuroraTheme.success
                                         }
-                                        Aurora.FsIcon {
+                                        FsIcon {
                                             visible: fileDelegate.hasPassword && !fileDelegate.isFolder
                                             name: "key"
                                             sizePx: 13
                                             color: AuroraTheme.warn
                                         }
-                                        Aurora.FsIcon {
+                                        FsIcon {
                                             visible: fileDelegate.directlink && !fileDelegate.isFolder
                                             name: "link"
                                             sizePx: 13
@@ -653,7 +653,7 @@ Item {
                                         width: 24; height: 24; radius: AuroraTheme.radiusSm
                                         color: explorerMa.containsMouse ? AuroraTheme.panel : "transparent"
                                         Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
-                                        Aurora.FsIcon { anchors.centerIn: parent; name: "folder"; sizePx: 14; color: AuroraTheme.ink2 }
+                                        FsIcon { anchors.centerIn: parent; name: "folder"; sizePx: 14; color: AuroraTheme.ink2 }
                                         MouseArea {
                                             id: explorerMa
                                             anchors.fill: parent
@@ -899,7 +899,7 @@ Item {
                         visible: !detailPanel.active
                         spacing: AuroraTheme.sp2
 
-                        Aurora.FsIcon {
+                        FsIcon {
                             Layout.alignment: Qt.AlignHCenter
                             name: "info"; sizePx: 28
                             color: AuroraTheme.ink3
@@ -948,7 +948,7 @@ Item {
                                     width: 28; height: 28; radius: AuroraTheme.radiusSm
                                     color: closePanelMa.containsMouse ? AuroraTheme.bg : "transparent"
                                     Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
-                                    Aurora.FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 14; color: AuroraTheme.ink2 }
+                                    FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 14; color: AuroraTheme.ink2 }
                                     MouseArea {
                                         id: closePanelMa; anchors.fill: parent; hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
@@ -1447,7 +1447,7 @@ Item {
                                 Layout.preferredHeight: 26
                                 visible: detailPanel.isSingle
 
-                                Aurora.FsIcon {
+                                FsIcon {
                                     name: "shield"; sizePx: 14
                                     color: (page.selectedFileData && page.selectedFileData.secure)
                                         ? AuroraTheme.success : AuroraTheme.ink3
@@ -1468,7 +1468,7 @@ Item {
                                 Layout.preferredHeight: 26
                                 visible: detailPanel.isSingle
 
-                                Aurora.FsIcon {
+                                FsIcon {
                                     name: "key"; sizePx: 14
                                     color: (page.selectedFileData && page.selectedFileData.hasPassword)
                                         ? AuroraTheme.warn : AuroraTheme.ink3
@@ -1490,7 +1490,7 @@ Item {
                                 Layout.preferredHeight: 32
                                 visible: detailPanel.isSingle
 
-                                Aurora.FsIcon {
+                                FsIcon {
                                     name: "link"; sizePx: 14
                                     color: (page.selectedFileData && page.selectedFileData.directlink)
                                         ? AuroraTheme.accent3 : AuroraTheme.ink3
@@ -1899,7 +1899,7 @@ Item {
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: AuroraTheme.sp2
-                            Aurora.FsIcon {
+                            FsIcon {
                                 name: "folder"
                                 sizePx: 16
                                 color: AuroraTheme.accent

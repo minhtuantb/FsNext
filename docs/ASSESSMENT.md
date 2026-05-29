@@ -30,14 +30,15 @@ phải lỗi thiết kế nền tảng.
 
 ### P1 — Nên xử lý sớm
 
-**1. Hai design-system QML song song (`FsAurora` + `Fshare`).**
-`FsAurora.Theme` là theme đang chạy, nhưng UI import lẫn lộn `Fshare.Components/Pages/Dialogs/Utils` và
-`FsAurora.Components/Pages/Windows` (alias `Aurora*`). `qml/Fshare/Theme/*` đã bị xóa nhưng các component Fshare khác
-vẫn dùng. Đây là nguồn nhầm lẫn (sửa nhầm bộ) và trùng lặp component.
-→ *Khuyến nghị*: Chốt **một** bộ component là chuẩn (đề xuất: hợp nhất về `Fshare.*` cho component/page, giữ
-`FsAurora.Theme` làm token). Lập bảng ánh xạ component trùng, migrate dần `FsAurora.Pages` (HomePage, LoginView) sang
-Fshare. Tài liệu hóa ranh giới tạm thời trong CLAUDE.md (đã làm) để tránh hồi quy. Dọn artifact thiết kế
-(`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`, `uploads/`) ra khỏi cây source runtime.
+**1. Hai design-system QML song song (`FsAurora` + `Fshare`).** 🔄 ĐANG XỬ LÝ
+`FsAurora.Theme` là theme đang chạy, nhưng UI từng import lẫn lộn atom của cả 2 bộ (7 atom trùng tên). Đã chốt
+hướng + tài liệu hóa ([docs/design-system.md](design-system.md)): **`Fshare.Components` là bộ atom chuẩn**,
+`FsAurora.Theme` = token, `FsAurora` = shell/HUD.
+- ✅ **Stage 1 (2026-05-29)**: hợp nhất 3 atom API-tương thích `FsIcon`, `FsTextField`, `FsCard` về Fshare (xóa bản
+  Aurora, repoint call site, build+runtime verified).
+- ⏳ **Stage 2**: 4 atom diverge `FsButton` (77 call site), `FsBadge`, `FsSwitch`, `FsProgressBar` — cần gộp
+  visual(Aurora)+a11y(Fshare) + verify thị giác từng surface. Đã ghi BACKLOG.
+- ⏳ Dọn artifact thiết kế (`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`, `uploads/`) khỏi cây source.
 
 **2. Hai crash-audit chưa đóng.**
 [docs/CRASH_AUDIT.md](CRASH_AUDIT.md) (47 findings) và [docs/FILE_MANAGER_CRASH_AUDIT.md](FILE_MANAGER_CRASH_AUDIT.md)

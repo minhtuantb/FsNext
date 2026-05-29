@@ -96,7 +96,7 @@ Item {
                         Layout.preferredHeight: 36
                         radius: AuroraTheme.radiusMd
                         color: AuroraTheme.accentTint10
-                        Aurora.FsIcon {
+                        FsIcon {
                             anchors.centerIn: parent
                             name: "folder-open"; sizePx: 18
                             color: AuroraTheme.accent
@@ -175,7 +175,7 @@ Item {
                             id: backRow
                             anchors.centerIn: parent
                             spacing: 4
-                            Aurora.FsIcon { name: "arrow-left"; sizePx: 12; color: AuroraTheme.ink2 }
+                            FsIcon { name: "arrow-left"; sizePx: 12; color: AuroraTheme.ink2 }
                             Text {
                                 text: qsTr("Quay lại")
                                 font.family: AuroraTheme.fontSans
@@ -235,7 +235,7 @@ Item {
                             id: selAllRow
                             anchors.centerIn: parent
                             spacing: 4
-                            Aurora.FsIcon { name: "check"; sizePx: 11; color: AuroraTheme.ink2 }
+                            FsIcon { name: "check"; sizePx: 11; color: AuroraTheme.ink2 }
                             Text {
                                 text: qsTr("Chọn tất cả file")
                                 font.family: AuroraTheme.fontSans
@@ -268,7 +268,7 @@ Item {
                     anchors.rightMargin: AuroraTheme.sp4
                     spacing: AuroraTheme.sp3
 
-                    Aurora.FsIcon { name: "check"; sizePx: 14; color: AuroraTheme.accent }
+                    FsIcon { name: "check"; sizePx: 14; color: AuroraTheme.accent }
                     Text {
                         Layout.fillWidth: true
                         text: vm ? qsTr("Đã chọn %1 file").arg(vm.selectedCount) : ""
@@ -359,7 +359,7 @@ Item {
                                        ? AuroraTheme.accent
                                        : "transparent"
                                 visible: !rowItem.isFolder
-                                Aurora.FsIcon {
+                                FsIcon {
                                     anchors.centerIn: parent
                                     visible: rowItem._selected
                                     name: "check"; sizePx: 10
@@ -506,7 +506,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         width: 56; height: 56; radius: 28
                         color: AuroraTheme.accentTint10
-                        Aurora.FsIcon { anchors.centerIn: parent; name: "folder"; sizePx: 24; color: AuroraTheme.accent }
+                        FsIcon { anchors.centerIn: parent; name: "folder"; sizePx: 24; color: AuroraTheme.accent }
                     }
                     Text {
                         Layout.alignment: Qt.AlignHCenter
@@ -558,7 +558,7 @@ Item {
         color: ibMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
         border.width: 1
         border.color: ibMa.containsMouse ? AuroraTheme.accent : AuroraTheme.border
-        Aurora.FsIcon {
+        FsIcon {
             anchors.centerIn: parent
             name: ib.icon; sizePx: 12
             color: ibMa.containsMouse ? AuroraTheme.accent : AuroraTheme.ink2

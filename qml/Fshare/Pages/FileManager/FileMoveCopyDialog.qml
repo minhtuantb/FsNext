@@ -68,7 +68,7 @@ FsDialog {
                     anchors.leftMargin: AuroraTheme.sp3
                     anchors.rightMargin: AuroraTheme.sp3
                     spacing: AuroraTheme.sp2
-                    Aurora.FsIcon { name: "folder"; sizePx: 16; color: AuroraTheme.accent }
+                    FsIcon { name: "folder"; sizePx: 16; color: AuroraTheme.accent }
                     Text {
                         Layout.fillWidth: true
                         text: root.selectedDestName
@@ -117,7 +117,7 @@ FsDialog {
                             anchors.leftMargin: AuroraTheme.sp3
                             anchors.rightMargin: AuroraTheme.sp3
                             spacing: AuroraTheme.sp2
-                            Aurora.FsIcon {
+                            FsIcon {
                                 name: "house"; sizePx: 15
                                 color: root.selectedDestId === "" ? AuroraTheme.accent : AuroraTheme.ink2
                             }
@@ -129,7 +129,7 @@ FsDialog {
                                 font.weight: root.selectedDestId === "" ? Font.DemiBold : Font.Normal
                                 color: root.selectedDestId === "" ? AuroraTheme.accent : AuroraTheme.ink1
                             }
-                            Aurora.FsIcon {
+                            FsIcon {
                                 visible: root.selectedDestId === ""
                                 name: "check"; sizePx: 14; color: AuroraTheme.accent
                             }
@@ -162,7 +162,7 @@ FsDialog {
                             anchors.leftMargin: AuroraTheme.sp3 + depth * AuroraTheme.sp4
                             anchors.rightMargin: AuroraTheme.sp3
                             spacing: AuroraTheme.sp2
-                            Aurora.FsIcon {
+                            FsIcon {
                                 name: "folder"; sizePx: 15
                                 color: root.selectedDestId === linkcode
                                     ? AuroraTheme.accent : AuroraTheme.ink2
@@ -178,7 +178,7 @@ FsDialog {
                                     ? AuroraTheme.accent : AuroraTheme.ink1
                                 elide: Text.ElideRight
                             }
-                            Aurora.FsIcon {
+                            FsIcon {
                                 visible: root.selectedDestId === linkcode
                                 name: "check"; sizePx: 14; color: AuroraTheme.accent
                             }

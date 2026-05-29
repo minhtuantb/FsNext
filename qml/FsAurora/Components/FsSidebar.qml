@@ -29,6 +29,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import FsAurora.Theme
+import Fshare.Components 1.0 as Fsh
 
 Rectangle {
     id: root
@@ -478,7 +479,7 @@ Rectangle {
                 Layout.preferredWidth: 16
                 Layout.preferredHeight: 16
                 Layout.alignment: root.collapsed ? Qt.AlignHCenter : Qt.AlignVCenter
-                FsIcon {
+                Fsh.FsIcon {
                     anchors.fill: parent
                     name: modelData.icon
                     sizePx: 16
@@ -761,7 +762,7 @@ Rectangle {
             anchors.leftMargin: 14
             anchors.rightMargin: 14
             spacing: 12
-            FsIcon {
+            Fsh.FsIcon {
                 Layout.preferredWidth: 16
                 Layout.preferredHeight: 16
                 name: popItem.icon

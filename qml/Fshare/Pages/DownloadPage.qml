@@ -323,7 +323,7 @@ Item {
                 }
                 spacing: AuroraTheme.sp3
 
-                Aurora.FsIcon {
+                FsIcon {
                     name: "search"
                     sizePx: 18
                     color: AuroraTheme.accent

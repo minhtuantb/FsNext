@@ -82,8 +82,10 @@ qmllint.exe -I qml qml/Fshare/Pages/<Page>.qml
 
 ## Gotchas (đọc trước khi sửa)
 
-- **2 design-system QML song song**: `FsAurora.Theme` là theme chạy; UI trộn cả `Fshare.*` lẫn `FsAurora.*`
-  (alias `Aurora*`). Đừng giả định chỉ một bộ. (Nợ kỹ thuật — xem ASSESSMENT.)
+- **Design-system QML**: atom tái sử dụng → `Fshare.Components` (chuẩn); `FsAurora.Theme` = token; `FsAurora` =
+  shell/HUD/trang khung. Quy tắc import + bảng ánh xạ atom: [docs/design-system.md](docs/design-system.md). Đang
+  hợp nhất dần (Stage 1 xong: FsIcon/FsTextField/FsCard; Stage 2: FsButton/FsBadge/FsSwitch/FsProgressBar). Trong
+  file FsAurora cần atom Fshare → `import Fshare.Components 1.0 as Fsh` (tránh ambiguous type).
 - **libcurl bỏ qua `QNetworkProxy`** → proxy phải set thủ công lên `HttpClient` và đọc lại trong engine
   (đã wire trong AppContext). Đừng kỳ vọng QNetworkProxy có tác dụng.
 - **Silent refresh single-flight**: mọi API call đi qua `FshareApi::executeAuthed()`. Đừng tự gọi refresh song song —

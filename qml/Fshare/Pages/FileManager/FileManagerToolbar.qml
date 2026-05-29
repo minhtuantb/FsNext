@@ -47,7 +47,7 @@ RowLayout {
             anchors.rightMargin: AuroraTheme.sp3
             spacing: AuroraTheme.sp2
 
-            Aurora.FsIcon {
+            FsIcon {
                 name: "search"
                 sizePx: 16
                 color: AuroraTheme.ink3
@@ -106,7 +106,7 @@ RowLayout {
                 ? AuroraTheme.accentTint15
                 : (listModeMa.containsMouse ? AuroraTheme.bg : "transparent")
             Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
-            Aurora.FsIcon { anchors.centerIn: parent; name: "list"; sizePx: 16
+            FsIcon { anchors.centerIn: parent; name: "list"; sizePx: 16
                 color: fileManagerViewModel && fileManagerViewModel.viewMode === "list"
                     ? AuroraTheme.accent : AuroraTheme.ink2 }
             MouseArea {
@@ -121,7 +121,7 @@ RowLayout {
                 ? AuroraTheme.accentTint15
                 : (medModeMa.containsMouse ? AuroraTheme.bg : "transparent")
             Behavior on color { enabled: !AuroraTheme.reduceMotion; ColorAnimation { duration: AuroraTheme.durFast } }
-            Aurora.FsIcon { anchors.centerIn: parent; name: "grid"; sizePx: 16
+            FsIcon { anchors.centerIn: parent; name: "grid"; sizePx: 16
                 color: fileManagerViewModel && fileManagerViewModel.viewMode === "medium"
                     ? AuroraTheme.accent : AuroraTheme.ink2 }
             MouseArea {

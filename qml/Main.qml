@@ -318,7 +318,7 @@ ApplicationWindow {
                             Layout.alignment: Qt.AlignTop
                             radius: AuroraTheme.radiusMd
                             color: AuroraTheme.accentTint10
-                            Aurora.FsIcon {
+                            FsIcon {
                                 anchors.centerIn: parent
                                 name: "power"
                                 sizePx: 22
@@ -369,7 +369,7 @@ ApplicationWindow {
                             anchors.fill: parent
                             anchors.margins: AuroraTheme.sp3
                             spacing: AuroraTheme.sp2
-                            Aurora.FsIcon {
+                            FsIcon {
                                 Layout.alignment: Qt.AlignTop
                                 name: "info"
                                 sizePx: 16
@@ -785,7 +785,7 @@ ApplicationWindow {
                 anchors.centerIn: parent
                 spacing: AuroraTheme.sp2
 
-                Aurora.FsIcon {
+                FsIcon {
                     Layout.alignment: Qt.AlignHCenter
                     name: "sparkle"
                     sizePx: 48

@@ -338,7 +338,7 @@ Item {
                     anchors.rightMargin: AuroraTheme.sp3
                     spacing: AuroraTheme.sp2
 
-                    Aurora.FsIcon { name: "search"; sizePx: 14; color: AuroraTheme.ink4 }
+                    FsIcon { name: "search"; sizePx: 14; color: AuroraTheme.ink4 }
                     TextInput {
                         id: extFilterInput
                         Layout.fillWidth: true
@@ -364,7 +364,7 @@ Item {
                         visible: extFilterInput.text.length > 0
                         width: 20; height: 20; radius: 10
                         color: clearFilterMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
-                        Aurora.FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink3 }
+                        FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink3 }
                         MouseArea {
                             id: clearFilterMa
                             anchors.fill: parent; hoverEnabled: true
@@ -425,7 +425,7 @@ Item {
                             ColorAnimation { duration: AuroraTheme.durFast } }
                         anchors.verticalCenter: parent.verticalCenter
 
-                        Aurora.FsIcon {
+                        FsIcon {
                             anchors.centerIn: parent
                             name: "heart"
                             sizePx: 16
@@ -462,7 +462,7 @@ Item {
                             spacing: AuroraTheme.sp2
                             anchors.verticalCenter: parent.verticalCenter
 
-                            Aurora.FsIcon {
+                            FsIcon {
                                 name: "chevron-right"; sizePx: 14; color: AuroraTheme.ink4
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -677,7 +677,7 @@ Item {
                                                 color: AuroraTheme.success
                                             }
 
-                                            Aurora.FsIcon {
+                                            FsIcon {
                                                 visible: favDelegate.hasPassword && !favDelegate.isFolder
                                                 name: "key"
                                                 sizePx: 13
@@ -709,7 +709,7 @@ Item {
                                             color: explorerMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
                                             Behavior on color { enabled: !AuroraTheme.reduceMotion
                                                 ColorAnimation { duration: AuroraTheme.durFast } }
-                                            Aurora.FsIcon { anchors.centerIn: parent; name: "folder"; sizePx: 14; color: AuroraTheme.ink2 }
+                                            FsIcon { anchors.centerIn: parent; name: "folder"; sizePx: 14; color: AuroraTheme.ink2 }
                                             MouseArea {
                                                 id: explorerMa
                                                 anchors.fill: parent
@@ -849,7 +849,7 @@ Item {
                             visible: !detailPanel.active
                             spacing: AuroraTheme.sp2
 
-                            Aurora.FsIcon {
+                            FsIcon {
                                 Layout.alignment: Qt.AlignHCenter
                                 name: "heart"; sizePx: 28
                                 color: AuroraTheme.ink4
@@ -901,7 +901,7 @@ Item {
                                         color: closePanelMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
                                         Behavior on color { enabled: !AuroraTheme.reduceMotion
                                             ColorAnimation { duration: AuroraTheme.durFast } }
-                                        Aurora.FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink2 }
+                                        FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink2 }
                                         MouseArea {
                                             id: closePanelMa; anchors.fill: parent; hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor

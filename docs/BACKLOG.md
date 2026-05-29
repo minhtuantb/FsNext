@@ -5,8 +5,13 @@
 ## Active backlog (đợt review 2026-05-29 — xem `docs/ASSESSMENT.md`)
 
 ### P1
-- ⬜ **Hợp nhất 2 design-system QML** (`FsAurora` + `Fshare`): chốt một bộ component chuẩn, migrate `FsAurora.Pages`
-  (HomePage, LoginView) sang Fshare, dọn artifact thiết kế (`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`).
+- 🔄 **Hợp nhất 2 design-system QML** — đã chốt: `Fshare.Components` chuẩn (xem [design-system.md](design-system.md)).
+  - ✅ Stage 1 (2026-05-29): `FsIcon`, `FsTextField`, `FsCard` → Fshare (đã verify).
+  - ⬜ Stage 2: 4 atom diverge — **FsButton** (gộp gradient+loading Aurora vào bản Fshare a11y; repoint 77
+    `Aurora.FsButton`), **FsBadge** (hợp nhất variant), **FsSwitch** (label+gradient vs focus-ring), **FsProgressBar**
+    (gradient/indeterminate vs semantic status — cân nhắc giữ 2 tên). Mỗi atom: merge + verify thị giác từng surface.
+  - ⬜ Sau Stage 2: cân nhắc bỏ alias `Aurora.` cho atom; dọn artifact thiết kế trong `qml/FsAurora/` (*.html,
+    design-canvas.jsx, handoff/, uploads/) khỏi cây source runtime.
 - ⬜ **Đóng crash audit**: đối chiếu từng finding trong `docs/CRASH_AUDIT.md` + `docs/FILE_MANAGER_CRASH_AUDIT.md`
   với code hiện tại, đánh dấu Fixed/Won't-fix/Open. Ưu tiên race click-nhanh + `FolderTreeModel` đệ quy không cap depth.
 
