@@ -16,6 +16,12 @@ Item {
     property var selectedFiles: []
     property string searchQuery: ""
 
+    // Emitted after a context-menu "Tải về" action has queued a file into the
+    // Download page. The host (Main.qml) shows the toast — keeping toast
+    // surface in one place — and routes the user to the Download page if they
+    // click the toast body.
+    signal downloadEnqueued(string fileName)
+
     // Context-menu state — the file that was right-clicked
     property var    _ctxFile:       null
     // Rename dialog state
@@ -96,6 +102,22 @@ Item {
                         fileManagerViewModel.copyLinks([file.linkcode]);
                 }
             },
+            // Queue this file into the Download page WITHOUT navigating — the
+            // user stays on My Files. A toast confirms the queue and offers a
+            // one-click jump to Tải về. Hidden for folders (use "Mở thư mục"
+            // → bulk download) and for already-downloaded files (the local
+            // copy is right there).
+            (!file.isFolder && !file.isDownloaded) ? {
+                label: qsTr("Tải về"),
+                icon: "⬇",
+                onTriggered: function() {
+                    if (!downloadViewModel) return;
+                    const url = "https://www.fshare.vn/file/" + file.linkcode;
+                    const folder = downloadViewModel.defaultSaveFolder || "";
+                    downloadViewModel.addDownload(url, folder, "");
+                    page.downloadEnqueued(file.name || file.linkcode);
+                }
+            } : null,
             // "Open containing folder" — only for downloaded/uploaded files
             file.isDownloaded ? {
                 label: qsTr("Mở thư mục chứa"),
@@ -178,18 +200,6 @@ Item {
                 icon: "▶",
                 onTriggered: function() {
                     page._playMediaFile(file);
-                }
-            } : null,
-            // Media-only: also expose a plain "copy stream link" so power users
-            // can paste the URL into another player / downloader by hand.
-            (page._isMediaFile(file) && !file.isDownloaded) ? {
-                label: qsTr("Sao chép link xem trực tiếp"),
-                icon: "⎘",
-                onTriggered: function() {
-                    page._pendingStreamLinkcode = "";
-                    page._pendingStreamName     = "";
-                    if (fileManagerViewModel)
-                        fileManagerViewModel.getStreamLink(file.linkcode);
                 }
             } : null,
             { separator: true },
@@ -1149,35 +1159,52 @@ Item {
                                 color: AuroraTheme.ink4
                             }
 
-                            // Row 1: [Di chuyển] [Sao chép]
-                            RowLayout {
+                            // Row 1: [Di chuyển] full-width
+                            // The sibling "Sao chép" (server-side copy-to-folder) was
+                            // removed because it read as a duplicate of "Sao chép link"
+                            // — same verb, different intent. Users who still need the
+                            // copy-to-folder operation can reach it via the right-click
+                            // "Copy to..." menu, which is the clearer label anyway.
+                            FsButton {
                                 Layout.fillWidth: true
                                 Layout.leftMargin: AuroraTheme.sp3
                                 Layout.rightMargin: AuroraTheme.sp3
                                 visible: detailPanel.active
-                                spacing: AuroraTheme.sp1
-
-                                FsButton {
-                                    Layout.fillWidth: true
-                                    text: qsTr("Di chuyển"); variant: "ghost"; size: "sm"
-                                    onClicked: {
-                                        moveCopyDialog.mode             = "move";
-                                        moveCopyDialog.pendingLinkcodes = page.selectedFiles.slice();
-                                        moveCopyDialog.open();
-                                    }
-                                }
-                                FsButton {
-                                    Layout.fillWidth: true
-                                    text: qsTr("Sao chép"); variant: "ghost"; size: "sm"
-                                    onClicked: {
-                                        moveCopyDialog.mode             = "copy";
-                                        moveCopyDialog.pendingLinkcodes = page.selectedFiles.slice();
-                                        moveCopyDialog.open();
-                                    }
+                                text: qsTr("Di chuyển"); variant: "ghost"; size: "sm"
+                                onClicked: {
+                                    moveCopyDialog.mode             = "move";
+                                    moveCopyDialog.pendingLinkcodes = page.selectedFiles.slice();
+                                    moveCopyDialog.open();
                                 }
                             }
 
-                            // Row 2: [Sao chép link] full-width
+                            // Row 2: [Tải về] — queues the selected file(s) into the
+                            // Download page without navigating; the host shows a
+                            // clickable toast that routes to Tải về on tap (see
+                            // downloadEnqueued signal + Main.qml). Hidden for folders
+                            // (use right-click to bulk-download) and for items the user
+                            // already has on disk.
+                            FsButton {
+                                Layout.fillWidth: true
+                                Layout.leftMargin: AuroraTheme.sp3
+                                Layout.rightMargin: AuroraTheme.sp3
+                                Layout.topMargin: AuroraTheme.sp1
+                                visible: detailPanel.isSingle && page.selectedFileData
+                                         && !page.selectedFileData.isFolder
+                                         && !page.selectedFileData.isDownloaded
+                                text: qsTr("Tải về"); variant: "ghost"; size: "sm"
+                                onClicked: {
+                                    if (!downloadViewModel || !page.selectedFileData) return;
+                                    const url = "https://www.fshare.vn/file/"
+                                              + page.selectedFileData.linkcode;
+                                    const folder = downloadViewModel.defaultSaveFolder || "";
+                                    downloadViewModel.addDownload(url, folder, "");
+                                    page.downloadEnqueued(page.selectedFileData.name
+                                                          || page.selectedFileData.linkcode);
+                                }
+                            }
+
+                            // Row 3: [Sao chép link] full-width
                             FsButton {
                                 Layout.fillWidth: true
                                 Layout.leftMargin: AuroraTheme.sp3
@@ -1255,59 +1282,14 @@ Item {
                                 }
                             }
 
-                            // ── Quick actions (single selection: copy link + share shortcuts) ──
-                            // Kept around as a convenience row — Copy link here is a
-                            // duplicate of the THAO TÁC one, but it gives the single-
-                            // selection view a secondary action near the file name.
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Layout.leftMargin: AuroraTheme.sp3
-                                Layout.rightMargin: AuroraTheme.sp3
-                                Layout.topMargin: AuroraTheme.sp2
-                                visible: detailPanel.isSingle && page.selectedFileData
-                                         && !page.selectedFileData.isFolder
-                                spacing: AuroraTheme.sp1
-
-                                // Share (same as copy link for Fshare)
-                                FsButton {
-                                    Layout.fillWidth: true
-                                    text: qsTr("Chia sẻ"); variant: "ghost"; size: "sm"
-                                    onClicked: {
-                                        if (fileManagerViewModel && page.selectedFileData)
-                                            fileManagerViewModel.copyLinks([page.selectedFileData.linkcode]);
-                                        page.showToast(qsTr("Link đã được sao chép — gửi cho người nhận"), "", "success");
-                                    }
-                                }
-                            }
-
-                            // ── Media extra: copy stream link ──
-                            // The hero button above handles "play now". This ghost
-                            // button is the fallback for users who want to paste the
-                            // URL into a different player / downloader by hand.
-                            // Shown only when the file is still remote — for
-                            // downloaded items the local path is already available.
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Layout.leftMargin: AuroraTheme.sp3
-                                Layout.rightMargin: AuroraTheme.sp3
-                                Layout.topMargin: AuroraTheme.sp1
-                                visible: detailPanel.isSingle && page.selectedFileData
-                                         && page._isMediaFile(page.selectedFileData)
-                                         && !page.selectedFileData.isDownloaded
-                                spacing: AuroraTheme.sp1
-
-                                FsButton {
-                                    Layout.fillWidth: true
-                                    text: qsTr("Sao chép link xem trực tiếp")
-                                    variant: "ghost"; size: "sm"
-                                    onClicked: {
-                                        page._pendingStreamLinkcode = "";
-                                        page._pendingStreamName     = "";
-                                        if (fileManagerViewModel && page.selectedFileData)
-                                            fileManagerViewModel.getStreamLink(page.selectedFileData.linkcode);
-                                    }
-                                }
-                            }
+                            // (Removed: "Chia sẻ" — it copied the share link, exactly
+                            // what "Sao chép link" above already does; having both made
+                            // the panel feel padded with redundant CTAs.)
+                            //
+                            // (Removed: "Sao chép link xem trực tiếp" — power-user-only
+                            // workflow; the "Xem trực tiếp" play button below still
+                            // covers the in-app case, and tải-về handles the
+                            // out-of-app case more reliably than a short-lived stream URL.)
 
                             // ── Divider ──
                             Rectangle {
@@ -1643,24 +1625,21 @@ Item {
             }
         }
         function onStreamLinkReady(linkcode, url) {
-            // Two intents share this signal:
-            //   1. "Xem trực tiếp" — launch the default media player via .m3u8
-            //   2. "Sao chép link xem trực tiếp" — the VM already put the URL
-            //      on the clipboard; we just toast.
-            // _pendingStreamLinkcode distinguishes them: it's set only by the
-            // play path (_playMediaFile).
-            if (page._pendingStreamLinkcode === linkcode) {
-                const hintName = page._pendingStreamName;
-                page._pendingStreamLinkcode = "";
-                page._pendingStreamName     = "";
-                if (fileManagerViewModel)
-                    fileManagerViewModel.playStreamUrl(url, hintName);
-                page.showToast(qsTr("Đang phát"),
-                               hintName || qsTr("Trình phát mặc định đã khởi chạy"),
-                               "success");
-            } else {
-                page.showToast(qsTr("Stream link đã được sao chép"), url, "success");
-            }
+            // Only the "Xem trực tiếp" (play) path triggers this now — it sets
+            // _pendingStreamLinkcode before requesting the stream URL. The old
+            // "Sao chép link xem trực tiếp" path was removed product-wide, so
+            // the previous "fallback to clipboard toast" branch went with it.
+            // Defend the match anyway: a stale signal (the user navigated away
+            // before the URL arrived) finds an empty linkcode and is dropped.
+            if (page._pendingStreamLinkcode !== linkcode) return;
+            const hintName = page._pendingStreamName;
+            page._pendingStreamLinkcode = "";
+            page._pendingStreamName     = "";
+            if (fileManagerViewModel)
+                fileManagerViewModel.playStreamUrl(url, hintName);
+            page.showToast(qsTr("Đang phát"),
+                           hintName || qsTr("Trình phát mặc định đã khởi chạy"),
+                           "success");
         }
         function onStreamLinkError(message) {
             page._pendingStreamLinkcode = "";

@@ -11,7 +11,8 @@ import FsAurora.Components 1.0 as Aurora
 
 Aurora.FsPageHeader {
     framed: false
-    kicker: qsTr("My Files")
+    compact: true
+    kicker: qsTr("My Files")    // ignored in compact mode (sidebar already labels the surface)
     title: qsTr("Files")
     accentWord: "."
     subtitle: {

@@ -42,6 +42,13 @@ class FavoritesViewModel : public QObject
 
     // ── Filter ────────────────────────────────────────────────
     Q_PROPERTY(QString extFilter READ extFilter WRITE setExtFilter NOTIFY extFilterChanged)
+    // Fulltext name search (client-side substring, diacritic-insensitive).
+    // Applies on top of whatever items the page currently shows — both the
+    // favorites root and any sub-folder the user has drilled into. Unlike
+    // extFilter (server-side hint that triggered a re-fetch), nameFilter never
+    // round-trips the server, so it stays in sync with the user's keystrokes
+    // and is reliable for partial matches like "lan" → "Lan toả.mp4".
+    Q_PROPERTY(QString nameFilter READ nameFilter WRITE setNameFilter NOTIFY nameFilterChanged)
 
 public:
     explicit FavoritesViewModel(FshareApi        *api,
@@ -66,6 +73,9 @@ public:
 
     QString extFilter() const { return m_extFilter; }
     void setExtFilter(const QString &filter);
+
+    QString nameFilter() const { return m_nameFilter; }
+    void setNameFilter(const QString &filter);
 
     // ── Favorites CRUD ───────────────────────────────────────
     Q_INVOKABLE void loadFavorites();
@@ -113,6 +123,7 @@ signals:
     void navigationChanged();
     void selectionChanged();
     void extFilterChanged();
+    void nameFilterChanged();
 
     void linksCopied(int count);
     void operationMessage(const QString &msg, bool isError);
@@ -122,6 +133,16 @@ signals:
 private:
     void setLoading(bool v);
     void refreshTotalCount();
+    // Set the visible model from `source`, after applying the current
+    // nameFilter as a case- and diacritic-insensitive substring match on
+    // `FileItem::name`. Caches `source` in m_allItems so a later filter
+    // change re-applies without going back to the server / cache.
+    void applyAndShow(const QVector<FileItem> &source);
+    // Normalise a string for fuzzy matching: trim → lowercase → strip
+    // Vietnamese combining marks (so "Lồng tiếng" matches "long tieng" and
+    // vice versa). Defined inline to keep parity with the BadWordFilter's
+    // stripDiacritics helper without sharing state.
+    static QString normaliseForSearch(const QString &s);
 
     struct FolderEntry { QString id; QString name; };
 
@@ -140,6 +161,12 @@ private:
 
     // Filter
     QString m_extFilter;
+    QString m_nameFilter;
+    // Unfiltered snapshot of whatever items the visible model was last
+    // populated with (favorites root OR sub-folder contents). Lets a
+    // keystroke-driven nameFilter re-apply without round-tripping the
+    // server or cache. Cleared on every fresh load.
+    QVector<FileItem> m_allItems;
 };
 
 } // namespace fsnext

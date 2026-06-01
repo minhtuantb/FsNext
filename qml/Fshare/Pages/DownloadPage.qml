@@ -97,7 +97,7 @@ Item {
         // ═════════════════════════════════════════════════
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: headerCol.implicitHeight + AuroraTheme.sp6 * 2
+            Layout.preferredHeight: headerCol.implicitHeight + AuroraTheme.sp4 * 2
             radius: AuroraTheme.radiusLg
             color: AuroraTheme.panel
             border.width: 1
@@ -106,8 +106,13 @@ Item {
             ColumnLayout {
                 id: headerCol
                 anchors.fill: parent
-                anchors.margins: AuroraTheme.sp6
-                spacing: AuroraTheme.sp4
+                // sp6 → sp4 (24 → 16 px) — the editorial 56-px hero + sp6
+                // padding gave this header ~120 px of chrome, dwarfing the
+                // active-transfer list below it. Tightening to sp4 + 32-px
+                // hero (see bigNumber) saves ~50 px without losing the
+                // glanceable "47.3 MB/s" affordance.
+                anchors.margins: AuroraTheme.sp4
+                spacing: AuroraTheme.sp3
 
                 // ── Top row: kicker+serif number · stats · actions ──
                 // Spacing trimmed sp6 (24) → sp4 (16) — earlier value sat right
@@ -150,14 +155,17 @@ Item {
                                 text: _value
                                 color: AuroraTheme.ink1
                                 font.family: AuroraTheme.fontSerif
-                                font.pixelSize: 56
-                                font.letterSpacing: -1.8
+                                // 56 → 32. Still hero-weight enough to read as the
+                                // page's primary number; the previous 56 left this
+                                // header taller than two list rows put together.
+                                font.pixelSize: 32
+                                font.letterSpacing: -1.0
                                 lineHeight: 1.0
                             }
 
                             Text {
                                 Layout.alignment: Qt.AlignBottom
-                                Layout.bottomMargin: 10
+                                Layout.bottomMargin: 4
                                 property string _unit: {
                                     if (page.showHistory) return "file";
                                     const s = bigNumber._speed;
@@ -170,7 +178,7 @@ Item {
                                 color: AuroraTheme.ink3
                                 font.family: AuroraTheme.fontSerif
                                 font.italic: true
-                                font.pixelSize: 22
+                                font.pixelSize: 14
                             }
                         }
                     }

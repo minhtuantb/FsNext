@@ -33,7 +33,7 @@ FavoritesViewModel::FavoritesViewModel(FshareApi        *api,
             this, [this](const QVector<FileItem> &files) {
                 // Only update if we're in folder-browsing mode
                 if (!isInFolder()) return;
-                m_fileListModel->resetItems(files);
+                applyAndShow(files);
                 refreshTotalCount();
             });
 
@@ -99,7 +99,7 @@ void FavoritesViewModel::loadFavorites()
             if (!guard) return;
             guard->setLoading(false);
             if (resp.isSuccess()) {
-                guard->m_fileListModel->resetItems(resp.data());
+                guard->applyAndShow(resp.data());
                 guard->refreshTotalCount();
             } else {
                 emit guard->operationMessage(resp.error().message, true);
@@ -350,6 +350,59 @@ void FavoritesViewModel::setExtFilter(const QString &filter)
     // Reload favorites with the new filter (only when at root)
     if (!isInFolder())
         loadFavorites();
+}
+
+void FavoritesViewModel::setNameFilter(const QString &filter)
+{
+    if (m_nameFilter == filter) return;
+    m_nameFilter = filter;
+    emit nameFilterChanged();
+
+    // Re-apply filter against the cached snapshot — no server round-trip.
+    // This is what makes the search reliable per keystroke; the old
+    // extFilter path went via listFavorites() so partial matches like
+    // "lan" would silently miss when the server didn't recognise the
+    // prefix as a file-extension hint.
+    applyAndShow(m_allItems);
+    refreshTotalCount();
+}
+
+// ── Filter application ──────────────────────────────────────────────────────
+
+QString FavoritesViewModel::normaliseForSearch(const QString &s)
+{
+    // NFD then drop combining marks (U+0300..U+036F) and fold Đ/đ → d.
+    // Matches BadWordFilter::stripDiacritics — we keep this duplicate small
+    // rather than pull a shared header just to fold ~30 codepoints.
+    const QString d = s.toLower().normalized(QString::NormalizationForm_D);
+    QString out;
+    out.reserve(d.size());
+    for (QChar c : d) {
+        const ushort u = c.unicode();
+        if (u >= 0x0300 && u <= 0x036F) continue;
+        if (u == 0x0110 || u == 0x0111) { out.append(QLatin1Char('d')); continue; }
+        out.append(c);
+    }
+    return out.trimmed();
+}
+
+void FavoritesViewModel::applyAndShow(const QVector<FileItem> &source)
+{
+    m_allItems = source;
+
+    if (m_nameFilter.trimmed().isEmpty()) {
+        m_fileListModel->resetItems(source);
+        return;
+    }
+
+    const QString needle = normaliseForSearch(m_nameFilter);
+    QVector<FileItem> filtered;
+    filtered.reserve(source.size());
+    for (const FileItem &it : source) {
+        if (normaliseForSearch(it.name).contains(needle))
+            filtered.append(it);
+    }
+    m_fileListModel->resetItems(filtered);
 }
 
 } // namespace fsnext

@@ -337,23 +337,35 @@ TransferService::~TransferService()
     for (auto *engine : m_engines)       engine->cancel();
     for (auto *engine : m_uploadEngines) engine->cancel();
 
-    // Signal all threads to quit (non-blocking)
+    // Signal all threads to quit (non-blocking).
     for (auto *thread : m_threads) thread->quit();
 
-    // Wait in parallel — give each a short timeout so total shutdown is bounded
-    const int kPerThreadWaitMs = 500;
+    // Wait — longer than the per-handler 500-1000 ms cap because at shutdown
+    // we may have just cancelled an upload mid-chunk and the curl_easy_perform
+    // needs a moment to unwind. NEVER fall through to terminate(): forcing a
+    // QThread holding libcurl state corrupts the heap (Exception 0xc0000374
+    // observed in the Windows Event Log), which is far worse than the
+    // possibility of a small leak. If a thread genuinely refuses to exit
+    // (extremely rare), we let the OS reclaim its memory on process exit.
+    const int kPerThreadWaitMs = 2000;
+    bool anyStuck = false;
     for (auto *thread : m_threads) {
         if (!thread->wait(kPerThreadWaitMs)) {
             qWarning() << "[FsNext] Thread did not exit in" << kPerThreadWaitMs
-                       << "ms, terminating";
-            thread->terminate();
-            thread->wait(200);
+                       << "ms — leaking on process exit (safer than terminate())";
+            anyStuck = true;
         }
     }
 
-    qDeleteAll(m_engines);
-    qDeleteAll(m_uploadEngines);
-    qDeleteAll(m_threads);
+    // Only delete if every thread exited cleanly. A stuck thread still owns its
+    // engine + map entries, and deleting them from the main thread while the
+    // worker is still inside curl is the precise heap-corruption recipe we are
+    // avoiding. Process exit will reclaim everything regardless.
+    if (!anyStuck) {
+        qDeleteAll(m_engines);
+        qDeleteAll(m_uploadEngines);
+        qDeleteAll(m_threads);
+    }
 }
 
 void TransferService::addDownload(const QString &url, const QString &password, const QString &savePath)
@@ -753,14 +765,14 @@ void TransferService::spawnUploadEngine(const TransferTask &task)
         [this, taskId]() { onUploadSessionExpired(taskId); });
     connect(thread, &QThread::started, engine, [engine, task]() { engine->startUpload(task); });
 
-    // Self-cleanup: once the worker's event loop exits (after startUpload
-    // returns), delete the engine then the thread on their own threads. This
-    // replaces the per-handler quit()+wait()+deleteLater(), which blocked the
-    // GUI thread and — when wait() timed out while curl was still mid-connect —
-    // deleteLater()'d a QThread that was still running. Callers now only detach
-    // the maps and quit(); deletion waits until the thread truly finishes.
-    connect(thread, &QThread::finished, engine, &QObject::deleteLater);
-    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+    // NOTE: do NOT wire `thread::finished → deleteLater` self-cleanup here.
+    // The worker's event loop has already exited by the time `finished` fires,
+    // so a deleteLater posted to it would never process — and the destructor's
+    // qDeleteAll(m_uploadEngines) / qDeleteAll(m_threads) would race the same
+    // pointers, leading to either a leak or (worse) a double-free. Engine
+    // lifecycle is owned explicitly by the per-task handlers (onUploadComplete /
+    // onUploadFailed / onUploadSessionExpired / cancelTask) and by the
+    // destructor — same model the download path has always used.
 
     thread->start();
 }
@@ -801,12 +813,15 @@ void TransferService::onUploadComplete(const QString &taskId, const QString &lin
             break;
         }
     }
-    // Engine + thread self-delete via finished→deleteLater (wired in
-    // spawnUploadEngine). Detach from the maps and ask the thread to quit; never
-    // wait() here — startUpload has already returned, so the thread exits its
-    // event loop promptly without blocking the GUI thread.
-    m_uploadEngines.remove(taskId);
-    if (auto *t = m_threads.take(taskId)) t->quit();
+    // Explicit cleanup — engine.deleteLater() is posted to the worker's event
+    // queue BEFORE quit() so the worker actually processes the deletion before
+    // its exec() returns. wait() then blocks briefly until the worker has fully
+    // exited (1000 ms cap — at completion time startUpload has just returned,
+    // so this is typically sub-ms). thread.deleteLater() defers QThread object
+    // deletion to the main thread's next event loop iteration, which is safe
+    // because QThread instances live on the main thread, not on themselves.
+    if (auto *e = m_uploadEngines.take(taskId)) e->deleteLater();
+    if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(1000); t->deleteLater(); }
     emit taskCompleted(taskId);
 
     // Record linkcode → source path for file manager "on computer" indicator.
@@ -864,9 +879,9 @@ void TransferService::onUploadFailed(const QString &taskId, const QString &error
     m_priorities.remove(taskId);
     TransferTask snapshot;
     for (auto &t : m_tasks) if (t.id == taskId) { t.state = TransferState::Error; t.errorMessage = error; snapshot = t; break; }
-    // Engine + thread self-delete via finished→deleteLater (see spawnUploadEngine).
-    m_uploadEngines.remove(taskId);
-    if (auto *t = m_threads.take(taskId)) t->quit();
+    // Explicit cleanup — see onUploadComplete for the rationale.
+    if (auto *e = m_uploadEngines.take(taskId)) e->deleteLater();
+    if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(1000); t->deleteLater(); }
 
     // Sync-specific failure routing.
     if (snapshot.isSyncTask && !snapshot.syncFolderId.isEmpty())
@@ -887,9 +902,12 @@ void TransferService::onUploadSessionExpired(const QString &taskId)
     // Release the slot so the orchestrator can re-dispatch us when the
     // re-enqueued task floats back to the front of the queue.
     if (m_orch) m_orch->release(taskId);
-    // Engine + thread self-delete via finished→deleteLater (see spawnUploadEngine).
-    m_uploadEngines.remove(taskId);
-    if (auto *t = m_threads.take(taskId)) t->quit();
+    // Explicit cleanup — see onUploadComplete. Wait 500 ms (instead of 1000):
+    // session-expired arrives mid-transfer with the worker mid curl_easy_perform,
+    // so we trade a slightly tighter window for snappier session re-creation.
+    // If the worker hasn't exited, it'll be qDeleteAll'd in the destructor.
+    if (auto *e = m_uploadEngines.take(taskId)) e->deleteLater();
+    if (auto *t = m_threads.take(taskId)) { t->quit(); t->wait(500); t->deleteLater(); }
 
     // Reset task to Queued and re-enqueue at its original priority.  The
     // orchestrator will create a new session + engine from scratch (byte 0).
@@ -988,28 +1006,46 @@ void TransferService::cancelTask(const QString &id)
     // Determine whether the task held an active orchestrator slot (Active or
     // Paused) vs was still purely Queued — we release() the former and
     // cancelQueued() the latter so the slot counter stays correct.
-    bool wasDispatched = false;
+    // Also snapshot localPath + type BEFORE the row is removed so we can
+    // delete the on-disk partial + sidecar after the engine releases the file.
+    bool wasDispatched   = false;
+    bool wasDownloadTask = false;
+    QString cancelLocalPath;
     for (int i = 0; i < m_tasks.size(); ++i) {
         if (m_tasks[i].id != id) continue;
         const auto &t = m_tasks[i];
-        wasDispatched = (t.state == TransferState::Active ||
-                         t.state == TransferState::Paused);
+        wasDispatched   = (t.state == TransferState::Active ||
+                           t.state == TransferState::Paused);
+        wasDownloadTask = (t.type  == TransferType::Download);
+        cancelLocalPath = t.localPath;
         m_tasks.remove(i);
         break;
     }
 
     // Clean up engine + thread. The engine was told to abort above.
-    if (auto *e = m_engines.take(id)) e->deleteLater();   // download engine
-    // The upload engine + thread self-delete via finished→deleteLater (wired in
-    // spawnUploadEngine), so detach + quit() only — no GUI-blocking wait() and no
-    // deleteLater() on a QThread that may still be inside curl_easy_perform.
-    const bool wasUpload = m_uploadEngines.contains(id);
-    m_uploadEngines.remove(id);
-    if (auto *t = m_threads.take(id)) {
-        t->quit();
-        if (!wasUpload) { t->wait(500); t->deleteLater(); }   // download thread: explicit cleanup
-    }
+    // Same explicit pattern for upload and download — see onUploadComplete.
+    if (auto *e = m_engines.take(id))       e->deleteLater();
+    if (auto *e = m_uploadEngines.take(id)) e->deleteLater();
+    if (auto *t = m_threads.take(id)) { t->quit(); t->wait(500); t->deleteLater(); }
     m_priorities.remove(id);
+
+    // ── Remove the partial file + sidecar after the engine has released its
+    // FILE* (the download routines fclose() before returning, and the wait()
+    // above gives the thread up to 500 ms to finish unwinding). Without this,
+    // every cancelled multi-segment download leaves a full-size pre-allocated
+    // file + .fsdownload journal orphaned on disk. Limited to genuine file
+    // paths so a not-yet-resolved task (localPath == save FOLDER) isn't nuked.
+    if (wasDownloadTask && !cancelLocalPath.isEmpty()) {
+        const QFileInfo fi(cancelLocalPath);
+        if (fi.exists() && fi.isFile()) {
+            if (!QFile::remove(cancelLocalPath))
+                qWarning() << "[TransferService] Cancel: could not remove partial"
+                           << cancelLocalPath << "(file may still be locked)";
+        }
+        // Sidecar lives next to the data file; remove unconditionally — its
+        // own existence check inside QFile::remove() returns false silently.
+        QFile::remove(cancelLocalPath + QStringLiteral(".fsdownload"));
+    }
 
     if (m_orch) {
         if (wasDispatched) {

@@ -24,11 +24,9 @@ Aurora.FsScrollPage {
         // ═════════════════════════════════════════════════
         Aurora.FsPageHeader {
             framed: true
-            kicker: qsTr("Tuỳ chọn & hệ thống")
+            compact: true
             title: qsTr("Cài")
             accentWord: qsTr("đặt.")
-            titlePixelSize: 56
-            titleLetterSpacing: -1.8
             subtitle: qsTr("Tùy chỉnh tải xuống, tải lên, ngôn ngữ và kết nối")
         }
 

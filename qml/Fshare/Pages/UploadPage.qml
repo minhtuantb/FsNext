@@ -237,7 +237,7 @@ Item {
         // ═════════════════════════════════════════════════
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: uploadHeaderCol.implicitHeight + AuroraTheme.sp6 * 2
+            Layout.preferredHeight: uploadHeaderCol.implicitHeight + AuroraTheme.sp4 * 2
             radius: AuroraTheme.radiusLg
             color: AuroraTheme.panel
             border.width: 1
@@ -246,8 +246,10 @@ Item {
             ColumnLayout {
                 id: uploadHeaderCol
                 anchors.fill: parent
-                anchors.margins: AuroraTheme.sp6
-                spacing: AuroraTheme.sp4
+                // sp6 → sp4 padding + smaller hero (see bigNumber). Saves
+                // ~50 px of vertical chrome, mirrors DownloadPage.
+                anchors.margins: AuroraTheme.sp4
+                spacing: AuroraTheme.sp3
 
                 // Spacing trimmed sp6 → sp4 — matches DownloadPage. Earlier
                 // value let the trailing action button overflow the panel
@@ -286,14 +288,15 @@ Item {
                                 text: _value
                                 color: AuroraTheme.ink1
                                 font.family: AuroraTheme.fontSerif
-                                font.pixelSize: 56
-                                font.letterSpacing: -1.8
+                                // 56 → 32, mirror of DownloadPage.
+                                font.pixelSize: 32
+                                font.letterSpacing: -1.0
                                 lineHeight: 1.0
                             }
 
                             Text {
                                 Layout.alignment: Qt.AlignBottom
-                                Layout.bottomMargin: 10
+                                Layout.bottomMargin: 4
                                 property string _unit: {
                                     if (page.showHistory) return "file";
                                     const s = bigNumber._speed;
@@ -306,7 +309,7 @@ Item {
                                 color: AuroraTheme.ink3
                                 font.family: AuroraTheme.fontSerif
                                 font.italic: true
-                                font.pixelSize: 22
+                                font.pixelSize: 14
                             }
                         }
                     }

@@ -308,11 +308,9 @@ Item {
         // ═════════════════════════════════════════════════
         Aurora.FsPageHeader {
             framed: true
-            kicker: qsTr("Bộ sưu tập cá nhân")
+            compact: true
             title: qsTr("Yêu")
             accentWord: qsTr("thích.")
-            titlePixelSize: 56
-            titleLetterSpacing: -1.8
             subtitle: {
                 if (!favoritesViewModel) return "—";
                 const n = favoritesViewModel.totalCount;
@@ -320,7 +318,12 @@ Item {
                 return qsTr("%1 mục đã gắn sao").arg(n);
             }
 
-            // Filter textbox
+            // Fulltext name search — client-side, per-keystroke.
+            // The previous extFilter sent the box value to the server as a
+            // file-extension hint, which silently missed partial-name searches
+            // ("lan" → "Lan toả.mp4") and felt unreliable. nameFilter does a
+            // diacritic-insensitive substring match locally over both the
+            // favorites root AND any folder the user has navigated into.
             Rectangle {
                 Layout.preferredWidth: 260
                 Layout.preferredHeight: 36
@@ -328,7 +331,7 @@ Item {
                 radius: AuroraTheme.radiusMd
                 color: AuroraTheme.bg
                 border.width: 1
-                border.color: extFilterInput.activeFocus ? AuroraTheme.accent : AuroraTheme.border
+                border.color: nameFilterInput.activeFocus ? AuroraTheme.accent : AuroraTheme.border
                 Behavior on border.color { enabled: !AuroraTheme.reduceMotion
                     ColorAnimation { duration: AuroraTheme.durFast } }
 
@@ -340,20 +343,24 @@ Item {
 
                     FsIcon { name: "search"; sizePx: 14; color: AuroraTheme.ink4 }
                     TextInput {
-                        id: extFilterInput
+                        id: nameFilterInput
                         Layout.fillWidth: true
                         verticalAlignment: TextInput.AlignVCenter
                         font.family: AuroraTheme.fontSans
                         font.pixelSize: 13
                         color: AuroraTheme.ink1
-                        text: favoritesViewModel ? favoritesViewModel.extFilter : ""
-                        onAccepted: {
-                            if (favoritesViewModel) favoritesViewModel.extFilter = text;
+                        text: favoritesViewModel ? favoritesViewModel.nameFilter : ""
+                        // Live filter — every keystroke updates the model. The VM
+                        // re-filters its cached snapshot in-memory, so this is
+                        // safe even for hundreds of favorites.
+                        onTextChanged: {
+                            if (favoritesViewModel && favoritesViewModel.nameFilter !== text)
+                                favoritesViewModel.nameFilter = text;
                         }
 
                         Text {
                             visible: parent.text.length === 0
-                            text: qsTr("Lọc theo đuôi file (vd: mp4, pdf)...")
+                            text: qsTr("Tìm theo tên file / thư mục…")
                             color: AuroraTheme.ink4
                             font: parent.font
                             anchors.verticalCenter: parent.verticalCenter
@@ -361,7 +368,7 @@ Item {
                     }
 
                     Rectangle {
-                        visible: extFilterInput.text.length > 0
+                        visible: nameFilterInput.text.length > 0
                         width: 20; height: 20; radius: 10
                         color: clearFilterMa.containsMouse ? AuroraTheme.accentTint10 : "transparent"
                         FsIcon { anchors.centerIn: parent; name: "x"; sizePx: 12; color: AuroraTheme.ink3 }
@@ -370,8 +377,8 @@ Item {
                             anchors.fill: parent; hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                extFilterInput.text = "";
-                                if (favoritesViewModel) favoritesViewModel.extFilter = "";
+                                nameFilterInput.text = "";
+                                if (favoritesViewModel) favoritesViewModel.nameFilter = "";
                             }
                         }
                     }

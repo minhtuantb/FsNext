@@ -52,6 +52,17 @@ Rectangle {
     readonly property int _expandedWidth: 240
     readonly property int _collapsedWidth: 64
 
+    // "Profile is known" gate — every binding from Main.qml that derives from
+    // userInfoViewModel falls back to a free-tier/empty value while /profile is
+    // still in flight. That made the sidebar flash an upgrade promo and a
+    // "Miễn phí" tier label for the ~300 ms gap between login and first
+    // /profile response, then flip both away. Anything visually conditional on
+    // the user's tier should wait for this flag instead of trusting the raw
+    // fallback. Total storage is always non-zero once /profile returns, so it's
+    // a reliable proxy without requiring a new VM property.
+    readonly property bool _profileResolved: storageTotalText.length > 0
+                                              || vipLabel.length > 0
+
     signal toggleCollapseRequested()
 
     property string transferStatsText: ""
@@ -272,7 +283,10 @@ Rectangle {
         // ══════════════════════════════════════════════
         Rectangle {
             id: upgradeCard
-            visible: !root.isVip && !root.collapsed && !hud.visible
+            // Gate on _profileResolved so the promo doesn't flash for VIP users
+            // during the pre-/profile window where isVip transiently reads
+            // false. See _profileResolved declaration at the top of root.
+            visible: root._profileResolved && !root.isVip && !root.collapsed && !hud.visible
             Layout.fillWidth: true
             Layout.bottomMargin: visible ? 10 : 0
             Layout.preferredHeight: visible ? upgradeCol.implicitHeight + 22 : 0
@@ -350,7 +364,11 @@ Rectangle {
         AvatarPivot {
             visible: !root.collapsed
             Layout.fillWidth: true
-            Layout.preferredHeight: visible ? 42 : 0
+            // 56px (was 42) — two rows of text at 12 + 11 px + 4 px gap + 8 px
+            // top/bottom padding need ~50 px of safe interior. 42 was working
+            // against an empty subtitle but with a real "VIP Pro · 31/12/2026"
+            // line the descender was clipping into the name above it.
+            Layout.preferredHeight: visible ? 56 : 0
         }
 
         // Rail-mode avatar — initials circle centred. Single click → emit
@@ -551,11 +569,16 @@ Rectangle {
 
     // ── Avatar pivot ────────────────────────────────────────────────────
     // Sits at the bottom of the sidebar with the user's name + plan label.
-    // Click toggles a popover above with 3 items (Tài khoản · Cài đặt ·
-    // Đăng xuất). Clicking outside the popover closes it.
+    // Click toggles a popover above (Tài khoản · Cài đặt · Ngôn ngữ ·
+    // Đăng xuất). The Ngôn ngữ row expands inline to switch language without
+    // leaving the menu. Clicking outside the popover closes it.
     component AvatarPivot: Item {
         id: pivot
         property bool open: false
+        // Inline language sub-menu state. Collapses whenever the popover
+        // closes so the menu always reopens in its compact form.
+        property bool langExpanded: false
+        onOpenChanged: if (!open) langExpanded = false
 
         // Avatar button (always visible)
         Rectangle {
@@ -594,7 +617,11 @@ Rectangle {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 0
+                    // 4 px between the two text lines — at spacing 0 the
+                    // mono subtitle ascended into the sans username on tall
+                    // fonts (Aurora's font stack varies by OS) and looked
+                    // crushed even when no real overlap occurred.
+                    spacing: 4
                     Text {
                         Layout.fillWidth: true
                         text: root.userName.length > 0 ? root.userName : qsTr("Người dùng")
@@ -606,20 +633,20 @@ Rectangle {
                     }
                     Text {
                         Layout.fillWidth: true
-                        // Combine VIP label + storage strip so the user gets
-                        // both their tier and "287 / 1024 GB" in a single
-                        // mono line. Falls back gracefully when fields are
-                        // empty (pre-/profile state).
-                        text: {
-                            const tier = root.vipLabel.length > 0 ? root.vipLabel : qsTr("Miễn phí");
-                            const used = root.storageUsedText;
-                            const total = root.storageTotalText;
-                            if (used.length === 0 && total.length === 0) return tier;
-                            return tier + " · " + used + (total.length > 0 ? " / " + total : "");
-                        }
+                        // Tier + expiry only. Storage figure was dropped: it
+                        // duplicates the (much clearer) info on the Account
+                        // page, and in this 240 px column it forced the tier
+                        // string to elide as soon as a meaningful "287 MB /
+                        // 1.5 TB" was appended, hiding the expiry the user
+                        // actually cares about here. While /profile is in
+                        // flight we render an em-dash so the line doesn't
+                        // briefly show "Miễn phí" then flip to the real tier.
+                        text: !root._profileResolved
+                              ? "—"
+                              : (root.vipLabel.length > 0 ? root.vipLabel : qsTr("Miễn phí"))
                         color: AuroraTheme.sidebarInk4
                         font.family: AuroraTheme.fontMono
-                        font.pixelSize: 10
+                        font.pixelSize: 11
                         elide: Text.ElideRight
                     }
                 }
@@ -694,8 +721,32 @@ Rectangle {
                 PopItem {
                     icon: "gear"
                     label: qsTr("Cài đặt")
-                    hint: "Ctrl ,"
                     onActivated: { pivot.open = false; root.navClicked(Pages.settings); }
+                }
+
+                // Ngôn ngữ — expands inline to switch language right here,
+                // without navigating away. The hint shows the current choice.
+                PopItem {
+                    icon: "globe"
+                    label: qsTr("Ngôn ngữ")
+                    hint: languageViewModel ? languageViewModel.displayName : ""
+                    onActivated: pivot.langExpanded = !pivot.langExpanded
+                }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    visible: pivot.langExpanded
+                    spacing: 2
+                    Repeater {
+                        model: languageViewModel ? languageViewModel.availableLanguages : []
+                        delegate: LangChoice {
+                            code: modelData.code
+                            name: modelData.name
+                            onSelected: {
+                                if (languageViewModel) languageViewModel.language = code;
+                                pivot.open = false;
+                            }
+                        }
+                    }
                 }
 
                 // Free-tier popover gets an extra "Nâng cấp" item — gives
@@ -796,6 +847,61 @@ Rectangle {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: popItem.activated()
+        }
+    }
+
+    // ── Language choice row (inline sub-item) ───────────────────────────
+    // Indented under the "Ngôn ngữ" entry. The active language is marked
+    // with the accent colour + a check. Selecting one switches immediately
+    // and closes the popover.
+    component LangChoice: Rectangle {
+        id: lc
+        property string code: ""
+        property string name: ""
+        readonly property bool active: languageViewModel
+                                       && languageViewModel.language === code
+        signal selected()
+
+        Layout.fillWidth: true
+        Layout.preferredHeight: 34
+        radius: 8
+        color: lcMa.containsMouse ? AuroraTheme.sidebarBgHover : "transparent"
+        Behavior on color { enabled: !AuroraTheme.reduceMotion
+            ColorAnimation { duration: AuroraTheme.durFast } }
+
+        RowLayout {
+            anchors.fill: parent
+            // 42px = PopItem left margin (14) + icon (16) + spacing (12) so
+            // the choice text aligns under the parent row's label.
+            anchors.leftMargin: 42
+            anchors.rightMargin: 14
+            spacing: 8
+            Text {
+                Layout.fillWidth: true
+                text: lc.name
+                color: lc.active ? AuroraTheme.accent
+                                 : (lcMa.containsMouse ? AuroraTheme.sidebarInk
+                                                       : AuroraTheme.sidebarInk2)
+                font.family: AuroraTheme.fontSans
+                font.pixelSize: 13
+                font.weight: lc.active ? Font.DemiBold : Font.Normal
+            }
+            Fsh.FsIcon {
+                visible: lc.active
+                name: "check"
+                sizePx: 14
+                Layout.preferredWidth: 14
+                Layout.preferredHeight: 14
+                color: AuroraTheme.accent
+            }
+        }
+
+        MouseArea {
+            id: lcMa
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: lc.selected()
         }
     }
 }

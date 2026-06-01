@@ -60,6 +60,14 @@ static constexpr int MAX_SINGLE_RETRIES  = 5;
 // Flush the resume journal to disk at most this often during a transfer.
 static constexpr qint64 SIDECAR_FLUSH_MS = 1000;
 
+// Stall detection — when an active transfer drops below 1 KB/s for this many
+// seconds, libcurl aborts the segment with CURLE_OPERATION_TIMEDOUT. The
+// existing retry/re-resolve machinery picks it up and resumes from the
+// committed offset, so a dead TCP connection no longer wedges the download
+// forever (Windows servers occasionally drop a connection without RST/FIN).
+static constexpr long LOW_SPEED_LIMIT_BPS = 1024;
+static constexpr long LOW_SPEED_TIME_SEC  = 60;
+
 // Short Vietnamese description for the few HTTP statuses our error messages
 // surface. Anything outside the map falls back to "Mã HTTP %1".
 static QString httpCodeDescription(long httpCode)
@@ -500,6 +508,9 @@ bool DownloadEngine::downloadMultiSegment(const QString &url, const QString &loc
         curl_easy_setopt(h, CURLOPT_TCP_KEEPALIVE, 1L);
         curl_easy_setopt(h, CURLOPT_TCP_KEEPIDLE, 120L);
         curl_easy_setopt(h, CURLOPT_TCP_KEEPINTVL, 60L);
+        // Stall guard — abort the segment if throughput is dead for too long.
+        curl_easy_setopt(h, CURLOPT_LOW_SPEED_LIMIT, LOW_SPEED_LIMIT_BPS);
+        curl_easy_setopt(h, CURLOPT_LOW_SPEED_TIME,  LOW_SPEED_TIME_SEC);
         return h;
     };
 
@@ -842,6 +853,9 @@ bool DownloadEngine::downloadSingleSegment(const QString &url, const QString &lo
         curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
         curl_easy_setopt(curl, CURLOPT_TCP_KEEPIDLE, 120L);
         curl_easy_setopt(curl, CURLOPT_TCP_KEEPINTVL, 60L);
+        // Stall guard — abort if the stream goes silent (kicks the retry loop).
+        curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, LOW_SPEED_LIMIT_BPS);
+        curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME,  LOW_SPEED_TIME_SEC);
         if (resumeFrom > 0)
             curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, static_cast<curl_off_t>(resumeFrom));
 

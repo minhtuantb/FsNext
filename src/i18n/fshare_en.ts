@@ -6,248 +6,249 @@
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="12"/>
         <source>Thêm thư mục đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Add Sync Folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="95"/>
         <source>Thư mục trên máy tính</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder on this computer</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="96"/>
         <source>Chọn thư mục để đồng bộ tự động</source>
-        <translation type="unfinished"></translation>
+        <translation>Choose a folder to sync automatically</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="111"/>
         <source>Thư mục đích trên Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Destination folder on Fshare</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="163"/>
         <source>Thư mục trên Fshare sẽ được tạo tự động theo tên thư mục đã chọn.</source>
-        <translation type="unfinished"></translation>
+        <translation>A folder will be created on Fshare automatically using the selected folder's name.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="222"/>
         <source>Theo dõi thư mục con</source>
-        <translation type="unfinished"></translation>
+        <translation>Include subfolders</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="223"/>
         <source>Bao gồm file trong các thư mục con</source>
-        <translation type="unfinished"></translation>
+        <translation>Include files in subfolders</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="233"/>
         <source>Xóa file local sau khi tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete local files after upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="234"/>
         <source>File sẽ bị xóa khỏi máy tính sau khi upload thành công và được xác nhận trên Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Files are removed from this computer after a successful upload is confirmed on Fshare</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="263"/>
         <source>File sẽ bị xóa vĩnh viễn khỏi máy tính sau khi upload thành công. Hành động này không thể hoàn tác. Đảm bảo bạn có bản sao lưu nếu cần.</source>
-        <translation type="unfinished"></translation>
+        <translation>Files will be permanently deleted from this computer after a successful upload. This action cannot be undone. Make sure you have a backup if needed.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="283"/>
         <source>Bỏ qua file theo mẫu</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignore files by pattern</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="292"/>
         <source>Mỗi mẫu cách nhau bởi dấu phẩy</source>
-        <translation type="unfinished"></translation>
+        <translation>Separate patterns with commas</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="331"/>
         <source>Đang quét thư mục...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanning folder…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="332"/>
         <source>Sẽ quét %1 file (%2) trong thư mục này.
 %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Will scan %1 file(s) (%2) in this folder.
+%3</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="335"/>
         <source>Quá trình tải lên sẽ bắt đầu sau khi thêm.</source>
-        <translation type="unfinished"></translation>
+        <translation>The upload will start once added.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="361"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="361"/>
         <source>Quay lại</source>
-        <translation type="unfinished"></translation>
+        <translation>Back</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="371"/>
         <source>Tiếp tục</source>
-        <translation type="unfinished"></translation>
+        <translation>Continue</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="371"/>
         <source>Thêm</source>
-        <translation type="unfinished"></translation>
+        <translation>Add</translation>
     </message>
 </context>
 <context>
     <name>DownloadPage</name>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="766"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="774"/>
         <source>Tải xuống</source>
         <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="283"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="291"/>
         <source>Đang tải</source>
         <translation>Active</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="284"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="292"/>
         <source>Lịch sử</source>
         <translation>History</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="355"/>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="760"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="363"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="768"/>
         <source>Huỷ</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="548"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="556"/>
         <source>Thêm tải xuống</source>
         <translation>Add Download</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="337"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="345"/>
         <source>Đang quét thư mục &quot;%1&quot;…</source>
         <translation>Scanning folder &quot;%1&quot;…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="258"/>
-        <source>Xoá lịch sử</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="266"/>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="384"/>
+        <source>Xoá lịch sử</source>
+        <translation>Clear history</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="274"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="392"/>
         <source>Thêm URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Add URL</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="295"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="303"/>
         <source>Mẹo: kéo thả link Fshare vào cửa sổ hoặc Ctrl+V</source>
-        <translation type="unfinished"></translation>
+        <translation>Tip: drag and drop a Fshare link into the window, or press Ctrl+V</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="346"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="354"/>
         <source>Đã tìm thấy %1 file</source>
         <translation>Found %1 file(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="244"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="252"/>
         <source>Tạm dừng tất cả</source>
         <translation>Pause All</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="244"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="252"/>
         <source>Tiếp tục tất cả</source>
         <translation>Resume All</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="382"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="390"/>
         <source>Chưa có tác vụ tải xuống</source>
         <translation>No active downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="383"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="391"/>
         <source>Dán link Fshare để bắt đầu tải.</source>
         <translation>Paste a Fshare link to start downloading.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="393"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="401"/>
         <source>Chưa có lịch sử tải xuống</source>
         <translation>No download history</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="394"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="402"/>
         <source>Các file đã tải xong sẽ hiển thị ở đây.</source>
         <translation>Completed downloads will appear here.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="504"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="512"/>
         <source>Đang tải thêm…</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading more…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="536"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="544"/>
         <source>Không thể tải vào thư mục hệ thống</source>
         <translation>Cannot download to a system folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="581"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="589"/>
         <source>LINK FSHARE</source>
-        <translation type="unfinished"></translation>
+        <translation>FSHARE LINK</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="666"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="674"/>
         <source>thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="676"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="684"/>
         <source>⚠ %1 link không hợp lệ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="703"/>
-        <source>Link thư mục sẽ được quét tự động</source>
-        <translation type="unfinished"></translation>
+        <translation>⚠ %1 invalid link(s)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="711"/>
-        <source>Tất cả file trong thư mục (bao gồm thư mục con) sẽ được thêm vào hàng đợi tải xuống.</source>
-        <translation type="unfinished"></translation>
+        <source>Link thư mục sẽ được quét tự động</source>
+        <translation>Folder links are scanned automatically</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="614"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="719"/>
+        <source>Tất cả file trong thư mục (bao gồm thư mục con) sẽ được thêm vào hàng đợi tải xuống.</source>
+        <translation>All files in the folder (including subfolders) will be added to the download queue.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="622"/>
         <source>Dán link vào đây — mỗi link một dòng
 https://www.fshare.vn/file/…</source>
         <translation>Paste links here — one per line
 https://www.fshare.vn/file/…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="723"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="731"/>
         <source>Thư mục lưu</source>
         <translation>Save folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="725"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="733"/>
         <source>Để trống sẽ dùng thư mục mặc định.</source>
         <translation>Leave blank to use the default folder.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="726"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="734"/>
         <source>Chọn thư mục tải xuống</source>
         <translation>Choose download folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="733"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="741"/>
         <source>Mật khẩu (nếu có)</source>
         <translation>Password (optional)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="734"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="742"/>
         <source>Nhập mật khẩu nếu file được bảo vệ</source>
         <translation>Enter file password if protected</translation>
     </message>
@@ -256,265 +257,261 @@ https://www.fshare.vn/file/…</translation>
     <name>FavoritesPage</name>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="67"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1152"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1159"/>
         <source>Đã thêm vào tải về</source>
-        <translation type="unfinished"></translation>
+        <translation>Added to downloads</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="79"/>
         <source>Đang lấy link xem trực tiếp…</source>
-        <translation type="unfinished"></translation>
+        <translation>Getting streaming link…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="94"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1052"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1059"/>
         <source>Mở thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Open folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="105"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1067"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1074"/>
         <source>Xem trực tiếp</source>
-        <translation type="unfinished"></translation>
+        <translation>Stream</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="113"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1077"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1084"/>
         <source>Mở file</source>
-        <translation type="unfinished"></translation>
+        <translation>Open file</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="120"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1276"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1283"/>
         <source>Mở thư mục chứa</source>
-        <translation type="unfinished"></translation>
+        <translation>Open containing folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="130"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1104"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1111"/>
         <source>Sao chép link</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy link</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="137"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1117"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1124"/>
         <source>Mở trên Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Open on Fshare</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="142"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1131"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1138"/>
         <source>Tải về</source>
-        <translation type="unfinished"></translation>
+        <translation>Download</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="150"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1290"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1297"/>
         <source>Bỏ yêu thích</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="311"/>
-        <source>Bộ sưu tập cá nhân</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove from Favorites</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="312"/>
         <source>Yêu</source>
-        <translation type="unfinished"></translation>
+        <translation>Favorites</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="313"/>
         <source>thích.</source>
-        <translation type="unfinished"></translation>
+        <translation>.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="319"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="317"/>
         <source>Chưa có mục nào</source>
-        <translation type="unfinished"></translation>
+        <translation>No items yet</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="320"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="318"/>
         <source>%1 mục đã gắn sao</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 starred item(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="356"/>
-        <source>Lọc theo đuôi file (vd: mp4, pdf)...</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="363"/>
+        <source>Tìm theo tên file / thư mục…</source>
+        <translation>Search by file or folder name…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="383"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="390"/>
         <source>Làm mới</source>
-        <translation type="unfinished"></translation>
+        <translation>Refresh</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="454"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="461"/>
         <source>Về Yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Back to Favorites</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="549"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="556"/>
         <source>Đang tải danh sách yêu thích...</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading favorites…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="559"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="566"/>
         <source>Thư mục trống</source>
-        <translation type="unfinished"></translation>
+        <translation>Empty folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="560"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="567"/>
         <source>Chưa có mục yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>No favorites yet</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="562"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="569"/>
         <source>Thư mục này chưa có file nào.</source>
-        <translation type="unfinished"></translation>
+        <translation>This folder has no files yet.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="563"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="570"/>
         <source>Đánh dấu file hoặc thư mục yêu thích từ trang Quản lý file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mark files or folders as favorites from the Files page.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="590"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="597"/>
         <source>Tên</source>
-        <translation type="unfinished"></translation>
+        <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="600"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1186"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="607"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1193"/>
         <source>Kích thước</source>
-        <translation type="unfinished"></translation>
+        <translation>Size</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="859"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="866"/>
         <source>Chọn file hoặc thư mục
 để xem thông tin</source>
-        <translation type="unfinished"></translation>
+        <translation>Select a file or folder
+to view details</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="891"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="898"/>
         <source>THÔNG TIN</source>
-        <translation type="unfinished"></translation>
+        <translation>DETAILS</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="946"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="953"/>
         <source>%1 mục đã chọn</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s) selected</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="964"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="971"/>
         <source>%1 thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 folder(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="965"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="972"/>
         <source>%1 tệp</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 file(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1021"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1028"/>
         <source>Thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1090"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1097"/>
         <source>THAO TÁC</source>
-        <translation type="unfinished"></translation>
+        <translation>ACTIONS</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1130"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1137"/>
         <source>Tải về %1 mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Download %1 item(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1153"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1160"/>
         <source>%1 mục đã xếp hàng</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s) queued</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1170"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1177"/>
         <source>CHI TIẾT</source>
-        <translation type="unfinished"></translation>
+        <translation>DETAILS</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1207"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1214"/>
         <source>Ngày tạo</source>
-        <translation type="unfinished"></translation>
+        <translation>Created</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1226"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1233"/>
         <source>Sửa đổi</source>
-        <translation type="unfinished"></translation>
+        <translation>Modified</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1245"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1252"/>
         <source>Lượt tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1289"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1296"/>
         <source>Bỏ yêu thích %1 mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove %1 item(s) from Favorites</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1323"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1330"/>
         <source>Xác nhận xóa</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirm deletion</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1324"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1331"/>
         <source>Bạn có chắc chắn muốn xóa %1 mục đã chọn? Thao tác này không thể hoàn tác.</source>
-        <translation type="unfinished"></translation>
+        <translation>Are you sure you want to delete %1 selected item(s)? This action cannot be undone.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1326"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1333"/>
         <source>Xóa</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1355"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1362"/>
         <source>Đã sao chép</source>
-        <translation type="unfinished"></translation>
+        <translation>Copied</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1356"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1363"/>
         <source>%1 link đã được sao chép vào clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 link(s) copied to clipboard</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1361"/>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1388"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1368"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1395"/>
         <source>Lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1361"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1368"/>
         <source>Thành công</source>
-        <translation type="unfinished"></translation>
+        <translation>Success</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1375"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1382"/>
         <source>Đang phát</source>
-        <translation type="unfinished"></translation>
+        <translation>Playing</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1376"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1383"/>
         <source>Đã mở trình phát mặc định</source>
-        <translation type="unfinished"></translation>
+        <translation>Opened in the default player</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1379"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1386"/>
         <source>Link tải sẵn sàng</source>
-        <translation type="unfinished"></translation>
+        <translation>Download link ready</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1380"/>
+        <location filename="../../qml/Fshare/Pages/FavoritesPage.qml" line="1387"/>
         <source>Đã sao chép vào clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Copied to clipboard</translation>
     </message>
 </context>
 <context>
@@ -522,37 +519,37 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="28"/>
         <source>Xác nhận xoá</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirm deletion</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="51"/>
         <source>Bạn có chắc muốn xoá mục này?</source>
-        <translation type="unfinished"></translation>
+        <translation>Are you sure you want to delete this item?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="52"/>
         <source>Bạn có chắc muốn xoá %1 mục?</source>
-        <translation type="unfinished"></translation>
+        <translation>Are you sure you want to delete %1 item(s)?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="77"/>
         <source>Thư mục sẽ bị xoá cùng toàn bộ nội dung bên trong.</source>
-        <translation type="unfinished"></translation>
+        <translation>The folder and all its contents will be deleted.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="88"/>
         <source>Hành động này không thể hoàn tác.</source>
-        <translation type="unfinished"></translation>
+        <translation>This action cannot be undone.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="109"/>
         <source>Huỷ</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileDeleteDialog.qml" line="114"/>
         <source>Xoá</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete</translation>
     </message>
 </context>
 <context>
@@ -560,52 +557,52 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="46"/>
         <source>Chi tiết file chia sẻ</source>
-        <translation type="unfinished"></translation>
+        <translation>Shared file details</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="133"/>
         <source>Đang lấy thông tin file…</source>
-        <translation type="unfinished"></translation>
+        <translation>Getting file details…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="199"/>
         <source>lượt tải</source>
-        <translation type="unfinished"></translation>
+        <translation>downloads</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="227"/>
         <source>File có mật khẩu</source>
-        <translation type="unfinished"></translation>
+        <translation>Password-protected file</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="254"/>
         <source>Mật khẩu</source>
-        <translation type="unfinished">Password</translation>
+        <translation>Password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="263"/>
         <source>Nhập mật khẩu để mở file</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter the password to open the file</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="277"/>
         <source>▶  Xem trực tiếp</source>
-        <translation type="unfinished"></translation>
+        <translation>▶  Stream</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="284"/>
         <source>⬇  Tải về máy</source>
-        <translation type="unfinished"></translation>
+        <translation>⬇  Download</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="295"/>
         <source>⎘  Sao chép link</source>
-        <translation type="unfinished"></translation>
+        <translation>⎘  Copy link</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FileDetailSheet.qml" line="301"/>
         <source>↗  Mở trên fshare.vn</source>
-        <translation type="unfinished"></translation>
+        <translation>↗  Open on fshare.vn</translation>
     </message>
 </context>
 <context>
@@ -614,417 +611,398 @@ https://www.fshare.vn/file/…</translation>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerBreadcrumb.qml" line="78"/>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerBreadcrumb.qml" line="111"/>
         <source>Về trang chủ</source>
-        <translation type="unfinished"></translation>
+        <translation>Back to home</translation>
     </message>
 </context>
 <context>
     <name>FileManagerHeader</name>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManager/FileManagerHeader.qml" line="14"/>
-        <source>My Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerHeader.qml" line="15"/>
-        <source>Files</source>
-        <translation type="unfinished"></translation>
+        <source>My Files</source>
+        <translation>My Files</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManager/FileManagerHeader.qml" line="24"/>
-        <source>Thư mục gốc</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../qml/Fshare/Pages/FileManager/FileManagerHeader.qml" line="16"/>
+        <source>Files</source>
+        <translation>Files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerHeader.qml" line="25"/>
+        <source>Thư mục gốc</source>
+        <translation>Root folder</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/FileManager/FileManagerHeader.qml" line="26"/>
         <source>%1 mục</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s)</translation>
     </message>
 </context>
 <context>
     <name>FileManagerPage</name>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="58"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="64"/>
         <source>Đang lấy link xem trực tiếp...</source>
-        <translation type="unfinished"></translation>
+        <translation>Getting streaming link…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="82"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="88"/>
         <source>Rename</source>
-        <translation type="unfinished"></translation>
+        <translation>Rename</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="92"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="98"/>
         <source>Copy Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy Link</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="101"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1563"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="111"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1195"/>
+        <source>Tải về</source>
+        <translation>Download</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="123"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1545"/>
         <source>Mở thư mục chứa</source>
-        <translation type="unfinished"></translation>
+        <translation>Open containing folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="109"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1554"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="131"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1536"/>
         <source>Mở file</source>
-        <translation type="unfinished"></translation>
+        <translation>Open file</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="118"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="140"/>
         <source>Move to...</source>
-        <translation type="unfinished"></translation>
+        <translation>Move to...</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="127"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="149"/>
         <source>Copy to...</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy to...</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="137"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="159"/>
         <source>Remove Secure</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove Secure</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="137"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="159"/>
         <source>Secure File</source>
-        <translation type="unfinished"></translation>
+        <translation>Secure File</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="145"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="167"/>
         <source>Set Password...</source>
-        <translation type="unfinished"></translation>
+        <translation>Set Password...</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="154"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="176"/>
         <source>Disable Direct Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Disable Direct Link</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="154"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="176"/>
         <source>Enable Direct Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Enable Direct Link</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="163"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1108"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="185"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1118"/>
         <source>Mở thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Open folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="177"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1127"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="199"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1137"/>
         <source>Xem trực tiếp</source>
-        <translation type="unfinished"></translation>
+        <translation>Stream</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="186"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1301"/>
-        <source>Sao chép link xem trực tiếp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="197"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="207"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="466"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="476"/>
         <source>Loading files...</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading files...</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="474"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="484"/>
         <source>No files in this folder</source>
-        <translation type="unfinished"></translation>
+        <translation>No files in this folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="475"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="485"/>
         <source>Upload files or create a new folder to get started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="505"/>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload files or create a new folder to get started.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="515"/>
-        <source>Size</source>
-        <translation type="unfinished"></translation>
+        <source>Name</source>
+        <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="908"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="525"/>
+        <source>Size</source>
+        <translation>Size</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="918"/>
         <source>Chọn file hoặc thư mục
 để xem thông tin</source>
-        <translation type="unfinished"></translation>
+        <translation>Select a file or folder
+to view details</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="940"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="950"/>
         <source>Thông tin</source>
-        <translation type="unfinished">About</translation>
+        <translation>About</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="993"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1003"/>
         <source>%1 mục đã chọn</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s) selected</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1012"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1022"/>
         <source>%1 thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 folder(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1013"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1023"/>
         <source>%1 tệp</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 file(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1071"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1081"/>
         <source>Thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1127"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1137"/>
         <source>Phát</source>
-        <translation type="unfinished"></translation>
+        <translation>Play</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1143"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1153"/>
         <source>THAO TÁC</source>
-        <translation type="unfinished"></translation>
+        <translation>ACTIONS</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1162"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1173"/>
         <source>Di chuyển</source>
-        <translation type="unfinished"></translation>
+        <translation>Move</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1171"/>
-        <source>Sao chép</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1187"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1214"/>
         <source>Sao chép link</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy link</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1201"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1228"/>
         <source>Đặt mật khẩu</source>
-        <translation type="unfinished"></translation>
+        <translation>Set password</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1221"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1250"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1248"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1277"/>
         <source>Tắt bảo mật</source>
-        <translation type="unfinished"></translation>
+        <translation>Disable security</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1221"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1242"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1248"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1269"/>
         <source>Bật bảo mật</source>
-        <translation type="unfinished"></translation>
+        <translation>Enable security</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1274"/>
-        <source>Chia sẻ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1278"/>
-        <source>Link đã được sao chép — gửi cho người nhận</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1326"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1308"/>
         <source>CHI TIẾT</source>
-        <translation type="unfinished"></translation>
+        <translation>DETAILS</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1343"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1325"/>
         <source>Kích thước</source>
-        <translation type="unfinished"></translation>
+        <translation>Size</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1365"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1347"/>
         <source>Ngày tạo</source>
-        <translation type="unfinished"></translation>
+        <translation>Created</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1385"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1367"/>
         <source>Sửa đổi</source>
-        <translation type="unfinished"></translation>
+        <translation>Modified</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1405"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1387"/>
         <source>Lượt tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1433"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1415"/>
         <source>BẢO MẬT</source>
-        <translation type="unfinished"></translation>
+        <translation>SECURITY</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1457"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1439"/>
         <source>Secure: Bật</source>
-        <translation type="unfinished"></translation>
+        <translation>Secure: On</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1457"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1439"/>
         <source>Secure: Tắt</source>
-        <translation type="unfinished"></translation>
+        <translation>Secure: Off</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1478"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1460"/>
         <source>Mật khẩu: Có</source>
-        <translation type="unfinished"></translation>
+        <translation>Password: Yes</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1478"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1460"/>
         <source>Mật khẩu: Không</source>
-        <translation type="unfinished"></translation>
+        <translation>Password: No</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1500"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1482"/>
         <source>Direct link: Bật</source>
-        <translation type="unfinished"></translation>
+        <translation>Direct link: On</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1500"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1482"/>
         <source>Direct link: Tắt</source>
-        <translation type="unfinished"></translation>
+        <translation>Direct link: Off</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1505"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1487"/>
         <source>Tắt</source>
-        <translation type="unfinished"></translation>
+        <translation>Off</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1505"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1487"/>
         <source>Bật</source>
-        <translation type="unfinished"></translation>
+        <translation>On</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1539"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1521"/>
         <source>Đổi tên</source>
-        <translation type="unfinished"></translation>
+        <translation>Rename</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1576"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1558"/>
         <source>Xoá %1 mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete %1 item(s)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1577"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1559"/>
         <source>Xoá</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1630"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1612"/>
         <source>Link copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Link copied to clipboard</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1631"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1613"/>
         <source>%1 links copied to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 links copied to clipboard</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1658"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1640"/>
         <source>Đang phát</source>
-        <translation type="unfinished"></translation>
+        <translation>Playing</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1659"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1641"/>
         <source>Trình phát mặc định đã khởi chạy</source>
-        <translation type="unfinished"></translation>
+        <translation>Opened in the default player</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1662"/>
-        <source>Stream link đã được sao chép</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1668"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1647"/>
         <source>Không thể lấy stream link</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to get the streaming link</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1746"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1725"/>
         <source>Tạo thư mục mới</source>
-        <translation type="unfinished"></translation>
+        <translation>New folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1762"/>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1765"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1741"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1744"/>
         <source>Thư mục gốc</source>
-        <translation type="unfinished"></translation>
+        <translation>Root folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1788"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1767"/>
         <source>Tên thư mục không được để trống</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder name cannot be empty</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1792"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1771"/>
         <source>Tên thư mục quá dài (tối đa 255 ký tự)</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder name is too long (255 characters max)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1800"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1779"/>
         <source>Không dùng các ký tự: &lt; &gt; : &quot; /  | ? *</source>
-        <translation type="unfinished"></translation>
+        <translation>Do not use these characters: &lt; &gt; : " /  | ? *</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1804"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1783"/>
         <source>Tên không được bắt đầu hoặc kết thúc bằng dấu chấm</source>
-        <translation type="unfinished"></translation>
+        <translation>Name cannot start or end with a period</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1811"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1790"/>
         <source>Tên này là tên dành riêng của hệ thống</source>
-        <translation type="unfinished"></translation>
+        <translation>This name is reserved by the system</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1820"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1799"/>
         <source>Đã tồn tại thư mục cùng tên ở đây</source>
-        <translation type="unfinished"></translation>
+        <translation>A folder with this name already exists here</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1889"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1868"/>
         <source>TẠO TRONG</source>
-        <translation type="unfinished"></translation>
+        <translation>CREATE IN</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1930"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1909"/>
         <source>Tạo bên trong thư mục đã chọn &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Create inside the selected folder "%1"</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1945"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1924"/>
         <source>Tên thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder name</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1946"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1925"/>
         <source>VD: Tài liệu 2026</source>
-        <translation type="unfinished"></translation>
+        <translation>e.g. Documents 2026</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1948"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1927"/>
         <source>Tránh dùng các ký tự &lt; &gt; : &quot; /  | ? *</source>
-        <translation type="unfinished"></translation>
+        <translation>Avoid these characters: &lt; &gt; : " /  | ? *</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1972"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1951"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1976"/>
+        <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1955"/>
         <source>Tạo thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Create folder</translation>
     </message>
 </context>
 <context>
@@ -1032,17 +1010,17 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerToolbar.qml" line="74"/>
         <source>Search files...</source>
-        <translation type="unfinished"></translation>
+        <translation>Search files...</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerToolbar.qml" line="84"/>
         <source>New Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>New Folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileManagerToolbar.qml" line="92"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Refresh</translation>
     </message>
 </context>
 <context>
@@ -1052,42 +1030,42 @@ https://www.fshare.vn/file/…</translation>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="41"/>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="141"/>
         <source>My Files</source>
-        <translation type="unfinished"></translation>
+        <translation>My Files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="34"/>
         <source>Move to...</source>
-        <translation type="unfinished"></translation>
+        <translation>Move to...</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="34"/>
         <source>Copy to...</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy to...</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="125"/>
         <source>My Files (root)</source>
-        <translation type="unfinished"></translation>
+        <translation>My Files (root)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="209"/>
         <source>%1 item(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="216"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="218"/>
         <source>Move Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Move Here</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileMoveCopyDialog.qml" line="218"/>
         <source>Copy Here</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy Here</translation>
     </message>
 </context>
 <context>
@@ -1095,38 +1073,38 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="29"/>
         <source>Set File Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Set File Password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="53"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="54"/>
         <source>Enter password for this file</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter password for this file</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="77"/>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="117"/>
         <source>Remove existing password</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove existing password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="145"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="148"/>
         <source>Remove Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove Password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FilePasswordDialog.qml" line="148"/>
         <source>Set Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Set Password</translation>
     </message>
 </context>
 <context>
@@ -1134,47 +1112,47 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="42"/>
         <source>Rename Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Rename Folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="42"/>
         <source>Rename File</source>
-        <translation type="unfinished"></translation>
+        <translation>Rename File</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="72"/>
         <source>Folder name</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder name</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="72"/>
         <source>File name</source>
-        <translation type="unfinished"></translation>
+        <translation>File name</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="77"/>
         <source>Name cannot contain: /  : * ? &quot; &lt; &gt; | , ! &apos; ` — # $ % ^ &amp; ~ = + @</source>
-        <translation type="unfinished"></translation>
+        <translation>Name cannot contain: /  : * ? " &lt; &gt; | , ! ' ` — # $ % ^ &amp; ~ = + @</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="79"/>
         <source>Name must be 100 characters or fewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Name must be 100 characters or fewer</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="88"/>
         <source>%1 / 100</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 / 100</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="111"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="117"/>
         <source>Rename</source>
-        <translation type="unfinished"></translation>
+        <translation>Rename</translation>
     </message>
 </context>
 <context>
@@ -1182,90 +1160,82 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="48"/>
         <source>Duyệt folder chia sẻ</source>
-        <translation type="unfinished"></translation>
+        <translation>Browse shared folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="109"/>
         <source>Folder chia sẻ</source>
-        <translation type="unfinished"></translation>
+        <translation>Shared folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="121"/>
         <source>Đang tải…</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="179"/>
         <source>Quay lại</source>
-        <translation type="unfinished"></translation>
+        <translation>Back</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="215"/>
         <source>%1 mục</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="239"/>
         <source>Chọn tất cả file</source>
-        <translation type="unfinished"></translation>
+        <translation>Select all files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="273"/>
         <source>Đã chọn %1 file</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 file(s) selected</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="279"/>
         <source>Bỏ chọn</source>
-        <translation type="unfinished"></translation>
+        <translation>Deselect</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="282"/>
         <source>Tải các file đã chọn</source>
-        <translation type="unfinished"></translation>
+        <translation>Download selected files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="409"/>
         <source>Mật khẩu</source>
-        <translation type="unfinished">Password</translation>
+        <translation>Password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="418"/>
         <source>Thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="432"/>
         <source>Xem chi tiết</source>
-        <translation type="unfinished"></translation>
+        <translation>View details</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="445"/>
         <source>Tải về</source>
-        <translation type="unfinished"></translation>
+        <translation>Download</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="448"/>
         <source>Sao chép link</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy link</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="456"/>
         <source>Tải cả folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Download entire folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/FolderBrowserDialog.qml" line="512"/>
         <source>Folder trống</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FsActivityRow</name>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsActivityRow.qml" line="82"/>
-        <source>Đang tải… %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>Empty folder</translation>
     </message>
 </context>
 <context>
@@ -1273,12 +1243,12 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsCommandPalette.qml" line="119"/>
         <source>Gõ để tìm lệnh…</source>
-        <translation type="unfinished"></translation>
+        <translation>Type to search commands…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsCommandPalette.qml" line="205"/>
         <source>Không có lệnh phù hợp</source>
-        <translation type="unfinished"></translation>
+        <translation>No matching commands</translation>
     </message>
 </context>
 <context>
@@ -1286,12 +1256,12 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsConfirmDialog.qml" line="23"/>
         <source>Xác nhận</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirm</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsConfirmDialog.qml" line="24"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
     </message>
 </context>
 <context>
@@ -1299,12 +1269,12 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsFolderPicker.qml" line="29"/>
         <source>Choose folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Choose folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsFolderPicker.qml" line="118"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Browse</translation>
     </message>
 </context>
 <context>
@@ -1312,64 +1282,64 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="135"/>
         <source>Kéo trái/phải hoặc click chấm để đổi dạng HUD</source>
-        <translation type="unfinished"></translation>
+        <translation>Drag left/right or click a dot to switch HUD layout</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="329"/>
         <source>TỐC ĐỘ</source>
-        <translation type="unfinished"></translation>
+        <translation>SPEED</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="338"/>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="748"/>
         <source>LIVE</source>
-        <translation type="unfinished"></translation>
+        <translation>LIVE</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="338"/>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="748"/>
         <source>IDLE</source>
-        <translation type="unfinished"></translation>
+        <translation>IDLE</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="582"/>
         <source>ĐANG TẢI LÊN</source>
-        <translation type="unfinished"></translation>
+        <translation>UPLOADING</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="583"/>
         <source>ĐANG TẢI XUỐNG</source>
-        <translation type="unfinished"></translation>
+        <translation>DOWNLOADING</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="583"/>
         <source>CHỜ</source>
-        <translation type="unfinished"></translation>
+        <translation>WAITING</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="607"/>
         <source>Không có tệp đang chạy</source>
-        <translation type="unfinished"></translation>
+        <translation>No active transfers</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="765"/>
         <source>DL</source>
-        <translation type="unfinished"></translation>
+        <translation>DL</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="766"/>
         <source>UL</source>
-        <translation type="unfinished"></translation>
+        <translation>UL</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="767"/>
         <source>ETA</source>
-        <translation type="unfinished"></translation>
+        <translation>ETA</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/FsMiniHud.qml" line="769"/>
         <source>HÔM NAY</source>
-        <translation type="unfinished"></translation>
+        <translation>TODAY</translation>
     </message>
 </context>
 <context>
@@ -1377,36 +1347,19 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsRemoteFolderTree.qml" line="47"/>
         <source>Đang tải thư mục...</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading folders…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsRemoteFolderTree.qml" line="164"/>
         <source>Tạo thư mục mới</source>
-        <translation type="unfinished"></translation>
+        <translation>New folder</translation>
     </message>
 </context>
 <context>
     <name>FsRenameDialog</name>
     <message>
-        <location filename="../../qml/Fshare/Components/FsRenameDialog.qml" line="18"/>
-        <source>Tên mới</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsRenameDialog.qml" line="19"/>
-        <source>Nhập tên…</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsRenameDialog.qml" line="23"/>
-        <location filename="../../qml/Fshare/Components/FsRenameDialog.qml" line="72"/>
-        <source>Đổi tên</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsRenameDialog.qml" line="67"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation type="obsolete">Cancel</translation>
     </message>
 </context>
 <context>
@@ -1414,143 +1367,115 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsSelect.qml" line="31"/>
         <source>Chọn...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FsShareDialog</name>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsShareDialog.qml" line="26"/>
-        <source>Chia sẻ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsShareDialog.qml" line="68"/>
-        <source>Liên kết chia sẻ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsShareDialog.qml" line="74"/>
-        <source>Sao chép</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsShareDialog.qml" line="84"/>
-        <source>File được bảo vệ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsShareDialog.qml" line="85"/>
-        <source>Người nhận sẽ cần mật khẩu để tải file này.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsShareDialog.qml" line="101"/>
-        <source>Đóng</source>
-        <translation type="unfinished"></translation>
+        <translation>Select…</translation>
     </message>
 </context>
 <context>
     <name>FsSidebar</name>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="197"/>
-        <source>Mở rộng sidebar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="163"/>
-        <source>Thu gọn sidebar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="600"/>
-        <source>Người dùng</source>
-        <translation type="unfinished">User</translation>
-    </message>
-    <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="614"/>
-        <source>Miễn phí</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="206"/>
-        <source>Trang chủ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="207"/>
-        <source>My Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="208"/>
+        <source>Mở rộng sidebar</source>
+        <translation>Expand sidebar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="174"/>
+        <source>Thu gọn sidebar</source>
+        <translation>Collapse sidebar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="627"/>
+        <source>Người dùng</source>
+        <translation>User</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="646"/>
+        <source>Miễn phí</source>
+        <translation>Free</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="217"/>
+        <source>Trang chủ</source>
+        <translation>Home</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="218"/>
+        <source>My Files</source>
+        <translation>My Files</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="219"/>
         <source>Yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Favorites</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="382"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="400"/>
         <source>Tài khoản</source>
-        <translation type="unfinished">Account</translation>
+        <translation>Account</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="691"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="718"/>
         <source>Thông tin tài khoản</source>
-        <translation type="unfinished"></translation>
+        <translation>Account information</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="696"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="723"/>
         <source>Cài đặt</source>
-        <translation type="unfinished">Settings</translation>
+        <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="233"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="244"/>
         <source>Tải xuống</source>
-        <translation type="unfinished">Downloads</translation>
+        <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="234"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="245"/>
         <source>Tải lên</source>
-        <translation type="unfinished">Uploads</translation>
+        <translation>Uploads</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="235"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="246"/>
         <source>Đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="294"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="308"/>
         <source>GIẢM 40%</source>
-        <translation type="unfinished"></translation>
+        <translation>40% OFF</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="302"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="316"/>
         <source>Nâng cấp VIP Pro</source>
-        <translation type="unfinished"></translation>
+        <translation>Upgrade to VIP Pro</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="310"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="324"/>
         <source>1TB · tốc độ không giới hạn</source>
-        <translation type="unfinished"></translation>
+        <translation>1TB · unlimited speed</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="327"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="341"/>
         <source>Xem ưu đãi</source>
-        <translation type="unfinished"></translation>
+        <translation>View offer</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="707"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="731"/>
+        <source>Ngôn ngữ</source>
+        <translation>Language</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="758"/>
         <source>Nâng cấp tài khoản</source>
-        <translation type="unfinished"></translation>
+        <translation>Upgrade account</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="708"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="759"/>
         <source>VIP Pro</source>
-        <translation type="unfinished"></translation>
+        <translation>VIP Pro</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="722"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="773"/>
         <source>Đăng xuất</source>
-        <translation type="unfinished"></translation>
+        <translation>Sign out</translation>
     </message>
 </context>
 <context>
@@ -1558,77 +1483,77 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="80"/>
         <source>Đang chờ</source>
-        <translation type="unfinished"></translation>
+        <translation>Queued</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="81"/>
         <source>Đang tải</source>
-        <translation type="unfinished">Active</translation>
+        <translation>Active</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="82"/>
         <source>Đã tạm dừng</source>
-        <translation type="unfinished"></translation>
+        <translation>Paused</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="83"/>
         <source>Hoàn tất</source>
-        <translation type="unfinished"></translation>
+        <translation>Complete</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="84"/>
         <source>Lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="85"/>
         <source>Đã huỷ</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancelled</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="97"/>
         <source>vừa xong</source>
-        <translation type="unfinished"></translation>
+        <translation>just now</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="98"/>
         <source>%1 phút trước</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 minute(s) ago</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="99"/>
         <source>%1 giờ trước</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 hour(s) ago</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="357"/>
         <source>Sao chép liên kết chia sẻ</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy share link</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="380"/>
         <source>Mở liên kết trên Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Open link on Fshare</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="405"/>
         <source>Xem trong My Files</source>
-        <translation type="unfinished"></translation>
+        <translation>View in My Files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="428"/>
         <source>Xoá file cục bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete local file</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="505"/>
         <source>Xoá hiển thị</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove from list</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsTransferItem.qml" line="506"/>
         <source>Huỷ tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel upload</translation>
     </message>
 </context>
 <context>
@@ -1636,183 +1561,78 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="48"/>
         <source>/ (Thư mục gốc)</source>
-        <translation type="unfinished"></translation>
+        <translation>/ (Root folder)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="66"/>
         <source>Tải lên file</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="106"/>
         <source>Chọn file để tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Choose files to upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="185"/>
         <source>Kéo thả file vào đây</source>
-        <translation type="unfinished"></translation>
+        <translation>Drag and drop files here</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="196"/>
         <source>hoặc</source>
-        <translation type="unfinished"></translation>
+        <translation>or</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="201"/>
         <source>chọn từ máy tính</source>
-        <translation type="unfinished"></translation>
+        <translation>browse your computer</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="231"/>
         <source>%1 file được chọn</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 file(s) selected</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="238"/>
         <source>Xoá tất cả</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear all</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="334"/>
         <source>Tải vào:</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload to:</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="361"/>
         <source>Mật khẩu bảo vệ file (để trống nếu không cần)</source>
-        <translation type="unfinished"></translation>
+        <translation>File password (leave blank if not needed)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="382"/>
         <source>File riêng tư (chỉ bạn xem được)</source>
-        <translation type="unfinished"></translation>
+        <translation>Private file (visible only to you)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="402"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Components/FsUploadDialog.qml" line="407"/>
         <source>Bắt đầu tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Start upload</translation>
     </message>
 </context>
 <context>
     <name>FsWatchCard</name>
     <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="126"/>
-        <source>Hoạt động</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="127"/>
-        <source>Đang quét</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="128"/>
         <source>Đang tải</source>
-        <translation type="unfinished">Active</translation>
+        <translation type="obsolete">Active</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="129"/>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="373"/>
-        <source>Tạm dừng</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="130"/>
-        <source>Lỗi</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="131"/>
-        <source>Đã tắt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="165"/>
-        <source>Đang tải: %1 (%2/%3 file)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="176"/>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="218"/>
-        <source>%1 còn lại</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="217"/>
-        <source>%1 file đang chờ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="238"/>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="338"/>
-        <source>%1 file đã đồng bộ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="240"/>
-        <source>%1 đang chờ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="248"/>
-        <source>Theo dõi thư mục con</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="262"/>
-        <source>Cập nhật lần cuối: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="268"/>
-        <source>Xóa local: Có</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="268"/>
-        <source>Xóa local: Không</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="304"/>
-        <source>Đang quét thư mục...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="351"/>
-        <source>Thư mục không tìm thấy hoặc đã bị tắt.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="367"/>
-        <source>Quét lại</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="379"/>
-        <source>Tiếp tục</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="385"/>
-        <source>Thử lại</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="391"/>
-        <source>Bật lại</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Components/FsWatchCard.qml" line="398"/>
         <source>Cài đặt</source>
-        <translation type="unfinished">Settings</translation>
+        <translation type="obsolete">Settings</translation>
     </message>
 </context>
 <context>
@@ -1820,173 +1640,173 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="301"/>
         <source>Tìm file, folder, hoặc dán link Fshare…</source>
-        <translation type="unfinished"></translation>
+        <translation>Search files, folders, or paste a Fshare link…</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="389"/>
         <source>Cài đặt</source>
-        <translation type="unfinished">Settings</translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="409"/>
         <source>Tải lên</source>
-        <translation type="unfinished">Uploads</translation>
+        <translation>Uploads</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="589"/>
         <source>Chào </source>
-        <translation type="unfinished"></translation>
+        <translation>Hi, </translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="598"/>
         <source>tiếp tục?</source>
-        <translation type="unfinished"></translation>
+        <translation>shall we continue?</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="623"/>
         <source>Dán link &amp; tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Paste link &amp; download</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="624"/>
         <source>Paste link Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Paste a Fshare link</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="630"/>
         <source>Tải file lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload files</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="631"/>
         <source>Kéo-thả hoặc chọn</source>
-        <translation type="unfinished"></translation>
+        <translation>Drag and drop or browse</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="637"/>
         <source>Thêm folder sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Add sync folder</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="638"/>
         <source>2-way đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Two-way sync</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="644"/>
         <source>Tạo link chia sẻ</source>
-        <translation type="unfinished"></translation>
+        <translation>Create share link</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="645"/>
         <source>Password + hết hạn</source>
-        <translation type="unfinished"></translation>
+        <translation>Password + expiry</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="665"/>
         <source>Tiếp tục đang tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Resume in progress</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="681"/>
         <source>tải xuống</source>
-        <translation type="unfinished"></translation>
+        <translation>downloads</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="682"/>
         <source>tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>uploads</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="684"/>
         <source>tổng</source>
-        <translation type="unfinished"></translation>
+        <translation>total</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="769"/>
         <source>File gần đây</source>
-        <translation type="unfinished"></translation>
+        <translation>Recent files</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="780"/>
         <source>Tất cả</source>
-        <translation type="unfinished"></translation>
+        <translation>All</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="781"/>
         <source>Video</source>
-        <translation type="unfinished"></translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="782"/>
         <source>Tài liệu</source>
-        <translation type="unfinished"></translation>
+        <translation>Documents</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="783"/>
         <source>Ảnh</source>
-        <translation type="unfinished"></translation>
+        <translation>Photos</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="853"/>
         <source>Chưa có file nào gần đây</source>
-        <translation type="unfinished"></translation>
+        <translation>No recent files</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="861"/>
         <source>Các file tải xuống sẽ hiển thị ở đây.</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloaded files will appear here.</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1095"/>
         <source>Lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1096"/>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1212"/>
         <source>Tạm dừng</source>
-        <translation type="unfinished"></translation>
+        <translation>Paused</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1097"/>
         <source>Trong hàng đợi</source>
-        <translation type="unfinished"></translation>
+        <translation>Queued</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1098"/>
         <source>Đang tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Uploading</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1098"/>
         <source>Đang tải xuống</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloading</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1168"/>
         <source>còn </source>
-        <translation type="unfinished"></translation>
+        <translation>left </translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1351"/>
         <source>Đã tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Uploaded</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1351"/>
         <source>Đã tải về</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloaded</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1379"/>
         <source>Mở thư mục chứa</source>
-        <translation type="unfinished"></translation>
+        <translation>Open containing folder</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="1385"/>
         <source>Mở trên Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Open on Fshare</translation>
     </message>
 </context>
 <context>
@@ -1994,42 +1814,42 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="111"/>
         <source>Đang tìm…</source>
-        <translation type="unfinished"></translation>
+        <translation>Searching…</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="112"/>
         <source>Không có kết quả</source>
-        <translation type="unfinished"></translation>
+        <translation>No results</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="113"/>
         <source>Kết quả tìm kiếm</source>
-        <translation type="unfinished"></translation>
+        <translation>Search results</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="125"/>
         <source>%1 mục</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 item(s)</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="169"/>
         <source>Không tìm thấy &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>No results for "%1"</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="170"/>
         <source>Không tìm thấy kết quả</source>
-        <translation type="unfinished"></translation>
+        <translation>No results found</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="178"/>
         <source>Thử từ khoá khác hoặc dán link Fshare.</source>
-        <translation type="unfinished"></translation>
+        <translation>Try a different keyword or paste a Fshare link.</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="252"/>
         <source>Thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder</translation>
     </message>
 </context>
 <context>
@@ -2037,12 +1857,12 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="265"/>
         <source>Đăng ký ngay →</source>
-        <translation type="unfinished"></translation>
+        <translation>Sign up now →</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="486"/>
         <source>Quên mật khẩu?</source>
-        <translation type="unfinished"></translation>
+        <translation>Forgot password?</translation>
     </message>
 </context>
 <context>
@@ -2050,37 +1870,37 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Main.qml" line="403"/>
         <source>Không hỏi lại lần sau</source>
-        <translation type="unfinished"></translation>
+        <translation>Don't ask again</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="404"/>
         <source>Không hỏi lại (chỉ khi không có lượt chuyển)</source>
-        <translation type="unfinished"></translation>
+        <translation>Don't ask again (only when no transfers are running)</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="428"/>
         <source>Huỷ</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="434"/>
         <source>Thu nhỏ vào khay</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimize to tray</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="459"/>
         <source>Thoát hẳn</source>
-        <translation type="unfinished"></translation>
+        <translation>Quit</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="520"/>
         <source>Trang chủ</source>
-        <translation type="unfinished"></translation>
+        <translation>Home</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="520"/>
         <source>Mở dashboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Open dashboard</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="521"/>
@@ -2090,7 +1910,7 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Main.qml" line="521"/>
         <source>Mở trang tải xuống</source>
-        <translation type="unfinished"></translation>
+        <translation>Open downloads</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="522"/>
@@ -2100,17 +1920,17 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Main.qml" line="522"/>
         <source>Mở trang tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Open uploads</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="523"/>
         <source>Đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="523"/>
         <source>Mở trang đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Open sync</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="524"/>
@@ -2120,17 +1940,17 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Main.qml" line="524"/>
         <source>Mở trình quản lý file</source>
-        <translation type="unfinished"></translation>
+        <translation>Open file manager</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="525"/>
         <source>Yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Favorites</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="525"/>
         <source>Mở danh sách yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Open favorites</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="526"/>
@@ -2140,7 +1960,7 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Main.qml" line="526"/>
         <source>Mở thông tin tài khoản</source>
-        <translation type="unfinished"></translation>
+        <translation>Open account information</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="527"/>
@@ -2150,80 +1970,85 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Main.qml" line="527"/>
         <source>Mở trang cài đặt</source>
-        <translation type="unfinished"></translation>
+        <translation>Open settings</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="528"/>
         <source>Thêm tải xuống</source>
-        <translation type="unfinished">Add Download</translation>
+        <translation>Add Download</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="528"/>
         <source>Dán link Fshare để bắt đầu</source>
-        <translation type="unfinished"></translation>
+        <translation>Paste a Fshare link to start</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="529"/>
         <source>Đăng xuất</source>
-        <translation type="unfinished"></translation>
+        <translation>Sign out</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="529"/>
         <source>Đăng xuất khỏi Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Sign out of Fshare</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="796"/>
         <source>Thả file để tải lên · Thả link Fshare để tải xuống</source>
-        <translation type="unfinished"></translation>
+        <translation>Drop files to upload · Drop a Fshare link to download</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="878"/>
+        <location filename="../../qml/Main.qml" line="818"/>
+        <source>Đã thêm vào Tải về</source>
+        <translation>Added to downloads</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Main.qml" line="905"/>
         <source>Đã sao chép link Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Fshare link copied</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="930"/>
+        <location filename="../../qml/Main.qml" line="957"/>
         <source>Lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="937"/>
+        <location filename="../../qml/Main.qml" line="964"/>
         <source>Đã sao chép link</source>
-        <translation type="unfinished"></translation>
+        <translation>Link copied</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="943"/>
+        <location filename="../../qml/Main.qml" line="970"/>
         <source>Đã thêm vào danh sách tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Added to the download queue</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="862"/>
+        <location filename="../../qml/Main.qml" line="889"/>
         <source>Phiên đăng nhập hết hạn</source>
         <translation>Session expired</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="277"/>
         <source>Thoát Fshare?</source>
-        <translation type="unfinished"></translation>
+        <translation>Quit Fshare?</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="336"/>
         <source>Bạn muốn đóng cửa sổ chính?</source>
-        <translation type="unfinished"></translation>
+        <translation>Close the main window?</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="345"/>
         <source>Chọn &lt;b&gt;Thu nhỏ vào khay&lt;/b&gt; để giữ app chạy nền (các tải xuống đang chạy sẽ tiếp tục). Chọn &lt;b&gt;Thoát hẳn&lt;/b&gt; để đóng hoàn toàn.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choose &lt;b&gt;Minimize to tray&lt;/b&gt; to keep the app running in the background (active downloads continue). Choose &lt;b&gt;Quit&lt;/b&gt; to close completely.</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="381"/>
         <source>Đang có %1 lượt chuyển chưa xong. Thoát hẳn sẽ tạm dừng tất cả.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 transfer(s) are still in progress. Quitting will pause them all.</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="865"/>
+        <location filename="../../qml/Main.qml" line="892"/>
         <source>Vui lòng đăng nhập lại để tiếp tục.</source>
         <translation>Please sign in again to continue.</translation>
     </message>
@@ -2233,665 +2058,636 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="30"/>
         <source>Tải xuống</source>
-        <translation type="unfinished">Downloads</translation>
+        <translation>Downloads</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="31"/>
         <source>Tải lên</source>
-        <translation type="unfinished">Uploads</translation>
+        <translation>Uploads</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="32"/>
         <source>Đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="33"/>
         <source>File</source>
-        <translation type="unfinished">Files</translation>
+        <translation>Files</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="34"/>
         <source>Yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Favorites</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="35"/>
         <source>Tài khoản</source>
-        <translation type="unfinished">Account</translation>
+        <translation>Account</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="36"/>
         <source>Cài đặt</source>
-        <translation type="unfinished">Settings</translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="37"/>
         <source>Showcase</source>
-        <translation type="unfinished"></translation>
+        <translation>Showcase</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Theme/Pages.qml" line="38"/>
         <source>Trang chủ</source>
-        <translation type="unfinished"></translation>
+        <translation>Home</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../core/services/SyncService.cpp" line="184"/>
+        <location filename="../core/services/SyncService.cpp" line="163"/>
         <source>Vui lòng đăng nhập trước</source>
-        <translation type="unfinished"></translation>
+        <translation>Please sign in first</translation>
     </message>
     <message>
-        <location filename="../core/services/SyncService.cpp" line="187"/>
+        <location filename="../core/services/SyncService.cpp" line="166"/>
         <source>Đã đạt giới hạn %1 thư mục đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync folder limit of %1 reached</translation>
     </message>
     <message>
-        <location filename="../core/services/SyncService.cpp" line="194"/>
-        <location filename="../core/services/SyncService.cpp" line="406"/>
+        <location filename="../core/services/SyncService.cpp" line="173"/>
+        <location filename="../core/services/SyncService.cpp" line="385"/>
         <source>Thư mục không tồn tại</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder does not exist</translation>
     </message>
     <message>
-        <location filename="../core/services/SyncService.cpp" line="200"/>
+        <location filename="../core/services/SyncService.cpp" line="179"/>
         <source>Thư mục này đã được đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>This folder is already being synced</translation>
     </message>
     <message>
-        <location filename="../core/services/SyncService.cpp" line="684"/>
+        <location filename="../core/services/SyncService.cpp" line="627"/>
         <source>File vượt quá giới hạn 1 GB</source>
-        <translation type="unfinished"></translation>
+        <translation>File exceeds the 1 GB limit</translation>
     </message>
     <message>
-        <location filename="../core/services/SyncService.cpp" line="856"/>
+        <location filename="../core/services/SyncService.cpp" line="804"/>
         <source>Không thể thêm vào hàng đợi tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to add to the upload queue</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="435"/>
         <source>Đang mở trình phát…</source>
-        <translation type="unfinished"></translation>
+        <translation>Opening player…</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="259"/>
         <source>FsNext — Khởi tạo thất bại</source>
-        <translation type="unfinished"></translation>
+        <translation>FsNext — Initialization failed</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="260"/>
         <source>Không thể khởi tạo ứng dụng:
 
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to initialize the application:
+
+%1</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="480"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="61"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="220"/>
         <source>Đã đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Synced</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="482"/>
         <source>Đã tải lên xong</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload complete</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="484"/>
         <source>Đã tải xuống xong</source>
-        <translation type="unfinished"></translation>
+        <translation>Download complete</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="490"/>
         <source>Đồng bộ thất bại: </source>
-        <translation type="unfinished"></translation>
+        <translation>Sync failed: </translation>
     </message>
     <message>
         <location filename="../main.cpp" line="492"/>
         <source>Tải lên thất bại: </source>
-        <translation type="unfinished"></translation>
+        <translation>Upload failed: </translation>
     </message>
     <message>
         <location filename="../main.cpp" line="494"/>
         <source>Tải xuống thất bại: </source>
-        <translation type="unfinished"></translation>
+        <translation>Download failed: </translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="62"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="219"/>
         <source>Đang tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Uploading</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="63"/>
         <source>Tạm dừng</source>
-        <translation type="unfinished"></translation>
+        <translation>Paused</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="64"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="349"/>
         <source>Lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="65"/>
         <source>Mất thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder missing</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="218"/>
         <source>Chờ</source>
-        <translation type="unfinished"></translation>
+        <translation>Waiting</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="221"/>
         <source>Thất bại</source>
-        <translation type="unfinished"></translation>
+        <translation>Failed</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="222"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="350"/>
         <source>Đã xoá local</source>
-        <translation type="unfinished"></translation>
+        <translation>Local copy deleted</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="330"/>
         <source>vừa xong</source>
-        <translation type="unfinished"></translation>
+        <translation>just now</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="331"/>
         <source>%1 phút</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 minute(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="332"/>
         <source>%1 giờ</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 hour(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="333"/>
         <source>%1 ngày</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 day(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="348"/>
         <source>Đã tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Uploaded</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="351"/>
         <source>Thêm thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Add folder</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="352"/>
         <source>Xoá thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove folder</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="437"/>
         <source>Thư mục không tìm thấy: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder not found: %1</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="441"/>
         <source>Đã đồng bộ %1 file</source>
-        <translation type="unfinished"></translation>
+        <translation>Synced %1 file(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="469"/>
         <source>~%1 giây</source>
-        <translation type="unfinished"></translation>
+        <translation>~%1 second(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="470"/>
         <source>~%1 phút</source>
-        <translation type="unfinished"></translation>
+        <translation>~%1 minute(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="471"/>
         <source>~%1 giờ</source>
-        <translation type="unfinished"></translation>
+        <translation>~%1 hour(s)</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="499"/>
         <source>Đã tạm dừng tải lên thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder upload paused</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="505"/>
         <source>Đã tiếp tục tải lên thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder upload resumed</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="511"/>
         <source>Đang thử tải lại các file lỗi...</source>
-        <translation type="unfinished"></translation>
+        <translation>Retrying failed files…</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="580"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="600"/>
         <source>Không thể thêm thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to add folder</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="622"/>
         <source>Đã lưu cài đặt thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder settings saved</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="650"/>
         <source>Sync service không khả dụng</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync service is unavailable</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="684"/>
         <source>Đã sao chép đường dẫn</source>
-        <translation type="unfinished"></translation>
+        <translation>Path copied</translation>
     </message>
     <message>
         <location filename="../viewmodels/SyncViewModel.cpp" line="720"/>
         <source>Đã xoá cache. Đang quét lại thư mục…</source>
-        <translation type="unfinished"></translation>
+        <translation>Cache cleared. Rescanning the folder…</translation>
     </message>
 </context>
 <context>
     <name>RemoveWatchDialog</name>
     <message>
-        <location filename="../../qml/Fshare/Dialogs/RemoveWatchDialog.qml" line="11"/>
-        <source>Xóa thư mục đồng bộ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Dialogs/RemoveWatchDialog.qml" line="45"/>
-        <source>Bạn có chắc muốn ngừng theo dõi thư mục này?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Dialogs/RemoveWatchDialog.qml" line="78"/>
-        <source>%1 file đã đồng bộ sẽ không bị ảnh hưởng.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Dialogs/RemoveWatchDialog.qml" line="86"/>
-        <source>File trên Fshare và trên máy tính đều được giữ nguyên.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Dialogs/RemoveWatchDialog.qml" line="111"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Dialogs/RemoveWatchDialog.qml" line="116"/>
-        <source>Xóa</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Cancel</translation>
     </message>
 </context>
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="27"/>
-        <source>Tuỳ chọn &amp; hệ thống</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="28"/>
         <source>Cài</source>
-        <translation type="unfinished"></translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="29"/>
         <source>đặt.</source>
-        <translation type="unfinished"></translation>
+        <translation>.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="32"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="30"/>
         <source>Tùy chỉnh tải xuống, tải lên, ngôn ngữ và kết nối</source>
-        <translation type="unfinished"></translation>
+        <translation>Customize downloads, uploads, language, and connection</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="38"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="36"/>
         <source>Chung</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="39"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="37"/>
         <source>━ General</source>
-        <translation type="unfinished"></translation>
+        <translation>━ General</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="46"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="44"/>
         <source>Tự động đăng nhập khi khởi động</source>
         <translation>Auto-login at startup</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="47"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="45"/>
         <source>Tự động đăng nhập bằng thông tin đã lưu</source>
         <translation>Automatically sign in with saved credentials</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="54"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="52"/>
         <source>Luôn hiển thị trên cùng</source>
         <translation>Stay on top</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="55"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="53"/>
         <source>Giữ cửa sổ ứng dụng luôn ở trên các cửa sổ khác</source>
         <translation>Keep the application window above others</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="62"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="60"/>
         <source>Giao diện tối</source>
         <translation>Dark mode</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="63"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="61"/>
         <source>Sử dụng giao diện màu tối</source>
         <translation>Use dark theme</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="70"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="68"/>
         <source>Thu nhỏ vào khay hệ thống khi đóng cửa sổ</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimize to the system tray when closing the window</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="71"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="69"/>
         <source>Cửa sổ ẩn xuống khay (tray) thay vì thoát hẳn ứng dụng. Có thể bật lại bằng cách bấm icon trên khay.</source>
-        <translation type="unfinished"></translation>
+        <translation>The window hides to the tray instead of quitting the app. Click the tray icon to bring it back.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="83"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="81"/>
         <source>Hỏi xác nhận khi đóng cửa sổ</source>
-        <translation type="unfinished"></translation>
+        <translation>Ask for confirmation when closing the window</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="84"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="82"/>
         <source>Hiện popup &apos;Thoát hẳn / Thu nhỏ vào khay&apos; mỗi lần bạn nhấn nút X. Tắt nếu muốn cửa sổ ứng xử theo lựa chọn cuối.</source>
-        <translation type="unfinished"></translation>
+        <translation>Show the 'Quit / Minimize to tray' prompt every time you click the X button. Turn off to always use your last choice.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="96"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="94"/>
         <source>Hiện mini HUD khi thu nhỏ</source>
-        <translation type="unfinished"></translation>
+        <translation>Show the mini HUD when minimized</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="97"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="95"/>
         <source>Khi bạn thu nhỏ cửa sổ (nút _) hoặc đóng vào khay mà đang có lượt chuyển file, một cửa sổ nhỏ luôn-trên-cùng sẽ hiện tốc độ + danh sách đang tải. Tự ẩn sau 30 giây khi mọi thứ hoàn tất.</source>
-        <translation type="unfinished"></translation>
+        <translation>When you minimize the window (the _ button) or close it to the tray while transfers are running, a small always-on-top window shows the speed and active transfers. It hides automatically 30 seconds after everything finishes.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="106"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="104"/>
         <source>Hiện tiến độ trên thanh taskbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Show progress on the taskbar</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="107"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="105"/>
         <source>Vẽ thanh tiến độ ngay trên nút taskbar của Fshare khi đang chuyển file — xanh khi chạy, đỏ khi lỗi, vàng khi tạm dừng. Cách xem tiến độ gọn nhất, không cần mở cửa sổ. (Chỉ Windows.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Draw a progress bar on the Fshare taskbar button during transfers — green when running, red on error, yellow when paused. The simplest way to track progress without opening the window. (Windows only.)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="116"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="114"/>
         <source>Thông báo bóng nhỏ khi tải xong / lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Balloon notifications on completion / error</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="117"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="115"/>
         <source>Hiện balloon notification ở khay hệ thống mỗi khi một file tải xong hoặc tải lỗi. Bấm vào thông báo để mở thẳng task đó. Tắt sẽ chỉ đổi màu icon khay thầm lặng.</source>
-        <translation type="unfinished"></translation>
+        <translation>Show a tray balloon notification whenever a file finishes or fails. Click the notification to jump straight to that task. When off, only the tray icon color changes silently.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="129"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="127"/>
         <source>Khi tên file bị trùng</source>
-        <translation type="unfinished"></translation>
+        <translation>When a filename already exists</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="130"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="128"/>
         <source>━ File conflict</source>
-        <translation type="unfinished"></translation>
+        <translation>━ File conflict</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="135"/>
+        <source>Đổi tên &quot;(1)&quot;</source>
+        <translation>Rename "(1)"</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="136"/>
+        <source>Mặc định, an toàn — không ghi đè dữ liệu cũ.</source>
+        <translation>Default and safe — never overwrites existing data.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="137"/>
-        <source>Đổi tên &quot;(1)&quot;</source>
-        <translation type="unfinished"></translation>
+        <source>Ghi đè</source>
+        <translation>Overwrite</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="138"/>
-        <source>Mặc định, an toàn — không ghi đè dữ liệu cũ.</source>
-        <translation type="unfinished"></translation>
+        <source>File cũ sẽ bị thay thế bởi bản tải mới.</source>
+        <translation>The existing file is replaced by the new download.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="139"/>
-        <source>Ghi đè</source>
-        <translation type="unfinished"></translation>
+        <source>Bỏ qua</source>
+        <translation>Skip</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="140"/>
-        <source>File cũ sẽ bị thay thế bởi bản tải mới.</source>
-        <translation type="unfinished"></translation>
+        <source>Tải xuống được hủy, file cũ giữ nguyên.</source>
+        <translation>The download is cancelled and the existing file is kept.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="141"/>
-        <source>Bỏ qua</source>
-        <translation type="unfinished"></translation>
+        <source>Hỏi mỗi lần</source>
+        <translation>Ask every time</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="142"/>
-        <source>Tải xuống được hủy, file cũ giữ nguyên.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="143"/>
-        <source>Hỏi mỗi lần</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="144"/>
         <source>Hiện hộp thoại lựa chọn cho mỗi lần trùng.</source>
-        <translation type="unfinished"></translation>
+        <translation>Show a choice dialog for each conflict.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="160"/>
+        <source>Đổi tên — đề xuất.</source>
+        <translation>Rename — recommended.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="161"/>
+        <source>Ghi đè — cẩn trọng, có thể mất dữ liệu cũ.</source>
+        <translation>Overwrite — use with caution, existing data may be lost.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="162"/>
-        <source>Đổi tên — đề xuất.</source>
-        <translation type="unfinished"></translation>
+        <source>Bỏ qua — file mới không được lưu.</source>
+        <translation>Skip — the new file is not saved.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="163"/>
-        <source>Ghi đè — cẩn trọng, có thể mất dữ liệu cũ.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="164"/>
-        <source>Bỏ qua — file mới không được lưu.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="165"/>
         <source>Hỏi mỗi lần — thêm một bước cho mỗi tải xuống.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ask every time — adds a step to each download.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="181"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="179"/>
         <source>Ngôn ngữ</source>
         <translation>Language</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="182"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="180"/>
         <source>━ Language</source>
-        <translation type="unfinished"></translation>
+        <translation>━ Language</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="189"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="187"/>
         <source>Ngôn ngữ hiển thị</source>
         <translation>Display language</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="190"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="188"/>
         <source>Chọn ngôn ngữ giao diện ứng dụng</source>
         <translation>Choose the interface language</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="209"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="207"/>
         <source>Hiệu suất tải</source>
         <translation>Transfer Performance</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="210"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="208"/>
         <source>━ Performance</source>
-        <translation type="unfinished"></translation>
+        <translation>━ Performance</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="217"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="215"/>
         <source>Số tải xuống đồng thời</source>
         <translation>Concurrent downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="218"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="216"/>
         <source>Số file tải xuống cùng lúc (1–16). Khuyến nghị: 8 cho tài khoản VIP, 4 cho tài khoản miễn phí.</source>
         <translation>Files downloading in parallel (1–16). Recommended: 8 for VIP, 4 for free accounts.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="230"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="228"/>
         <source>Luồng song song mỗi file</source>
         <translation>Segments per file</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="231"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="229"/>
         <source>Số luồng HTTP Range mỗi file (1–32). Khuyến nghị: 16 — chia file thành các phần tải song song. Chỉ áp dụng cho file ≥ 2 MB trên CDN hỗ trợ Range request.</source>
         <translation>HTTP Range streams per file (1–32). Recommended: 16. Only applies to files ≥ 2 MB on CDN servers that support Range requests.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="244"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="242"/>
         <source>Số tải lên đồng thời</source>
         <translation>Concurrent uploads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="245"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="243"/>
         <source>Số file tải lên cùng lúc (1–8). Khuyến nghị: 4. Tải lên bị giới hạn bởi CPU/ổ đĩa; hơn 4 hiếm khi có thêm lợi ích.</source>
         <translation>Files uploading in parallel (1–8). Recommended: 4. Upload is CPU/disk-bound; more than 4 rarely helps.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="257"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="255"/>
         <source>Tổng giới hạn đồng thời</source>
-        <translation type="unfinished"></translation>
+        <translation>Total concurrency limit</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="258"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="256"/>
         <source>Trần tổng cho mọi loại (tải xuống + tải lên + duyệt thư mục), 1–32. Khuyến nghị: 10. Bảo vệ máy yếu khỏi việc cộng dồn các hạn mức riêng. Đặt 0 để tắt trần tổng.</source>
-        <translation type="unfinished"></translation>
+        <translation>Overall cap across all types (downloads + uploads + folder browsing), 1–32. Recommended: 10. Protects low-spec machines from individual limits adding up. Set to 0 to disable the cap.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="293"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="291"/>
         <source>Tối ưu cho tài khoản VIP: 8 file × 16 luồng = tối đa 128 kết nối HTTP/2 song song. Tài khoản miễn phí: giảm xuống 4 file × 8 luồng để tránh bị giới hạn tốc độ.</source>
         <translation>Optimal for VIP: 8 files × 16 segments = up to 128 parallel HTTP/2 streams. Free accounts: reduce to 4 × 8 to avoid rate limiting.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="308"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="306"/>
         <source>Tải xuống</source>
-        <translation type="unfinished">Downloads</translation>
+        <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="309"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="307"/>
         <source>━ Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>━ Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="316"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="314"/>
         <source>Tự động bắt đầu tải</source>
         <translation>Auto-start downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="317"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="315"/>
         <source>Bắt đầu tải ngay khi thêm vào danh sách</source>
         <translation>Start download immediately when added</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="324"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="322"/>
         <source>Thư mục tải xuống</source>
         <translation>Download folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="325"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="323"/>
         <source>Vị trí mặc định lưu file đã tải</source>
         <translation>Default location for downloaded files</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="330"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="328"/>
         <source>Chọn thư mục tải xuống mặc định</source>
         <translation>Choose default download folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="341"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="339"/>
         <source>Kết nối</source>
         <translation>Connection</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="342"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="340"/>
         <source>━ Network</source>
-        <translation type="unfinished"></translation>
+        <translation>━ Network</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="349"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="347"/>
         <source>Chế độ proxy</source>
         <translation>Proxy mode</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="350"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="348"/>
         <source>Cách kết nối qua proxy</source>
         <translation>How to connect through proxies</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="355"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="353"/>
         <source>Không dùng</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="356"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="354"/>
         <source>Hệ thống</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="357"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="355"/>
         <source>Thủ công</source>
         <translation>Manual</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="367"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="365"/>
         <source>Địa chỉ proxy</source>
         <translation>Proxy host</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="368"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="366"/>
         <source>Tên máy chủ hoặc địa chỉ IP proxy</source>
         <translation>Proxy server hostname or IP address</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="381"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="379"/>
         <source>Cổng proxy</source>
         <translation>Proxy port</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="382"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="380"/>
         <source>Cổng máy chủ proxy (1–65535)</source>
         <translation>Proxy server port (1–65535)</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="396"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="394"/>
         <source>Thông tin</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="397"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="395"/>
         <source>━ About</source>
-        <translation type="unfinished"></translation>
+        <translation>━ About</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="445"/>
+        <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="443"/>
         <source>Phiên bản %1 · © FPT Corporation</source>
-        <translation type="unfinished"></translation>
+        <translation>Version %1 · © FPT Corporation</translation>
     </message>
 </context>
 <context>
@@ -2899,304 +2695,305 @@ https://www.fshare.vn/file/…</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="31"/>
         <source>Design System Showcase</source>
-        <translation type="unfinished"></translation>
+        <translation>Design System Showcase</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="38"/>
         <source>All design tokens and components — for visual review and iteration</source>
-        <translation type="unfinished"></translation>
+        <translation>All design tokens and components — for visual review and iteration</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="49"/>
         <source>1. Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>1. Colors</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="50"/>
         <source>Brand red used sparingly — only logo, primary button, active progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Brand red used sparingly — only logo, primary button, active progress</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="57"/>
         <source>Brand</source>
-        <translation type="unfinished"></translation>
+        <translation>Brand</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="70"/>
         <source>Semantic</source>
-        <translation type="unfinished"></translation>
+        <translation>Semantic</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="82"/>
         <source>Surfaces</source>
-        <translation type="unfinished"></translation>
+        <translation>Surfaces</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="93"/>
         <source>Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Text</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="108"/>
         <source>2. Typography</source>
-        <translation type="unfinished"></translation>
+        <translation>2. Typography</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="109"/>
         <source>Font: </source>
-        <translation type="unfinished"></translation>
+        <translation>Font: </translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="110"/>
         <source> — Mono: </source>
-        <translation type="unfinished"></translation>
+        <translation> — Mono: </translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="130"/>
         <source>3. Spacing &amp; Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>3. Spacing &amp; Radius</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="131"/>
         <source>4px grid · pill buttons (100px)</source>
-        <translation type="unfinished"></translation>
+        <translation>4px grid · pill buttons (100px)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="139"/>
         <source>Spacing</source>
-        <translation type="unfinished"></translation>
+        <translation>Spacing</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="174"/>
         <source>Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>Radius</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="215"/>
         <source>4. Buttons (FsButton)</source>
-        <translation type="unfinished"></translation>
+        <translation>4. Buttons (FsButton)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="216"/>
         <source>5 variants × 3 sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>5 variants × 3 sizes</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="254"/>
         <source>5. Text Fields (FsTextField)</source>
-        <translation type="unfinished"></translation>
+        <translation>5. Text Fields (FsTextField)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="255"/>
         <source>Label, placeholder, error, hint, password</source>
-        <translation type="unfinished"></translation>
+        <translation>Label, placeholder, error, hint, password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="264"/>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>Email</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="265"/>
         <source>you@example.com</source>
-        <translation type="unfinished"></translation>
+        <translation>you@example.com</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="269"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="270"/>
         <source>Enter password</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="276"/>
         <source>With error</source>
-        <translation type="unfinished"></translation>
+        <translation>With error</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="277"/>
         <source>Try typing</source>
-        <translation type="unfinished"></translation>
+        <translation>Try typing</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="279"/>
         <source>This value is invalid</source>
-        <translation type="unfinished"></translation>
+        <translation>This value is invalid</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="283"/>
         <source>With hint</source>
-        <translation type="unfinished"></translation>
+        <translation>With hint</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="284"/>
         <source>Enter folder name</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter folder name</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="285"/>
         <source>Will be created in current folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Will be created in current folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="289"/>
         <source>Read-only</source>
-        <translation type="unfinished"></translation>
+        <translation>Read-only</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="300"/>
         <source>6. Cards (FsCard)</source>
-        <translation type="unfinished"></translation>
+        <translation>6. Cards (FsCard)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="301"/>
         <source>Default and accent variants</source>
-        <translation type="unfinished"></translation>
+        <translation>Default and accent variants</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="315"/>
         <source>Default Card</source>
-        <translation type="unfinished"></translation>
+        <translation>Default Card</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="331"/>
         <source>Accent Card</source>
-        <translation type="unfinished"></translation>
+        <translation>Accent Card</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="345"/>
         <source>7. Badges (FsBadge)</source>
-        <translation type="unfinished"></translation>
+        <translation>7. Badges (FsBadge)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="346"/>
         <source>7 variants for status indicators</source>
-        <translation type="unfinished"></translation>
+        <translation>7 variants for status indicators</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="383"/>
         <source>8. Progress Bars (FsProgressBar)</source>
-        <translation type="unfinished"></translation>
+        <translation>8. Progress Bars (FsProgressBar)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="384"/>
         <source>Status-aware fill colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Status-aware fill colors</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="401"/>
         <source>9. File Type Icons (FsFileTypeIcon)</source>
-        <translation type="unfinished"></translation>
+        <translation>9. File Type Icons (FsFileTypeIcon)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="402"/>
         <source>Color-coded by file extension</source>
-        <translation type="unfinished"></translation>
+        <translation>Color-coded by file extension</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="432"/>
         <source>10. Transfer Items (FsTransferItem)</source>
-        <translation type="unfinished"></translation>
+        <translation>10. Transfer Items (FsTransferItem)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="433"/>
         <source>All states: queued, active, paused, complete, error</source>
-        <translation type="unfinished"></translation>
+        <translation>All states: queued, active, paused, complete, error</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="480"/>
         <source>Connection timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Connection timeout</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="489"/>
         <source>11. State Components</source>
-        <translation type="unfinished"></translation>
+        <translation>11. State Components</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="490"/>
         <source>FsEmptyState · FsLoadingState</source>
-        <translation type="unfinished"></translation>
+        <translation>FsEmptyState · FsLoadingState</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="506"/>
         <source>No downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>No downloads</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="507"/>
         <source>Add a Fshare link to get started</source>
-        <translation type="unfinished"></translation>
+        <translation>Add a Fshare link to get started</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="508"/>
         <source>Add Download</source>
-        <translation type="unfinished"></translation>
+        <translation>Add Download</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="522"/>
         <source>Loading files…</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading files…</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="532"/>
         <source>12. Dialog (FsDialog)</source>
-        <translation type="unfinished"></translation>
+        <translation>12. Dialog (FsDialog)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="533"/>
         <source>Click button to open · scale + opacity transitions</source>
-        <translation type="unfinished"></translation>
+        <translation>Click button to open · scale + opacity transitions</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="539"/>
         <source>Open Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Open Dialog</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="545"/>
         <source>Open Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Open Confirm</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="558"/>
         <source>Sample Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Sample Dialog</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="565"/>
         <source>This is a dialog content area.
 Any QML can go here.</source>
-        <translation type="unfinished"></translation>
+        <translation>This is a dialog content area.
+Any QML can go here.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="581"/>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="612"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="582"/>
         <source>Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirm</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="589"/>
         <source>Delete file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete file?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="596"/>
         <source>This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>This action cannot be undone.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/ShowcasePage.qml" line="613"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete</translation>
     </message>
 </context>
 <context>
@@ -3204,207 +3001,207 @@ Any QML can go here.</source>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="161"/>
         <source>Không thể thêm</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to add</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="214"/>
         <source>Không thể quét thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to scan the folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="330"/>
         <source>folder đang sync.</source>
-        <translation type="unfinished"></translation>
+        <translation>folder(s) syncing.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="421"/>
         <source>Tự động đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto sync</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="421"/>
         <source>Đã tạm dừng</source>
-        <translation type="unfinished"></translation>
+        <translation>Paused</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="439"/>
         <source>Thêm folder sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Add sync folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="458"/>
         <source>Chưa có thư mục đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>No sync folders yet</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="459"/>
         <source>Tự động sao lưu tối đa %1 thư mục, giới hạn %2 MB/s để không ảnh hưởng mạng. Có thể tự động xoá bản local sau khi tải xong.</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatically back up to %1 folder(s), capped at %2 MB/s to avoid slowing your network. Local copies can be deleted automatically after upload.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="462"/>
         <source>Thêm thư mục đầu tiên</source>
-        <translation type="unfinished"></translation>
+        <translation>Add your first folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="578"/>
         <source>Máy tính</source>
-        <translation type="unfinished"></translation>
+        <translation>Computer</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="633"/>
         <source>Fshare Cloud</source>
-        <translation type="unfinished"></translation>
+        <translation>Fshare Cloud</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="683"/>
         <source> file</source>
-        <translation type="unfinished"></translation>
+        <translation> file(s)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="764"/>
         <source>Đồng bộ ngay</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync now</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="775"/>
         <source>Tạm dừng tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Pause upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="781"/>
         <source>Tiếp tục tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Resume upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="789"/>
         <source>Thử lại file lỗi (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Retry failed files (%1)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="795"/>
         <source>Mở thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Open folder</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="800"/>
         <source>Xoá cache và quét lại</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear cache and rescan</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="805"/>
         <source>Cài đặt thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder settings</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="814"/>
         <source>Xoá khỏi danh sách đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove from sync list</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="831"/>
         <source>Bật đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Enable sync</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="848"/>
         <source>Xoá local sau khi tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete local after upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="902"/>
         <source>→ /%1 · %2 MB/s · %3 file</source>
-        <translation type="unfinished"></translation>
+        <translation>→ /%1 · %2 MB/s · %3 file(s)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="915"/>
         <source>Trạng thái</source>
-        <translation type="unfinished"></translation>
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1004"/>
         <source>%1 · %2 · đã sao lưu %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 · %2 · %3 backed up</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1006"/>
         <source>%1 · %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 · %2</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1049"/>
         <source>Sao chép link Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy Fshare link</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1055"/>
         <source>Mở link Fshare</source>
-        <translation type="unfinished"></translation>
+        <translation>Open Fshare link</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1075"/>
         <source>Chưa có file nào được theo dõi</source>
-        <translation type="unfinished"></translation>
+        <translation>No files tracked yet</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1076"/>
         <source>Bấm &quot;Đồng bộ ngay&quot; để quét thư mục và bắt đầu sao lưu.</source>
-        <translation type="unfinished"></translation>
+        <translation>Click "Sync now" to scan the folder and start backing up.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1097"/>
         <source>Hoạt động gần đây</source>
-        <translation type="unfinished"></translation>
+        <translation>Recent activity</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1113"/>
         <source>Xoá lịch sử</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear history</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1241"/>
         <source>Xoá khỏi danh sách đồng bộ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove from sync list?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1242"/>
         <source>File đã tải lên Fshare sẽ KHÔNG bị xoá. FsNext chỉ ngừng theo dõi thư mục này.</source>
-        <translation type="unfinished"></translation>
+        <translation>Files already uploaded to Fshare will NOT be deleted. FsNext simply stops tracking this folder.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1243"/>
         <source>Xoá khỏi danh sách</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove from list</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1250"/>
         <source>Đồng bộ ngay?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync now?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1251"/>
         <source>FsNext sẽ quét toàn bộ thư mục và tải mọi file mới hoặc đã sửa đổi lên Fshare.</source>
-        <translation type="unfinished"></translation>
+        <translation>FsNext will scan the entire folder and upload every new or modified file to Fshare.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1252"/>
         <source>Bắt đầu quét</source>
-        <translation type="unfinished"></translation>
+        <translation>Start scan</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1259"/>
         <source>Xoá cache đồng bộ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear sync cache?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1260"/>
         <source>Toàn bộ trạng thái local của thư mục này sẽ bị xoá và FsNext sẽ quét lại từ đầu. File trên Fshare KHÔNG bị ảnh hưởng.</source>
-        <translation type="unfinished"></translation>
+        <translation>All local state for this folder will be cleared and FsNext will rescan from scratch. Files on Fshare are NOT affected.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1261"/>
         <source>Xoá cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear cache</translation>
     </message>
 </context>
 <context>
@@ -3412,109 +3209,109 @@ Any QML can go here.</source>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="258"/>
         <source>Mở rộng widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Expand widget</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="259"/>
         <source>Thu nhỏ widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Collapse widget</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="260"/>
         <source>Đổi kích thước widget</source>
-        <translation type="unfinished"></translation>
+        <translation>Resize widget</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="293"/>
         <source>Tạm dừng tất cả</source>
-        <translation type="unfinished">Pause All</translation>
+        <translation>Pause All</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="294"/>
         <source>Tiếp tục tất cả</source>
-        <translation type="unfinished">Resume All</translation>
+        <translation>Resume All</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="323"/>
         <source>Mở cửa sổ chính</source>
-        <translation type="unfinished"></translation>
+        <translation>Open main window</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="351"/>
         <source>Đóng</source>
-        <translation type="unfinished"></translation>
+        <translation>Close</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="387"/>
         <source>TỔNG TỐC ĐỘ ↓</source>
-        <translation type="unfinished"></translation>
+        <translation>TOTAL SPEED ↓</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="397"/>
         <source>đỉnh </source>
-        <translation type="unfinished"></translation>
+        <translation>peak </translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="449"/>
         <source>ETA tổng</source>
-        <translation type="unfinished"></translation>
+        <translation>Total ETA</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="530"/>
         <source>Không có lượt chuyển nào</source>
-        <translation type="unfinished"></translation>
+        <translation>No transfers</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="556"/>
         <source>+ %1 mục khác</source>
-        <translation type="unfinished"></translation>
+        <translation>+ %1 more</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="692"/>
         <source>%1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="721"/>
         <source>Dán link</source>
-        <translation type="unfinished"></translation>
+        <translation>Paste link</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="994"/>
         <source>còn </source>
-        <translation type="unfinished"></translation>
+        <translation>left </translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="753"/>
         <source>⏸ Tạm dừng</source>
-        <translation type="unfinished"></translation>
+        <translation>⏸ Paused</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="754"/>
         <source>Sẵn sàng</source>
-        <translation type="unfinished"></translation>
+        <translation>Ready</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="978"/>
         <source>Lỗi</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="981"/>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="982"/>
         <source>đang chờ</source>
-        <translation type="unfinished"></translation>
+        <translation>queued</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="986"/>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="987"/>
         <source>tạm dừng</source>
-        <translation type="unfinished"></translation>
+        <translation>paused</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/TransferHudPanel.qml" line="989"/>
         <source>hoàn tất</source>
-        <translation type="unfinished"></translation>
+        <translation>complete</translation>
     </message>
 </context>
 <context>
@@ -3522,141 +3319,141 @@ Any QML can go here.</source>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="77"/>
         <source>Đã xoá file cục bộ.</source>
-        <translation type="unfinished"></translation>
+        <translation>Local file deleted.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="148"/>
         <source>Chọn file để tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Choose files to upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="174"/>
         <source>Xoá bản sao cục bộ của &quot;%1&quot;? Hành động này không thể hoàn tác.</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete the local copy of "%1"? This action cannot be undone.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="182"/>
         <source>Xoá file cục bộ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete local file?</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="183"/>
         <source>Xoá</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="184"/>
         <source>Huỷ</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="385"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="388"/>
         <source>Xoá lịch sử</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear history</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="392"/>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="639"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="395"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="642"/>
         <source>Thêm file</source>
-        <translation type="unfinished"></translation>
+        <translation>Add files</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="408"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="411"/>
         <source>Đang tải</source>
         <translation>Active</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="409"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="412"/>
         <source>Lịch sử</source>
         <translation>History</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="458"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="461"/>
         <source>Còn %1 file từ phiên trước chưa tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 file(s) from your previous session haven't been uploaded</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="467"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="470"/>
         <source>Tiếp tục để mở lại bảng tải lên, hoặc bỏ để xoá khỏi danh sách.</source>
-        <translation type="unfinished"></translation>
+        <translation>Resume to reopen the upload panel, or discard to remove them from the list.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="475"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="478"/>
         <source>Tiếp tục</source>
-        <translation type="unfinished"></translation>
+        <translation>Continue</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="485"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="488"/>
         <source>Bỏ</source>
-        <translation type="unfinished"></translation>
+        <translation>Discard</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="554"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="557"/>
         <source>Thả để tải lên.</source>
-        <translation type="unfinished"></translation>
+        <translation>Drop to upload.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="555"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="558"/>
         <source>Kéo thả bất kỳ vào đây.</source>
-        <translation type="unfinished"></translation>
+        <translation>Drag and drop anything here.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="566"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="569"/>
         <source>Hoặc</source>
-        <translation type="unfinished"></translation>
+        <translation>Or</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="572"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="575"/>
         <source>chọn từ máy</source>
-        <translation type="unfinished"></translation>
+        <translation>browse your computer</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="584"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="587"/>
         <source>— tối đa 50 GB mỗi file · tự động resume</source>
-        <translation type="unfinished"></translation>
+        <translation>— up to 50 GB per file · auto-resume</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="597"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="600"/>
         <source>Ưu tiên · VIP</source>
-        <translation type="unfinished"></translation>
+        <translation>Priority · VIP</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="597"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="600"/>
         <source>Mã hoá TLS 1.3</source>
-        <translation type="unfinished"></translation>
+        <translation>TLS 1.3 encryption</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="638"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="641"/>
         <source>Kéo thả file vào vùng phía trên, hoặc nhấn “Thêm file”.</source>
-        <translation type="unfinished"></translation>
+        <translation>Drag and drop files into the area above, or click “Add files”.</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="755"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="758"/>
         <source>Đang tải thêm…</source>
-        <translation type="unfinished"></translation>
+        <translation>Loading more…</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="372"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="375"/>
         <source>Tạm dừng tất cả</source>
         <translation>Pause All</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="372"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="375"/>
         <source>Tiếp tục tất cả</source>
         <translation>Resume All</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="637"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="640"/>
         <source>Chưa có tác vụ tải lên</source>
         <translation>No active uploads</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="647"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="650"/>
         <source>Chưa có lịch sử tải lên</source>
         <translation>No upload history</translation>
     </message>
     <message>
-        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="648"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="651"/>
         <source>Các file đã tải lên sẽ hiển thị ở đây.</source>
         <translation>Completed uploads will appear here.</translation>
     </message>
@@ -3664,14 +3461,13 @@ Any QML can go here.</source>
 <context>
     <name>UserInfoPage</name>
     <message>
-        <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="38"/>
         <source>Tài khoản</source>
-        <translation>Account</translation>
+        <translation type="vanished">Account</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="44"/>
         <source>Thành viên</source>
-        <translation type="unfinished"></translation>
+        <translation>Member</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="47"/>
@@ -3681,48 +3477,48 @@ Any QML can go here.</source>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="105"/>
         <source>Gói</source>
-        <translation type="unfinished"></translation>
+        <translation>Plan</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="137"/>
         <source>đã dùng</source>
-        <translation type="unfinished"></translation>
+        <translation>used</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="153"/>
         <source>hết hạn</source>
-        <translation type="unfinished"></translation>
+        <translation>expires</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="155"/>
         <source>Còn</source>
-        <translation type="unfinished"></translation>
+        <translation>Remaining</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="200"/>
         <source>Không bảo đảm</source>
-        <translation type="unfinished"></translation>
+        <translation>Non-guaranteed</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="202"/>
         <source>Bảo đảm</source>
-        <translation type="unfinished"></translation>
+        <translation>Guaranteed</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="204"/>
         <source>Còn trống</source>
-        <translation type="unfinished"></translation>
+        <translation>Available</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="267"/>
         <source>Quyền lợi</source>
-        <translation type="unfinished"></translation>
+        <translation>Benefits</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="279"/>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="471"/>
         <source>Loại thành viên</source>
-        <translation type="unfinished"></translation>
+        <translation>Membership type</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="281"/>
@@ -3737,142 +3533,142 @@ Any QML can go here.</source>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="285"/>
         <source>Bảo mật</source>
-        <translation type="unfinished"></translation>
+        <translation>Security</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="287"/>
         <source>Điểm tích lũy</source>
-        <translation type="unfinished"></translation>
+        <translation>Reward points</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="288"/>
         <source>điểm</source>
-        <translation type="unfinished"></translation>
+        <translation>points</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="361"/>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="984"/>
         <source>Thông tin cá nhân</source>
-        <translation type="unfinished"></translation>
+        <translation>Personal information</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="444"/>
         <source>Tham gia</source>
-        <translation type="unfinished"></translation>
+        <translation>Joined</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="469"/>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>Email</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="470"/>
         <source>Mã thành viên</source>
-        <translation type="unfinished"></translation>
+        <translation>Member ID</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="472"/>
         <source>Ngày đăng ký</source>
-        <translation type="unfinished"></translation>
+        <translation>Registration date</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="473"/>
         <source>Thời hạn VIP</source>
-        <translation type="unfinished"></translation>
+        <translation>VIP expiry</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="509"/>
         <source>ĐÃ XÁC MINH</source>
-        <translation type="unfinished"></translation>
+        <translation>VERIFIED</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="564"/>
         <source>DL không bảo đảm</source>
-        <translation type="unfinished"></translation>
+        <translation>Non-guaranteed DL</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="622"/>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="709"/>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="796"/>
         <source>Đã dùng</source>
-        <translation type="unfinished"></translation>
+        <translation>Used</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="627"/>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="714"/>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="801"/>
         <source>Còn lại</source>
-        <translation type="unfinished"></translation>
+        <translation>Remaining</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="651"/>
         <source>DL bảo đảm</source>
-        <translation type="unfinished"></translation>
+        <translation>Guaranteed DL</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="738"/>
         <source>Lưu lượng (Traffic)</source>
-        <translation type="unfinished"></translation>
+        <translation>Traffic</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="842"/>
         <source>Quản lý tài khoản</source>
-        <translation type="unfinished"></translation>
+        <translation>Manage account</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="851"/>
         <source>Mở trên fshare.vn ↗</source>
-        <translation type="unfinished"></translation>
+        <translation>Open on fshare.vn ↗</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="985"/>
         <source>Đổi email, số điện thoại, avatar</source>
-        <translation type="unfinished"></translation>
+        <translation>Change email, phone number, avatar</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="990"/>
         <source>Đổi mật khẩu</source>
-        <translation type="unfinished"></translation>
+        <translation>Change password</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="991"/>
         <source>Cần email/OTP xác nhận</source>
-        <translation type="unfinished"></translation>
+        <translation>Requires email/OTP confirmation</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="996"/>
         <source>Xác thực 2 lớp (2FA)</source>
-        <translation type="unfinished"></translation>
+        <translation>Two-factor authentication (2FA)</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="997"/>
         <source>Bảo vệ thêm bằng OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>Extra protection with OTP</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="1002"/>
         <source>Lịch sử VIP &amp; thanh toán</source>
-        <translation type="unfinished"></translation>
+        <translation>VIP &amp; billing history</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="1003"/>
         <source>Gói đã mua, gia hạn, giao dịch</source>
-        <translation type="unfinished"></translation>
+        <translation>Purchased plans, renewals, transactions</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="1014"/>
         <source>Các thao tác bảo mật (đổi mật khẩu, 2FA, quản lý thiết bị) được thực hiện trên fshare.vn để đảm bảo OTP và xác minh hoạt động chính xác.</source>
-        <translation type="unfinished"></translation>
+        <translation>Security actions (changing your password, 2FA, device management) are performed on fshare.vn to ensure OTP and verification work correctly.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="1042"/>
         <source>TỔNG DUNG LƯỢNG</source>
-        <translation type="unfinished"></translation>
+        <translation>TOTAL STORAGE</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UserInfoPage.qml" line="1061"/>
         <source>TỔNG LƯU LƯỢNG</source>
-        <translation type="unfinished"></translation>
+        <translation>TOTAL TRAFFIC</translation>
     </message>
 </context>
 <context>
@@ -3880,67 +3676,67 @@ Any QML can go here.</source>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="12"/>
         <source>Cài đặt thư mục đồng bộ</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync folder settings</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="87"/>
         <source>Theo dõi thư mục con</source>
-        <translation type="unfinished"></translation>
+        <translation>Include subfolders</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="88"/>
         <source>Bao gồm file trong các thư mục con</source>
-        <translation type="unfinished"></translation>
+        <translation>Include files in subfolders</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="98"/>
         <source>Xóa file local sau khi tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete local files after upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="99"/>
         <source>File sẽ bị xóa khỏi máy tính sau upload thành công</source>
-        <translation type="unfinished"></translation>
+        <translation>Files are removed from this computer after a successful upload</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="120"/>
         <source>File sẽ bị xóa vĩnh viễn khỏi máy tính sau khi upload thành công.</source>
-        <translation type="unfinished"></translation>
+        <translation>Files will be permanently deleted from this computer after a successful upload.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="138"/>
         <source>Bỏ qua file theo mẫu</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignore files by pattern</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="148"/>
         <source>Mỗi mẫu cách nhau bởi dấu phẩy</source>
-        <translation type="unfinished"></translation>
+        <translation>Separate patterns with commas</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="162"/>
         <source>Giới hạn tốc độ tải lên</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload speed limit</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="170"/>
         <source>Không giới hạn</source>
-        <translation type="unfinished"></translation>
+        <translation>Unlimited</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="180"/>
         <source>Tùy chỉnh</source>
-        <translation type="unfinished"></translation>
+        <translation>Custom</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="220"/>
         <source>Hủy</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="225"/>
         <source>Lưu</source>
-        <translation type="unfinished"></translation>
+        <translation>Save</translation>
     </message>
 </context>
 <context>
@@ -3948,17 +3744,17 @@ Any QML can go here.</source>
     <message>
         <location filename="../core/services/AuthService.cpp" line="199"/>
         <source>Phiên đăng nhập đã quá hạn 7 ngày. Vui lòng đăng nhập lại.</source>
-        <translation type="unfinished"></translation>
+        <translation>Your session has expired after 7 days. Please sign in again.</translation>
     </message>
     <message>
         <location filename="../core/services/AuthService.cpp" line="399"/>
         <source>OAuth service chưa được khởi tạo.</source>
-        <translation type="unfinished"></translation>
+        <translation>The OAuth service is not initialized.</translation>
     </message>
     <message>
         <location filename="../core/services/AuthService.cpp" line="403"/>
         <source>%1 login chưa được cấu hình. Vui lòng liên hệ admin.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 sign-in is not configured. Please contact your administrator.</translation>
     </message>
 </context>
 <context>
@@ -3967,13 +3763,15 @@ Any QML can go here.</source>
         <location filename="../viewmodels/DownloadViewModel.cpp" line="226"/>
         <source>Cannot download to system folder: &quot;%1&quot;.
 Please choose a different destination.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cannot download to system folder: "%1".
+Please choose a different destination.</translation>
     </message>
     <message>
         <location filename="../viewmodels/DownloadViewModel.cpp" line="265"/>
         <source>Không nhận diện được %1 liên kết (chỉ chấp nhận fshare.vn/file/ hoặc /folder/):
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't recognize %1 link(s) (only fshare.vn/file/ or /folder/ are accepted):
+%2</translation>
     </message>
 </context>
 <context>
@@ -3981,17 +3779,17 @@ Please choose a different destination.</source>
     <message>
         <location filename="../viewmodels/FavoritesViewModel.cpp" line="123"/>
         <source>Đã thêm vào yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Added to Favorites</translation>
     </message>
     <message>
         <location filename="../viewmodels/FavoritesViewModel.cpp" line="149"/>
         <source>Đã bỏ yêu thích</source>
-        <translation type="unfinished"></translation>
+        <translation>Removed from Favorites</translation>
     </message>
     <message>
         <location filename="../viewmodels/FavoritesViewModel.cpp" line="302"/>
         <source>Không mở được trình phát mặc định</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to open the default player</translation>
     </message>
 </context>
 <context>
@@ -3999,7 +3797,7 @@ Please choose a different destination.</source>
     <message>
         <location filename="../viewmodels/FileManagerViewModel.cpp" line="350"/>
         <source>Không mở được trình phát mặc định</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to open the default player</translation>
     </message>
 </context>
 <context>
@@ -4008,7 +3806,7 @@ Please choose a different destination.</source>
         <location filename="../viewmodels/FolderPickerModel.cpp" line="12"/>
         <location filename="../viewmodels/FolderPickerModel.cpp" line="86"/>
         <source>/ (Thư mục gốc)</source>
-        <translation type="unfinished"></translation>
+        <translation>/ (Root folder)</translation>
     </message>
 </context>
 <context>
@@ -4016,39 +3814,39 @@ Please choose a different destination.</source>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="61"/>
         <source>Phát hiện %1 link · Nhấn Enter để mở tải hàng loạt</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 link(s) detected · Press Enter to open bulk download</translation>
     </message>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="70"/>
         <source>Link folder · Nhấn Enter để duyệt</source>
-        <translation type="unfinished"></translation>
+        <translation>Folder link · Press Enter to browse</translation>
     </message>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="73"/>
         <source>Link file · Nhấn Enter để xem chi tiết</source>
-        <translation type="unfinished"></translation>
+        <translation>File link · Press Enter to view details</translation>
     </message>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="94"/>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="118"/>
         <source>Nhập tối thiểu %1 ký tự để tìm kiếm</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter at least %1 character(s) to search</translation>
     </message>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="103"/>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="130"/>
         <source>Từ khoá chứa nội dung không phù hợp</source>
-        <translation type="unfinished"></translation>
+        <translation>Your search contains inappropriate content</translation>
     </message>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="109"/>
         <source>Chế độ chính xác · Nhấn Enter để tìm</source>
-        <translation type="unfinished"></translation>
+        <translation>Exact mode · Press Enter to search</translation>
     </message>
     <message>
         <location filename="../viewmodels/HomeSearchViewModel.cpp" line="137"/>
         <source>Nhấn Enter để tìm kiếm</source>
-        <translation type="unfinished"></translation>
+        <translation>Press Enter to search</translation>
     </message>
 </context>
 <context>
@@ -4057,83 +3855,84 @@ Please choose a different destination.</source>
         <location filename="../core/services/OAuthService.cpp" line="29"/>
         <location filename="../core/services/OAuthService.cpp" line="320"/>
         <source>%1 login chưa được cấu hình.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 sign-in is not configured.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="68"/>
         <source>Không thể mở cổng %1 cho đăng nhập %2 — cổng đang bận.</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't open port %1 for %2 sign-in — the port is in use.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="71"/>
         <source>Không thể mở cổng localhost cho đăng nhập OAuth.</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't open a localhost port for OAuth sign-in.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="111"/>
         <source>Phản hồi OAuth không khớp (state mismatch — có thể do tấn công CSRF).</source>
-        <translation type="unfinished"></translation>
+        <translation>OAuth response mismatch (state mismatch — possible CSRF attack).</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="127"/>
         <source>Hết thời gian chờ đăng nhập %1 (2 phút).
 Kiểm tra Google Cloud Console: redirect_uri phải là &quot;http://localhost&quot; (không có port hoặc path).</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 sign-in timed out (2 minutes).
+Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port or path).</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="163"/>
         <source>Không thể mở trình duyệt cho %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't open the browser for %1.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="221"/>
         <source>Đổi mã OAuth thất bại (HTTP %1)%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>OAuth code exchange failed (HTTP %1)%2.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="228"/>
         <source>Phản hồi OAuth không phải JSON hợp lệ.</source>
-        <translation type="unfinished"></translation>
+        <translation>The OAuth response is not valid JSON.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="235"/>
         <source>Không nhận được access_token từ %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>No access_token received from %1.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="264"/>
         <source>Lấy thông tin tài khoản OAuth thất bại (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Failed to retrieve OAuth account information (HTTP %1).</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="269"/>
         <source>Thông tin tài khoản OAuth không phải JSON hợp lệ.</source>
-        <translation type="unfinished"></translation>
+        <translation>The OAuth account information is not valid JSON.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="283"/>
         <source>Không lấy được email từ %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't retrieve the email from %1.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="324"/>
         <source>Không có refresh_token đã lưu cho %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>No saved refresh_token for %1.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="371"/>
         <source>Refresh token đã hết hạn hoặc bị thu hồi (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>The refresh token has expired or been revoked (HTTP %1).</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="377"/>
         <source>Phản hồi refresh không phải JSON hợp lệ.</source>
-        <translation type="unfinished"></translation>
+        <translation>The refresh response is not valid JSON.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="383"/>
         <source>Refresh không trả về access_token.</source>
-        <translation type="unfinished"></translation>
+        <translation>The refresh did not return an access_token.</translation>
     </message>
 </context>
 <context>
@@ -4141,37 +3940,37 @@ Kiểm tra Google Cloud Console: redirect_uri phải là &quot;http://localhost&
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="197"/>
         <source>Quá nhiều lần thử làm mới phiên. Vui lòng đăng nhập lại.</source>
-        <translation type="unfinished"></translation>
+        <translation>Too many session refresh attempts. Please sign in again.</translation>
     </message>
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="207"/>
         <source>Không có phiên đăng nhập.</source>
-        <translation type="unfinished"></translation>
+        <translation>No active session.</translation>
     </message>
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="311"/>
         <source>Lỗi mạng khi làm mới phiên. Sẽ thử lại sau.</source>
-        <translation type="unfinished"></translation>
+        <translation>Network error while refreshing the session. Will retry shortly.</translation>
     </message>
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="323"/>
         <source>Không thể làm mới phiên (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to refresh the session (HTTP %1).</translation>
     </message>
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="335"/>
         <source>Phiên đã hết hạn. Vui lòng đăng nhập lại.</source>
-        <translation type="unfinished"></translation>
+        <translation>Your session has expired. Please sign in again.</translation>
     </message>
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="345"/>
         <source>Server trả về phiên rỗng. Vui lòng đăng nhập lại.</source>
-        <translation type="unfinished"></translation>
+        <translation>The server returned an empty session. Please sign in again.</translation>
     </message>
     <message>
         <location filename="../core/services/RefreshTokenCoordinator.cpp" line="371"/>
         <source>Mã phản hồi không xác định (%1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Unknown response code (%1).</translation>
     </message>
 </context>
 <context>
@@ -4179,106 +3978,106 @@ Kiểm tra Google Cloud Console: redirect_uri phải là &quot;http://localhost&
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="157"/>
         <source>Đường dẫn folder không hợp lệ</source>
-        <translation type="unfinished"></translation>
+        <translation>Invalid folder path</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="274"/>
         <source>Đường dẫn file không hợp lệ</source>
-        <translation type="unfinished"></translation>
+        <translation>Invalid file path</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="295"/>
         <source>Không lấy được thông tin file</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't retrieve file details</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="372"/>
         <source>Không tải được danh sách thư mục</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't load the folder list</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="399"/>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="467"/>
         <source>Đã thêm vào danh sách tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Added to the download queue</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="427"/>
         <source>Không tạo được phiên phát trực tiếp</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't create a streaming session</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="433"/>
         <source>Không mở được trình phát mặc định</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to open the default player</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="447"/>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="478"/>
         <source>Đã sao chép link</source>
-        <translation type="unfinished"></translation>
+        <translation>Link copied</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="526"/>
         <source>Đã thêm %1 file vào danh sách tải</source>
-        <translation type="unfinished"></translation>
+        <translation>Added %1 file(s) to the download queue</translation>
     </message>
 </context>
 <context>
     <name>fsnext::SystemTray</name>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="188"/>
+        <location filename="../platform/SystemTray.cpp" line="195"/>
         <source>Hiện cửa sổ</source>
-        <translation type="unfinished"></translation>
+        <translation>Show window</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="194"/>
+        <location filename="../platform/SystemTray.cpp" line="201"/>
         <source>Hiện mini HUD</source>
-        <translation type="unfinished"></translation>
+        <translation>Show mini HUD</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="197"/>
+        <location filename="../platform/SystemTray.cpp" line="204"/>
         <source>Tạm dừng tất cả</source>
-        <translation type="unfinished">Pause All</translation>
+        <translation>Pause All</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="207"/>
+        <location filename="../platform/SystemTray.cpp" line="214"/>
         <source>Cài đặt thông báo…</source>
-        <translation type="unfinished"></translation>
+        <translation>Notification settings…</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="212"/>
+        <location filename="../platform/SystemTray.cpp" line="219"/>
         <source>Thoát</source>
-        <translation type="unfinished"></translation>
+        <translation>Quit</translation>
     </message>
     <message numerus="yes">
-        <location filename="../platform/SystemTray.cpp" line="282"/>
+        <location filename="../platform/SystemTray.cpp" line="289"/>
         <source>Đang chuyển %n mục</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Transferring %n item</numerusform>
+            <numerusform>Transferring %n items</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../platform/SystemTray.cpp" line="283"/>
+        <location filename="../platform/SystemTray.cpp" line="290"/>
         <source>%n mục đang chờ</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n item queued</numerusform>
+            <numerusform>%n items queued</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../platform/SystemTray.cpp" line="284"/>
+        <location filename="../platform/SystemTray.cpp" line="291"/>
         <source>%n mục lỗi</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n item failed</numerusform>
+            <numerusform>%n items failed</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="287"/>
+        <location filename="../platform/SystemTray.cpp" line="294"/>
         <source>Sẵn sàng</source>
-        <translation type="unfinished"></translation>
+        <translation>Ready</translation>
     </message>
 </context>
 <context>
@@ -4286,37 +4085,37 @@ Kiểm tra Google Cloud Console: redirect_uri phải là &quot;http://localhost&
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="129"/>
         <source>Đã tải lên &quot;%1&quot; nhưng không đặt được mật khẩu: %2. File hiện KHÔNG được bảo vệ.</source>
-        <translation type="unfinished"></translation>
+        <translation>"%1" was uploaded, but the password couldn't be set: %2. The file is currently NOT protected.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="246"/>
         <source>Chỉ tài khoản VIP mới có thể upload file bảo mật.</source>
-        <translation type="unfinished"></translation>
+        <translation>Only VIP accounts can upload secure files.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="251"/>
         <source>Không đủ dung lượng bảo mật. Cần thêm %1 MB, còn %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translation>Not enough secure storage. %1 MB more needed, %2 MB available.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="259"/>
         <source>Không đủ dung lượng. Cần thêm %1 MB, còn %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translation>Not enough storage. %1 MB more needed, %2 MB available.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="365"/>
         <source>Không tìm thấy file cục bộ.</source>
-        <translation type="unfinished"></translation>
+        <translation>Local file not found.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="370"/>
         <source>File cục bộ đã bị xoá hoặc di chuyển.</source>
-        <translation type="unfinished"></translation>
+        <translation>The local file was deleted or moved.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="375"/>
         <source>Không xoá được file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Couldn't delete the file: %1</translation>
     </message>
 </context>
 <context>
@@ -4324,7 +4123,7 @@ Kiểm tra Google Cloud Console: redirect_uri phải là &quot;http://localhost&
     <message>
         <location filename="../viewmodels/UserInfoViewModel.cpp" line="66"/>
         <source>Vĩnh viễn</source>
-        <translation type="unfinished"></translation>
+        <translation>Lifetime</translation>
     </message>
 </context>
 </TS>

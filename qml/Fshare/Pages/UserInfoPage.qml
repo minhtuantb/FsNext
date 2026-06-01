@@ -35,7 +35,7 @@ Aurora.FsScrollPage {
             // ═══════════════════════════════════════════════════════════════
             Aurora.FsPageHeader {
                 framed: false
-                kicker: qsTr("Tài khoản")
+                compact: true
                 // The dynamic name + level pair is rendered as title + accentWord
                 // so the second-token italic-accent treatment lines up with the
                 // other editorial headers.

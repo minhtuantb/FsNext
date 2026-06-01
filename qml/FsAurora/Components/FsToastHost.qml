@@ -51,8 +51,16 @@ Item {
     // we shift the first entry from here into _visible.
     ListModel { id: _pending }
 
+    // Fired when the user clicks the body of a toast that carried a non-empty
+    // `action`. Listeners switch on the action token (e.g. "go.download" →
+    // navigate to the Download page). Toasts without an action stay
+    // dismiss-only and never emit this signal.
+    signal toastActivated(string action)
+
     // ── Public API ────────────────────────────────────────────────────
-    // payload: { title, desc, variant, autoCloseMs }
+    // payload: { title, desc, variant, autoCloseMs, action }
+    //   action — optional opaque token. When set, the body is clickable and a
+    //            click emits toastActivated(action) before dismissing.
     // Returns the toast id (int) so callers could dismiss specific toasts
     // later if we ever expose host.dismiss(id).
     function show(payload) {
@@ -61,6 +69,7 @@ Item {
             title:       payload.title       || "",
             desc:        payload.desc        || "",
             variant:     payload.variant     || "info",
+            action:      payload.action      || "",
             autoCloseMs: payload.autoCloseMs > 0 ? payload.autoCloseMs : defaultAutoCloseMs
         };
         if (_visible.count < maxVisible) {
@@ -87,6 +96,7 @@ Item {
                 title:       next.title,
                 desc:        next.desc,
                 variant:     next.variant,
+                action:      next.action,
                 autoCloseMs: next.autoCloseMs
             };
             _pending.remove(0);
@@ -110,20 +120,23 @@ Item {
             model: _visible
 
             // Each row reads the model's _id / title / desc / variant /
-            // autoCloseMs roles and emits onClosed → host._dismiss(_id).
+            // action / autoCloseMs roles and emits onClosed → host._dismiss(_id).
             FsToast {
                 required property int    _id
                 required property string title
                 required property string desc
                 required property string variant
+                required property string action
                 required property int    autoCloseMs
 
                 title:       _id ? title : ""    // bind via role
                 desc:        desc
                 variant:     variant
+                action:      action
                 autoCloseMs: autoCloseMs
                 autoClose:   true
                 onClosed:    host._dismiss(_id)
+                onActivated: if (action.length > 0) host.toastActivated(action)
             }
         }
     }

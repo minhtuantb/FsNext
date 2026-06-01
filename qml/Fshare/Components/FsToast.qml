@@ -30,7 +30,14 @@ Rectangle {
     property bool autoClose: true
     property int autoCloseMs: 5000
 
+    // Opaque token. When non-empty, the toast body becomes clickable: clicking
+    // (anywhere except the ✕) emits activated() and then closed(), letting the
+    // host route the user to whatever surface the action describes (e.g.,
+    // "go.download" → switch to the Download page). Empty = pure notification.
+    property string action: ""
+
     signal closed()
+    signal activated()
 
     implicitWidth: _hasContent ? 380 : 0
     implicitHeight: _hasContent ? (row.implicitHeight + AuroraTheme.sp4 * 2) : 0
@@ -65,6 +72,19 @@ Rectangle {
         }
     }
     property color _accentText: _accentColor
+
+    // Body-click handler — declared BEFORE the RowLayout so it sits BEHIND
+    // the close-button MouseArea in stacking order: clicking the ✕ still
+    // dismisses without firing activated(). Disabled when no action is set,
+    // so plain notifications keep their idle cursor and don't surprise the
+    // user with a "click to go somewhere" affordance.
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        enabled: root.action.length > 0
+        cursorShape: root.action.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onClicked: { root.activated(); root.closed(); }
+    }
 
     RowLayout {
         id: row

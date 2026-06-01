@@ -807,7 +807,22 @@ ApplicationWindow {
     Component { id: downloadPageComp;       DownloadPage {} }
     Component { id: uploadPageComp;         UploadPage {} }
     Component { id: syncPageComp;           SyncPage {} }
-    Component { id: fileManagerPageComp;    FileManagerPage {} }
+    Component {
+        id: fileManagerPageComp
+        FileManagerPage {
+            // "Tải về" context menu queued a file — surface a clickable toast
+            // (taps route to the Download page). The page itself never touches
+            // toastHost, keeping cross-component coupling at the Main.qml seam.
+            onDownloadEnqueued: (fileName) => {
+                toastHost.show({
+                    title:   qsTr("Đã thêm vào Tải về"),
+                    desc:    fileName,
+                    variant: "success",
+                    action:  "go.download"
+                });
+            }
+        }
+    }
     Component { id: favoritesPageComp;      FavoritesPage {} }
     Component { id: userInfoPageComp;       UserInfoPage {} }
     Component { id: settingsPageComp;       SettingsPage {} }
@@ -853,6 +868,18 @@ ApplicationWindow {
     // Up to 3 visible at once stacked top-right; overflow is queued FIFO.
     Aurora.FsToastHost {
         id: toastHost
+        // Clickable toasts route through here. The `action` token is set by
+        // callers of show(); we map it to navigation here so pages don't need
+        // to know about page indices. Keep this list small and intent-driven
+        // ("go.<surface>") — not a free-for-all command bus.
+        onToastActivated: (action) => {
+            switch (action) {
+            case "go.download": root.currentPage = Pages.download; break;
+            case "go.upload":   root.currentPage = Pages.upload;   break;
+            case "go.files":    root.currentPage = Pages.files;    break;
+            case "go.sync":     root.currentPage = Pages.sync;     break;
+            }
+        }
     }
 
     Connections {
