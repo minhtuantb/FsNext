@@ -48,6 +48,19 @@ public:
     virtual void setCookie(const QString &cookie);
     QString cookie() const;
 
+    // Shutdown hook — set this *before* draining the QtConcurrent pool at
+    // app exit. Once set, every in-flight curl_easy_perform() unwinds at the
+    // next progress callback (≤200 ms) by returning CURLE_ABORTED_BY_CALLBACK
+    // from the transfer-info hook installed in createHandle(). This is the
+    // ONLY way to stop a long HTTP wait (e.g. deep folder crawl) without
+    // letting the worker thread outlive FshareApi / HttpClient — a worker
+    // still inside listFiles() when those objects are destroyed is the heap
+    // corruption (Windows 0xc0000374) we see at exit on networks under load.
+    //
+    // Idempotent + thread-safe.
+    static void requestGlobalShutdown();
+    static bool isShuttingDown();
+
 private:
     CURL *createHandle();
     void applyHeaders(CURL *curl, const QMap<QString, QString> &extra);

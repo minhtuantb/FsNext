@@ -150,7 +150,7 @@ Item {
                 Layout.fillWidth: true
 
                 Text {
-                    text: "━━ Chào bạn trở lại"
+                    text: qsTr("━━ Chào bạn trở lại")
                     color: "#FFAF1D"
                     font.family: AuroraTheme.fontMono
                     font.pixelSize: 11
@@ -161,7 +161,7 @@ Item {
 
                 // Line 1 — "Tiếp tục" serif upright
                 Text {
-                    text: "Tiếp tục"
+                    text: qsTr("Tiếp tục")
                     color: "#FFFFFF"
                     font.family: AuroraTheme.fontSerif
                     font.pixelSize: 72
@@ -173,7 +173,7 @@ Item {
                 // Qt doesn't support CSS text-gradient; use accent3 pink as a
                 // single-tone stand-in that still reads as "the accent line".
                 Text {
-                    text: "nơi bạn dừng."
+                    text: qsTr("nơi bạn dừng.")
                     color: AuroraTheme.accent3
                     font.family: AuroraTheme.fontSerif
                     font.italic: true
@@ -185,7 +185,7 @@ Item {
                 Text {
                     Layout.topMargin: 22
                     Layout.preferredWidth: 380
-                    text: "287 GB trong kho, 7 file đang chờ tải về, 14 link đang sống — mọi thứ của bạn, cách một lần đăng nhập."
+                    text: qsTr("287 GB trong kho, 7 file đang chờ tải về, 14 link đang sống — mọi thứ của bạn, cách một lần đăng nhập.")
                     color: Qt.rgba(1, 1, 1, 0.70)
                     font.family: AuroraTheme.fontSans
                     font.pixelSize: 14
@@ -256,7 +256,7 @@ Item {
             spacing: 6
 
             Text {
-                text: "Chưa có tài khoản?"
+                text: qsTr("Chưa có tài khoản?")
                 font.family: AuroraTheme.fontSans
                 font.pixelSize: 12
                 color: AuroraTheme.ink3
@@ -285,7 +285,7 @@ Item {
 
             // ── Kicker + greeting ───────────────────────────
             Text {
-                text: "━━ Đăng nhập"
+                text: qsTr("━━ Đăng nhập")
                 font.family: AuroraTheme.fontMono
                 font.pixelSize: 11
                 font.letterSpacing: 2.0
@@ -297,7 +297,7 @@ Item {
             RowLayout {
                 spacing: 0
                 Text {
-                    text: "Chào "
+                    text: qsTr("Chào ")
                     font.family: AuroraTheme.fontSerif
                     font.pixelSize: 48
                     color: AuroraTheme.ink1
@@ -316,7 +316,7 @@ Item {
             Text {
                 Layout.topMargin: 10
                 Layout.fillWidth: true
-                text: "Đăng nhập để tiếp tục đồng bộ 3 folder và quản lý 14 link đang hoạt động."
+                text: qsTr("Đăng nhập để tiếp tục đồng bộ 3 folder và quản lý 14 link đang hoạt động.")
                 font.family: AuroraTheme.fontSans
                 font.pixelSize: 13
                 color: AuroraTheme.ink3
@@ -396,7 +396,7 @@ Item {
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: AuroraTheme.border }
                 Text {
-                    text: "HOẶC"
+                    text: qsTr("HOẶC")
                     font.family: AuroraTheme.fontMono
                     font.pixelSize: 11
                     font.letterSpacing: 1.5
@@ -409,7 +409,7 @@ Item {
             Fsh.FsTextField {
                 id: emailField
                 Layout.fillWidth: true
-                label: "EMAIL HOẶC TÊN ĐĂNG NHẬP"
+                label: qsTr("EMAIL HOẶC TÊN ĐĂNG NHẬP")
                 placeholder: "your@email.com"
                 text: root.authVm ? root.authVm.email : ""
                 onTextChanged:
@@ -419,7 +419,7 @@ Item {
             Fsh.FsTextField {
                 id: passwordField
                 Layout.fillWidth: true
-                label: "MẬT KHẨU"
+                label: qsTr("MẬT KHẨU")
                 placeholder: "••••••••"
                 echoMode: TextInput.Password
                 text: root.authVm ? root.authVm.password : ""
@@ -470,7 +470,7 @@ Item {
                         }
                     }
                     Text {
-                        text: "Giữ đăng nhập"
+                        text: qsTr("Giữ đăng nhập")
                         font.family: AuroraTheme.fontSans
                         font.pixelSize: 12
                         color: AuroraTheme.ink2
@@ -503,7 +503,7 @@ Item {
             Fsh.FsButton {
                 Layout.topMargin: 22
                 Layout.fillWidth: true
-                text: (root.authVm && root.authVm.isLoading) ? "Đang đăng nhập…" : "Đăng nhập  ›"
+                text: (root.authVm && root.authVm.isLoading) ? qsTr("Đang đăng nhập…") : qsTr("Đăng nhập  ›")
                 variant: "primary"
                 size: "lg"
                 loading: root.authVm && root.authVm.isLoading
@@ -543,7 +543,7 @@ Item {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: "Kết nối an toàn · TLS 1.3 · SRP authentication"
+                        text: qsTr("Kết nối an toàn · TLS 1.3 · SRP authentication")
                         font.family: AuroraTheme.fontSans
                         font.pixelSize: 11
                         color: AuroraTheme.ink3

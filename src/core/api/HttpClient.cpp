@@ -4,8 +4,38 @@
 #include <QMutexLocker>
 #include <QSet>
 #include <QUrl>
+#include <atomic>
 
 namespace fsnext {
+
+// Process-wide shutdown flag. Set by requestGlobalShutdown(). Once true, the
+// curl xferinfo callback installed in createHandle() returns non-zero on its
+// next tick (libcurl polls it at ~100-200 ms intervals during transfer), which
+// makes curl_easy_perform() return CURLE_ABORTED_BY_CALLBACK and the worker
+// thread unwind back to the QtConcurrent::run lambda — letting the global
+// thread-pool drain BEFORE we destroy FshareApi / HttpClient / etc.
+static std::atomic<bool> g_httpShutdown{false};
+
+// Transfer-info callback installed on every easy handle. Lightweight — it
+// only reads the atomic, no other work — so it's safe to call hundreds of
+// times per second on every active transfer.
+static int abortOnShutdown(void * /*clientp*/,
+                            curl_off_t /*dltotal*/, curl_off_t /*dlnow*/,
+                            curl_off_t /*ultotal*/, curl_off_t /*ulnow*/)
+{
+    return g_httpShutdown.load(std::memory_order_relaxed) ? 1 : 0;
+}
+
+void HttpClient::requestGlobalShutdown()
+{
+    g_httpShutdown.store(true, std::memory_order_relaxed);
+}
+
+bool HttpClient::isShuttingDown()
+{
+    return g_httpShutdown.load(std::memory_order_relaxed);
+}
+
 
 // Reject anything that isn't a plausible proxy host. We accept bare hostnames,
 // IPv4, bracketed IPv6, or scheme-prefixed URLs for the proxy protocols libcurl
@@ -184,6 +214,14 @@ CURL *HttpClient::createHandle()
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 15L);
+    // Wire the shutdown abort hook on every handle. Libcurl polls this during
+    // both connect and transfer; once g_httpShutdown flips true it returns
+    // non-zero and curl_easy_perform unwinds within ~100-200 ms. Without this,
+    // a worker stuck in listFiles() against a slow Fshare endpoint outlives
+    // its captured FshareApi pointer at app exit → heap corruption.
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, abortOnShutdown);
+    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, nullptr);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
     // Reject TLS < 1.2. Fshare and all supporting OAuth providers (Google,

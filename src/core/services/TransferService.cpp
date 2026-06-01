@@ -155,7 +155,12 @@ void TransferService::loadHistory(const QString &userId)
     const int     pageSize        = kHistoryMaxPerType;
     const QString requestedUserId = userId;
 
-    QtConcurrent::run([this, requestedUserId, dbPath, dlJson, upJson, pageSize]() {
+    // QPointer<TransferService> guard — though TransferService is app-lifetime
+    // in normal flow, capturing a QPointer makes the contract explicit and
+    // documents that the lambda must tolerate a vanished receiver (matches
+    // every other QtConcurrent::run pattern in this file).
+    QPointer<TransferService> guard(this);
+    QtConcurrent::run([guard, requestedUserId, dbPath, dlJson, upJson, pageSize]() {
         TransferHistoryDb bgDb;
         // A connection-name-per-thread keeps Qt's QSqlDatabase registry happy
         // even if loadHistory fires twice in rapid succession (re-login / user
@@ -187,32 +192,35 @@ void TransferService::loadHistory(const QString &userId)
         QHash<QString, QString> inflightSnapshots;
         QVector<TransferTask> inflight = bgDb.loadInFlight(requestedUserId, &inflightSnapshots);
 
-        // Marshal back to the main thread. `this` is safe to capture because
-        // TransferService outlives the worker (AppContext owns it for the
-        // entire app lifetime). The userId guard protects against a logout-
-        // then-login race where a stale result could arrive after the user
-        // changed.
-        QMetaObject::invokeMethod(this, [this, dl, up, inflight, inflightSnapshots,
-                                          requestedUserId]() {
-            if (m_currentUserId != requestedUserId) {
+        // Marshal back to the main thread. Two guards:
+        //   • `guard` catches a destroyed-mid-flight service (extra-defensive;
+        //     in normal flow TransferService outlives the worker).
+        //   • The userId check protects against a logout-then-login race where
+        //     a stale result could arrive after the user changed.
+        if (!guard) return;
+        QMetaObject::invokeMethod(guard.data(),
+            [guard, dl, up, inflight, inflightSnapshots, requestedUserId]() {
+            auto *self = guard.data();
+            if (!self) return;
+            if (self->m_currentUserId != requestedUserId) {
                 qDebug() << "[TransferService] bg history result discarded (user changed)";
                 return;
             }
-            m_completed.clear();
-            m_completed.append(dl);
-            m_completed.append(up);
+            self->m_completed.clear();
+            self->m_completed.append(dl);
+            self->m_completed.append(up);
             // Initial replay is bounded by kHistoryMaxPerType × 2 so this trim
             // is a no-op today, but it keeps the invariant in one place for
             // when that cap grows.
-            trimFrontTo(m_completed, kCompletedInMemoryCap);
+            trimFrontTo(self->m_completed, kCompletedInMemoryCap);
             qDebug() << "[TransferService] Loaded" << dl.size() << "downloads and"
                      << up.size() << "uploads (page 0, bg) for user" << requestedUserId;
-            for (const auto &t : m_completed) emit taskAdded(t);
+            for (const auto &t : self->m_completed) emit self->taskAdded(t);
 
             if (!inflight.isEmpty()) {
                 qInfo() << "[TransferService] Resuming" << inflight.size()
                         << "in-flight tasks from previous session";
-                resumeInFlightTasks(inflight, inflightSnapshots);
+                self->resumeInFlightTasks(inflight, inflightSnapshots);
             }
         }, Qt::QueuedConnection);
     });

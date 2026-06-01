@@ -3,6 +3,7 @@
 #include "core/api/FshareApi.h"
 
 #include <QDebug>
+#include <QPointer>
 #include <QtConcurrent>
 
 namespace fsnext {
@@ -62,51 +63,74 @@ void BatchFileResolver::processQueue()
         m_inFlight++;
 
         FshareApi *api = m_api;
+        // QPointer guard — defends against the resolver being destroyed while
+        // a worker is still in the blocking getFileInfo call. The resolver is
+        // app-lifetime in normal flow (owned by AppContext) but the defensive
+        // guard costs nothing and makes "delete me right now" scenarios safe
+        // (e.g. a future test harness, or a hard logout that recreates the
+        // batch surface).
+        QPointer<BatchFileResolver> guard(this);
 
-        QtConcurrent::run([this, api, url]() {
-            if (m_cancelled.load()) {
-                QMutexLocker lk(&m_mutex);
-                m_inFlight--;
-                m_completed++;
-                m_failed++;
-                lk.unlock();
-                scheduleNext();
+        QtConcurrent::run([guard, api, url]() {
+            if (!guard || guard->m_cancelled.load()) {
+                if (auto *self = guard.data()) {
+                    QMutexLocker lk(&self->m_mutex);
+                    self->m_inFlight--;
+                    self->m_completed++;
+                    self->m_failed++;
+                    lk.unlock();
+                    self->scheduleNext();
+                }
                 return;
             }
 
-            // Blocking API call on thread-pool thread
+            // Blocking API call on thread-pool thread. `api` is captured by
+            // value (raw pointer is safe — AppContext owns FshareApi for app
+            // lifetime; main.cpp's waitForDone(5000) drains every worker
+            // before the api object is destroyed at exit).
             auto result = api->getFileInfo(url);
 
-            QMutexLocker lk(&m_mutex);
-            m_inFlight--;
-            m_completed++;
+            // Re-check after the blocking call returned: the resolver may
+            // have been destroyed while getFileInfo was outstanding.
+            auto *self = guard.data();
+            if (!self) return;
+
+            QMutexLocker lk(&self->m_mutex);
+            self->m_inFlight--;
+            self->m_completed++;
 
             if (result.isSuccess()) {
-                m_succeeded++;
+                self->m_succeeded++;
                 FileItem item = result.data();
-                int completed = m_completed;
-                int total = m_total;
+                int completed = self->m_completed;
+                int total = self->m_total;
                 lk.unlock();
 
-                // Deliver on main thread
-                QMetaObject::invokeMethod(this, [this, item, completed, total]() {
-                    emit itemResolved(item);
-                    emit batchProgress(completed, total);
+                // Deliver on main thread — invokeMethod silently no-ops if
+                // the receiver is gone, but the inner lambda still copies the
+                // guard so we don't dereference a dangling self there either.
+                QMetaObject::invokeMethod(self, [guard, item, completed, total]() {
+                    if (auto *s = guard.data()) {
+                        emit s->itemResolved(item);
+                        emit s->batchProgress(completed, total);
+                    }
                 }, Qt::QueuedConnection);
             } else {
-                m_failed++;
+                self->m_failed++;
                 QString error = result.error().message;
-                int completed = m_completed;
-                int total = m_total;
+                int completed = self->m_completed;
+                int total = self->m_total;
                 lk.unlock();
 
-                QMetaObject::invokeMethod(this, [this, url, error, completed, total]() {
-                    emit itemFailed(url, error);
-                    emit batchProgress(completed, total);
+                QMetaObject::invokeMethod(self, [guard, url, error, completed, total]() {
+                    if (auto *s = guard.data()) {
+                        emit s->itemFailed(url, error);
+                        emit s->batchProgress(completed, total);
+                    }
                 }, Qt::QueuedConnection);
             }
 
-            scheduleNext();
+            self->scheduleNext();
         });
     }
 }

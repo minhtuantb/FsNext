@@ -26,7 +26,7 @@
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="163"/>
         <source>Thư mục trên Fshare sẽ được tạo tự động theo tên thư mục đã chọn.</source>
-        <translation>A folder will be created on Fshare automatically using the selected folder's name.</translation>
+        <translation>A folder will be created on Fshare automatically using the selected folder&apos;s name.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Dialogs/AddWatchFolderDialog.qml" line="222"/>
@@ -952,7 +952,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1779"/>
         <source>Không dùng các ký tự: &lt; &gt; : &quot; /  | ? *</source>
-        <translation>Do not use these characters: &lt; &gt; : " /  | ? *</translation>
+        <translation>Do not use these characters: &lt; &gt; : &quot; /  | ? *</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1783"/>
@@ -977,7 +977,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1909"/>
         <source>Tạo bên trong thư mục đã chọn &quot;%1&quot;</source>
-        <translation>Create inside the selected folder "%1"</translation>
+        <translation>Create inside the selected folder &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1924"/>
@@ -992,7 +992,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1927"/>
         <source>Tránh dùng các ký tự &lt; &gt; : &quot; /  | ? *</source>
-        <translation>Avoid these characters: &lt; &gt; : " /  | ? *</translation>
+        <translation>Avoid these characters: &lt; &gt; : &quot; /  | ? *</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManagerPage.qml" line="1951"/>
@@ -1132,7 +1132,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="77"/>
         <source>Name cannot contain: /  : * ? &quot; &lt; &gt; | , ! &apos; ` — # $ % ^ &amp; ~ = + @</source>
-        <translation>Name cannot contain: /  : * ? " &lt; &gt; | , ! ' ` — # $ % ^ &amp; ~ = + @</translation>
+        <translation>Name cannot contain: /  : * ? &quot; &lt; &gt; | , ! &apos; ` — # $ % ^ &amp; ~ = + @</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/FileManager/FileRenameDialog.qml" line="79"/>
@@ -1834,7 +1834,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="169"/>
         <source>Không tìm thấy &quot;%1&quot;</source>
-        <translation>No results for "%1"</translation>
+        <translation>No results for &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Components/HomeSearchOverlay.qml" line="170"/>
@@ -1855,14 +1855,89 @@ to view details</translation>
 <context>
     <name>LoginView</name>
     <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="153"/>
+        <source>━━ Chào bạn trở lại</source>
+        <translation>━━ Welcome back</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="164"/>
+        <source>Tiếp tục</source>
+        <translation>Continue</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="176"/>
+        <source>nơi bạn dừng.</source>
+        <translation>where you left off.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="188"/>
+        <source>287 GB trong kho, 7 file đang chờ tải về, 14 link đang sống — mọi thứ của bạn, cách một lần đăng nhập.</source>
+        <translation>287 GB in storage, 7 files waiting to download, 14 active links — everything you have, one sign-in away.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="259"/>
+        <source>Chưa có tài khoản?</source>
+        <translation>Don't have an account?</translation>
+    </message>
+    <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="265"/>
         <source>Đăng ký ngay →</source>
         <translation>Sign up now →</translation>
     </message>
     <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="288"/>
+        <source>━━ Đăng nhập</source>
+        <translation>━━ Sign in</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="300"/>
+        <source>Chào </source>
+        <translation>Hi, </translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="319"/>
+        <source>Đăng nhập để tiếp tục đồng bộ 3 folder và quản lý 14 link đang hoạt động.</source>
+        <translation>Sign in to keep syncing 3 folders and managing 14 active links.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="399"/>
+        <source>HOẶC</source>
+        <translation>OR</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="412"/>
+        <source>EMAIL HOẶC TÊN ĐĂNG NHẬP</source>
+        <translation>EMAIL OR USERNAME</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="422"/>
+        <source>MẬT KHẨU</source>
+        <translation>PASSWORD</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="473"/>
+        <source>Giữ đăng nhập</source>
+        <translation>Keep me signed in</translation>
+    </message>
+    <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="486"/>
         <source>Quên mật khẩu?</source>
         <translation>Forgot password?</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="506"/>
+        <source>Đang đăng nhập…</source>
+        <translation>Signing in…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="506"/>
+        <source>Đăng nhập  ›</source>
+        <translation>Sign in  ›</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="546"/>
+        <source>Kết nối an toàn · TLS 1.3 · SRP authentication</source>
+        <translation>Secure connection · TLS 1.3 · SRP authentication</translation>
     </message>
 </context>
 <context>
@@ -1870,12 +1945,12 @@ to view details</translation>
     <message>
         <location filename="../../qml/Main.qml" line="403"/>
         <source>Không hỏi lại lần sau</source>
-        <translation>Don't ask again</translation>
+        <translation>Don&apos;t ask again</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="404"/>
         <source>Không hỏi lại (chỉ khi không có lượt chuyển)</source>
-        <translation>Don't ask again (only when no transfers are running)</translation>
+        <translation>Don&apos;t ask again (only when no transfers are running)</translation>
     </message>
     <message>
         <location filename="../../qml/Main.qml" line="428"/>
@@ -2407,7 +2482,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="82"/>
         <source>Hiện popup &apos;Thoát hẳn / Thu nhỏ vào khay&apos; mỗi lần bạn nhấn nút X. Tắt nếu muốn cửa sổ ứng xử theo lựa chọn cuối.</source>
-        <translation>Show the 'Quit / Minimize to tray' prompt every time you click the X button. Turn off to always use your last choice.</translation>
+        <translation>Show the &apos;Quit / Minimize to tray&apos; prompt every time you click the X button. Turn off to always use your last choice.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="94"/>
@@ -2452,7 +2527,7 @@ to view details</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="135"/>
         <source>Đổi tên &quot;(1)&quot;</source>
-        <translation>Rename "(1)"</translation>
+        <translation>Rename &quot;(1)&quot;</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SettingsPage.qml" line="136"/>
@@ -3146,7 +3221,7 @@ Any QML can go here.</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1076"/>
         <source>Bấm &quot;Đồng bộ ngay&quot; để quét thư mục và bắt đầu sao lưu.</source>
-        <translation>Click "Sync now" to scan the folder and start backing up.</translation>
+        <translation>Click &quot;Sync now&quot; to scan the folder and start backing up.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="1097"/>
@@ -3329,7 +3404,7 @@ Any QML can go here.</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="174"/>
         <source>Xoá bản sao cục bộ của &quot;%1&quot;? Hành động này không thể hoàn tác.</source>
-        <translation>Delete the local copy of "%1"? This action cannot be undone.</translation>
+        <translation>Delete the local copy of &quot;%1&quot;? This action cannot be undone.</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="182"/>
@@ -3370,7 +3445,7 @@ Any QML can go here.</translation>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="461"/>
         <source>Còn %1 file từ phiên trước chưa tải lên</source>
-        <translation>%1 file(s) from your previous session haven't been uploaded</translation>
+        <translation>%1 file(s) from your previous session haven&apos;t been uploaded</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="470"/>
@@ -3763,14 +3838,14 @@ Any QML can go here.</translation>
         <location filename="../viewmodels/DownloadViewModel.cpp" line="226"/>
         <source>Cannot download to system folder: &quot;%1&quot;.
 Please choose a different destination.</source>
-        <translation>Cannot download to system folder: "%1".
+        <translation>Cannot download to system folder: &quot;%1&quot;.
 Please choose a different destination.</translation>
     </message>
     <message>
         <location filename="../viewmodels/DownloadViewModel.cpp" line="265"/>
         <source>Không nhận diện được %1 liên kết (chỉ chấp nhận fshare.vn/file/ hoặc /folder/):
 %2</source>
-        <translation>Couldn't recognize %1 link(s) (only fshare.vn/file/ or /folder/ are accepted):
+        <translation>Couldn&apos;t recognize %1 link(s) (only fshare.vn/file/ or /folder/ are accepted):
 %2</translation>
     </message>
 </context>
@@ -3860,12 +3935,12 @@ Please choose a different destination.</translation>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="68"/>
         <source>Không thể mở cổng %1 cho đăng nhập %2 — cổng đang bận.</source>
-        <translation>Couldn't open port %1 for %2 sign-in — the port is in use.</translation>
+        <translation>Couldn&apos;t open port %1 for %2 sign-in — the port is in use.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="71"/>
         <source>Không thể mở cổng localhost cho đăng nhập OAuth.</source>
-        <translation>Couldn't open a localhost port for OAuth sign-in.</translation>
+        <translation>Couldn&apos;t open a localhost port for OAuth sign-in.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="111"/>
@@ -3877,12 +3952,12 @@ Please choose a different destination.</translation>
         <source>Hết thời gian chờ đăng nhập %1 (2 phút).
 Kiểm tra Google Cloud Console: redirect_uri phải là &quot;http://localhost&quot; (không có port hoặc path).</source>
         <translation>%1 sign-in timed out (2 minutes).
-Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port or path).</translation>
+Check the Google Cloud Console: redirect_uri must be &quot;http://localhost&quot; (no port or path).</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="163"/>
         <source>Không thể mở trình duyệt cho %1.</source>
-        <translation>Couldn't open the browser for %1.</translation>
+        <translation>Couldn&apos;t open the browser for %1.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="221"/>
@@ -3912,7 +3987,7 @@ Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port
     <message>
         <location filename="../core/services/OAuthService.cpp" line="283"/>
         <source>Không lấy được email từ %1.</source>
-        <translation>Couldn't retrieve the email from %1.</translation>
+        <translation>Couldn&apos;t retrieve the email from %1.</translation>
     </message>
     <message>
         <location filename="../core/services/OAuthService.cpp" line="324"/>
@@ -3988,12 +4063,12 @@ Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="295"/>
         <source>Không lấy được thông tin file</source>
-        <translation>Couldn't retrieve file details</translation>
+        <translation>Couldn&apos;t retrieve file details</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="372"/>
         <source>Không tải được danh sách thư mục</source>
-        <translation>Couldn't load the folder list</translation>
+        <translation>Couldn&apos;t load the folder list</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="399"/>
@@ -4004,7 +4079,7 @@ Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="427"/>
         <source>Không tạo được phiên phát trực tiếp</source>
-        <translation>Couldn't create a streaming session</translation>
+        <translation>Couldn&apos;t create a streaming session</translation>
     </message>
     <message>
         <location filename="../viewmodels/RemoteShareViewModel.cpp" line="433"/>
@@ -4085,7 +4160,7 @@ Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="129"/>
         <source>Đã tải lên &quot;%1&quot; nhưng không đặt được mật khẩu: %2. File hiện KHÔNG được bảo vệ.</source>
-        <translation>"%1" was uploaded, but the password couldn't be set: %2. The file is currently NOT protected.</translation>
+        <translation>&quot;%1&quot; was uploaded, but the password couldn&apos;t be set: %2. The file is currently NOT protected.</translation>
     </message>
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="246"/>
@@ -4115,7 +4190,7 @@ Check the Google Cloud Console: redirect_uri must be "http://localhost" (no port
     <message>
         <location filename="../viewmodels/UploadViewModel.cpp" line="375"/>
         <source>Không xoá được file: %1</source>
-        <translation>Couldn't delete the file: %1</translation>
+        <translation>Couldn&apos;t delete the file: %1</translation>
     </message>
 </context>
 <context>

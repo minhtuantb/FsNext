@@ -1,5 +1,6 @@
 #include "app/Application.h"
 #include "app/AppContext.h"
+#include "core/api/HttpClient.h"
 #include "core/services/AuthService.h"
 #include "core/services/SettingsService.h"
 #include "core/services/TransferService.h"
@@ -617,12 +618,22 @@ int main(int argc, char *argv[])
     // AppContext and would be destructed at the closing brace of this scope;
     // any task still running at that moment would dereference a freed
     // pointer.  Block until the global thread pool drains so every captured
-    // pointer is still valid when its lambda finishes.  5 s is the same
-    // bound TransferService uses for individual worker threads — long
-    // enough to let a typical in-flight HTTP request finish, short enough
-    // that a wedged network call doesn't keep the user staring at a frozen
-    // exit.
-    QThreadPool::globalInstance()->waitForDone(5000);
+    // pointer is still valid when its lambda finishes.
+    //
+    // Step 1 — flip the HTTP shutdown flag. Every active curl_easy_perform
+    // unwinds at its next progress tick (~100-200 ms) with
+    // CURLE_ABORTED_BY_CALLBACK. Without this, a worker doing a deep
+    // FileSyncWorker folder crawl could be N seconds into a listFiles() call
+    // when shutdown begins, blow past waitForDone's timeout, and access a
+    // freed FshareApi from inside curl — the heap-corruption (0xc0000374) we
+    // observed at exit on loaded accounts.
+    fsnext::HttpClient::requestGlobalShutdown();
+    //
+    // Step 2 — wait up to 15 s for every worker to finish. Most return
+    // immediately after the abort hook fires; the long bound is only there
+    // for a worker that was sleeping in a Qt::msleep or similar inside a
+    // non-curl code path.
+    QThreadPool::globalInstance()->waitForDone(15000);
     }   // ── end of "Main.qml loaded" else branch ─────────────────────────────
     }   // ── end of "init succeeded" guard (CRASH_AUDIT H11) ──────────────────
     }   // ── End of application-context scope ───────────────────────────────

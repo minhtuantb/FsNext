@@ -74,6 +74,9 @@ qmllint.exe -I qml qml/Fshare/Pages/<Page>.qml
 - **MVVM**: QML chỉ binding + display logic; business logic ở Service; ViewModel là cầu nối (Q_PROPERTY/Q_INVOKABLE).
 - ViewModel mới phải được tạo + wire trong `AppContext::init()` và đăng ký trong `AppContext::registerQml()`.
 - **Không hardcode màu/size trong QML** — dùng token `FsAurora.Theme` (`AuroraTheme`, `AuroraColors`).
+- **Song ngữ (vi nguồn / en)**: MỌI chuỗi hiển thị PHẢI bọc `qsTr()` (QML) / `tr()` (C++) — không bao giờ
+  hardcode. Sau khi thêm/sửa text: chạy lupdate → dịch entry mới sang EN → lrelease/build. Chi tiết + tone +
+  lệnh: **skill `fsnext-i18n`** (`.claude/skills/fsnext-i18n/SKILL.md`). Toggle runtime qua `LanguageViewModel`.
 - **Lambda async** (`QtConcurrent::run`, `SingleShotConnection`, `QTimer::singleShot`): capture `QPointer` cho
   QObject pointer + check `if (!guard) return;` đầu callback (bug-class số 1 theo crash-audit). Shutdown đã có
   `QThreadPool::globalInstance()->waitForDone(5000)` ở `main.cpp` để drain pool trước khi hủy service.
