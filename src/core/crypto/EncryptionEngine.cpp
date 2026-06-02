@@ -65,7 +65,13 @@ CryptoError encryptStream(std::istream &in, std::uint64_t inSize, std::ostream &
     if (crypto_secretbox_easy(h.wrappedDek, dek.data(), 32, h.wrapNonce, wrappingKey.data()) != 0)
         return CryptoError::InternalError;
     h.originalSize = inSize;
-    h.filename     = filename;
+    // Clamp the stored display name to the same bound the parser enforces, so a
+    // pathological (very long) name can't produce a .fshenc that encrypts fine
+    // but fails to decrypt (parseFixedHeader rejects filenameLen > MaxFilenameLen).
+    // Real names are < 255 chars, so this never affects normal use.
+    h.filename = filename.size() > fenc::MaxFilenameLen
+                     ? filename.substr(0, fenc::MaxFilenameLen)
+                     : filename;
 
     crypto_secretstream_xchacha20poly1305_state st;
     if (useAes) {

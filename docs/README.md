@@ -13,6 +13,13 @@ phân theo mục đích. Tài liệu legacy v5.3.0 và snapshot kế hoạch th�
 | [m18-async-scan-plan.md](m18-async-scan-plan.md) | Kế hoạch thực thi (bàn giao): đưa quét folder sync ra background thread. |
 | [BACKLOG.md](BACKLOG.md) | Backlog đang mở (P1–P3), việc đã xong, feature request (2FA...), tech debt (IFshareApi). |
 
+## Đặc tả tính năng — Mã hóa & Vault (E2EE)
+| File | Dùng để |
+|---|---|
+| [specs/encryption-progress.md](specs/encryption-progress.md) | **Bàn giao/tiến độ** module Vault: việc đã làm, build/test/run + env, cạm bẫy, tồn đọng. |
+| [specs/encryption-plan.md](specs/encryption-plan.md) | Spec kỹ thuật để code: thuật toán (.fshenc), key hierarchy, lộ trình E0–E6, §13 quyết định. |
+| [specs/encryption-ui-brief.md](specs/encryption-ui-brief.md) | Brief UI/UX cho thiết kế: 19 màn, microcopy VI, flow, checklist. |
+
 ## Reference theo chủ đề
 | File | Dùng để |
 |---|---|

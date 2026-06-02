@@ -183,6 +183,7 @@ private:
     // ── Secure-delete of decrypted temp files ──
     void trackTemp(const QString &path, const QString &dir);
     void sweepTemps(bool force);        // force = delete all regardless of age
+    void sweepOrphanTemps();            // wipe temps left behind by a crashed prior session
     static void secureDeleteFile(const QString &path);
 
     std::unique_ptr<VaultManager> vault_;

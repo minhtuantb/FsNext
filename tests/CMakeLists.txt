@@ -1103,6 +1103,45 @@ if(WIN32)
 endif()
 add_test(NAME VaultManager COMMAND test_vault_manager)
 
+# ── test_vault_robustness (QA: edge / fuzz / crash-safety) ────────────────
+# Adversarial surface for the Vault feature: malformed/fuzzed .fshenc headers
+# (untrusted input), truncation, fail-closed decrypt (no partial output on
+# wrong-key/tamper/truncate), kill-mid-write simulation, edge filenames/sizes,
+# and VaultManager state corruption. Same link set as test_vault_manager.
+qt_add_executable(test_vault_robustness
+    test_vault_robustness.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/CryptoError.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/KdfParams.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/VaultMetadata.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/VaultMetadata.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/VaultManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/VaultManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.cpp
+)
+target_include_directories(test_vault_robustness PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_vault_robustness PRIVATE
+    Qt6::Core
+    Qt6::Test
+    unofficial-sodium::sodium
+    jsoncpp
+)
+target_compile_definitions(test_vault_robustness PRIVATE SODIUM_STATIC)
+if(WIN32)
+    target_link_libraries(test_vault_robustness PRIVATE crypt32)
+endif()
+add_test(NAME VaultRobustness COMMAND test_vault_robustness)
+
 # ── test_vault_viewmodel (Phase U1) ───────────────────────
 # Async VaultViewModel bridge (QtConcurrent off-main + auto-lock + busy gate).
 qt_add_executable(test_vault_viewmodel

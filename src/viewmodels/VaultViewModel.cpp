@@ -86,6 +86,10 @@ VaultViewModel::VaultViewModel(QObject *parent)
     tempSweepTimer_.setInterval(60 * 1000);
     connect(&tempSweepTimer_, &QTimer::timeout, this, [this] { sweepTemps(false); });
     tempSweepTimer_.start();
+    // A previous run may have crashed (hard kill) without unwinding through
+    // lock()/destructor, leaving decrypted plaintext under the temp root. Wipe
+    // any such orphans now, on startup.
+    sweepOrphanTemps();
 }
 
 VaultViewModel::~VaultViewModel()
@@ -400,8 +404,12 @@ void VaultViewModel::runEncryptBatch(const QStringList &paths, int skipped, bool
                 }
                 const QString in = paths.at(i);
                 const QFileInfo fi(in);
-                const QString out =
-                    outDir + QStringLiteral("/") + fi.fileName() + QStringLiteral(".fshenc");
+                // Unique output path: two files with the same basename (e.g. from
+                // different sub-folders) must NOT silently overwrite each other.
+                const QString base = outDir + QStringLiteral("/") + fi.fileName();
+                QString out = base + QStringLiteral(".fshenc");
+                for (int dup = 1; QFile::exists(out); ++dup)
+                    out = base + QStringLiteral(" (") + QString::number(dup) + QStringLiteral(").fshenc");
                 const CryptoError e = eng.encryptFile(in.toStdString(), out.toStdString(), *key);
                 if (e == CryptoError::Ok) {
                     ++ok;
@@ -518,6 +526,15 @@ void VaultViewModel::decryptAndOpen(const QString &fshencPath)
     QString name = QFileInfo(in).completeBaseName();
     if (engine_.readHeader(in.toStdString(), h) == CryptoError::Ok && !h.filename.empty())
         name = QString::fromStdString(h.filename);
+    // SECURITY: the stored filename is untrusted (a .fshenc may come from the
+    // cloud / someone else). Strip any path components so a hostile name like
+    // "..\\..\\evil" can't make us write the decrypted plaintext OUTSIDE the
+    // temp dir. Keep only the basename; fall back if it sanitises to nothing.
+    name = QFileInfo(name).fileName();
+    if (name.isEmpty() || name == QStringLiteral(".") || name == QStringLiteral(".."))
+        name = QFileInfo(in).completeBaseName();
+    if (name.isEmpty())
+        name = QStringLiteral("decrypted");
 
     const QString tmpDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation)
                            + QStringLiteral("/FsNextVault/")
@@ -765,6 +782,33 @@ void VaultViewModel::secureDeleteFile(const QString &path)
         f.close();
     }
     QFile::remove(path);
+}
+
+void VaultViewModel::sweepOrphanTemps()
+{
+    const QString root = QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+                         + QStringLiteral("/FsNextVault");
+    QDir rootDir(root);
+    if (!rootDir.exists())
+        return;
+    int cleaned = 0;
+    const QFileInfoList subs =
+        rootDir.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    for (const QFileInfo &fi : subs) {
+        if (fi.isDir()) {
+            QDirIterator it(fi.absoluteFilePath(), QDir::Files, QDirIterator::Subdirectories);
+            while (it.hasNext()) {
+                secureDeleteFile(it.next());
+                ++cleaned;
+            }
+            QDir(fi.absoluteFilePath()).removeRecursively();
+        } else {
+            secureDeleteFile(fi.absoluteFilePath());
+            ++cleaned;
+        }
+    }
+    if (cleaned > 0)
+        emit tempCleaned(cleaned);  // surfaced as a toast once the UI is connected
 }
 
 void VaultViewModel::sweepTemps(bool force)
