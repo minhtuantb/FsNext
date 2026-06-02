@@ -36,6 +36,7 @@ class TransferBudgetViewModel;
 class HomeSearchViewModel;
 class RemoteShareViewModel;
 class TransferHudViewModel;
+class VaultViewModel;
 
 class AppContext : public QObject {
     Q_OBJECT
@@ -57,6 +58,7 @@ public:
     FileService *fileService() const { return m_fileService.get(); }
     SettingsService *settingsService() const { return m_settingsService.get(); }
     LanguageViewModel *languageViewModel() const { return m_languageVM.get(); }
+    VaultViewModel *vaultViewModel() const { return m_vaultVM.get(); }
     // HUD aggregate VM — drives the tray-icon colour, balloon notifications
     // and (in P1+) the Mini Window / Tray Popup QML surfaces.  main.cpp
     // pulls this out to wire SystemTray and balloon gating.
@@ -108,6 +110,8 @@ private:
     std::unique_ptr<TransferBudgetViewModel> m_budgetVM;
     std::unique_ptr<HomeSearchViewModel> m_homeSearchVM;
     std::unique_ptr<RemoteShareViewModel> m_remoteShareVM;
+    // Encryption vault — wraps VaultManager + crypto engine for QML.
+    std::unique_ptr<VaultViewModel> m_vaultVM;
     // HUD aggregate VM — created last so it can reference every other VM.
     std::unique_ptr<TransferHudViewModel> m_hudVM;
 };

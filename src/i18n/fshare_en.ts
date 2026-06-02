@@ -1414,12 +1414,12 @@ to view details</translation>
         <translation>Collapse sidebar</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="627"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="649"/>
         <source>Người dùng</source>
         <translation>User</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="646"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="668"/>
         <source>Miễn phí</source>
         <translation>Free</translation>
     </message>
@@ -1439,17 +1439,17 @@ to view details</translation>
         <translation>Favorites</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="400"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="422"/>
         <source>Tài khoản</source>
         <translation>Account</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="718"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="740"/>
         <source>Thông tin tài khoản</source>
         <translation>Account information</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="723"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="745"/>
         <source>Cài đặt</source>
         <translation>Settings</translation>
     </message>
@@ -1469,44 +1469,76 @@ to view details</translation>
         <translation>Sync</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="308"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="271"/>
+        <source>Vault</source>
+        <translation>Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="330"/>
         <source>GIẢM 40%</source>
         <translation>40% OFF</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="316"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="338"/>
         <source>Nâng cấp VIP Pro</source>
         <translation>Upgrade to VIP Pro</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="324"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="346"/>
         <source>1TB · tốc độ không giới hạn</source>
         <translation>1TB · unlimited speed</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="341"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="363"/>
         <source>Xem ưu đãi</source>
         <translation>View offer</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="731"/>
         <source>Ngôn ngữ</source>
-        <translation>Language</translation>
+        <translation type="vanished">Language</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="758"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="785"/>
         <source>Nâng cấp tài khoản</source>
         <translation>Upgrade account</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="759"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="786"/>
         <source>VIP Pro</source>
         <translation>VIP Pro</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="773"/>
+        <location filename="../../qml/FsAurora/Components/FsSidebar.qml" line="800"/>
         <source>Đăng xuất</source>
         <translation>Sign out</translation>
+    </message>
+</context>
+<context>
+    <name>FsStrengthMeter</name>
+    <message>
+        <location filename="../../qml/Fshare/Components/FsStrengthMeter.qml" line="18"/>
+        <source>Độ mạnh</source>
+        <translation>Strength</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Components/FsStrengthMeter.qml" line="20"/>
+        <source>Yếu</source>
+        <translation>Weak</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Components/FsStrengthMeter.qml" line="20"/>
+        <source>Trung bình</source>
+        <translation>Fair</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Components/FsStrengthMeter.qml" line="20"/>
+        <source>Khá</source>
+        <translation>Good</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Components/FsStrengthMeter.qml" line="20"/>
+        <source>Mạnh</source>
+        <translation>Strong</translation>
     </message>
 </context>
 <context>
@@ -2221,37 +2253,37 @@ to view details</translation>
         <translation>Sign out of Fshare</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="796"/>
+        <location filename="../../qml/Main.qml" line="801"/>
         <source>Thả file để tải lên · Thả link Fshare để tải xuống</source>
         <translation>Drop files to upload · Drop a Fshare link to download</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="818"/>
+        <location filename="../../qml/Main.qml" line="823"/>
         <source>Đã thêm vào Tải về</source>
         <translation>Added to downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="905"/>
+        <location filename="../../qml/Main.qml" line="919"/>
         <source>Đã sao chép link Fshare</source>
         <translation>Fshare link copied</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="957"/>
+        <location filename="../../qml/Main.qml" line="971"/>
         <source>Lỗi</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="964"/>
+        <location filename="../../qml/Main.qml" line="978"/>
         <source>Đã sao chép link</source>
         <translation>Link copied</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="970"/>
+        <location filename="../../qml/Main.qml" line="984"/>
         <source>Đã thêm vào danh sách tải</source>
         <translation>Added to the download queue</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="889"/>
+        <location filename="../../qml/Main.qml" line="903"/>
         <source>Phiên đăng nhập hết hạn</source>
         <translation>Session expired</translation>
     </message>
@@ -2276,7 +2308,7 @@ to view details</translation>
         <translation>%1 transfer(s) are still in progress. Quitting will pause them all.</translation>
     </message>
     <message>
-        <location filename="../../qml/Main.qml" line="892"/>
+        <location filename="../../qml/Main.qml" line="906"/>
         <source>Vui lòng đăng nhập lại để tiếp tục.</source>
         <translation>Please sign in again to continue.</translation>
     </message>
@@ -2284,49 +2316,54 @@ to view details</translation>
 <context>
     <name>Pages</name>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="30"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="31"/>
         <source>Tải xuống</source>
         <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="31"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="32"/>
         <source>Tải lên</source>
         <translation>Uploads</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="32"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="33"/>
         <source>Đồng bộ</source>
         <translation>Sync</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="33"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="34"/>
         <source>File</source>
         <translation>Files</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="34"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="35"/>
         <source>Yêu thích</source>
         <translation>Favorites</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="35"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="36"/>
         <source>Tài khoản</source>
         <translation>Account</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="36"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="37"/>
         <source>Cài đặt</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="37"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="38"/>
         <source>Showcase</source>
         <translation>Showcase</translation>
     </message>
     <message>
-        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="38"/>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="39"/>
         <source>Trang chủ</source>
         <translation>Home</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Theme/Pages.qml" line="40"/>
+        <source>Vault</source>
+        <translation>Vault</translation>
     </message>
 </context>
 <context>
@@ -2368,12 +2405,17 @@ to view details</translation>
         <translation>Opening player…</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="260"/>
+        <location filename="../main.cpp" line="239"/>
+        <source>Không thể khởi tạo thư viện mã hóa. Ứng dụng sẽ thoát.</source>
+        <translation>Could not initialize the encryption library. The application will exit.</translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="274"/>
         <source>FsNext — Khởi tạo thất bại</source>
         <translation>FsNext — Initialization failed</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="261"/>
+        <location filename="../main.cpp" line="275"/>
         <source>Không thể khởi tạo ứng dụng:
 
 %1</source>
@@ -2382,34 +2424,34 @@ to view details</translation>
 %1</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="481"/>
+        <location filename="../main.cpp" line="514"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="61"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="220"/>
         <source>Đã đồng bộ</source>
         <translation>Synced</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="483"/>
+        <location filename="../main.cpp" line="516"/>
         <source>Đã tải lên xong</source>
         <translation>Upload complete</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="485"/>
+        <location filename="../main.cpp" line="518"/>
         <source>Đã tải xuống xong</source>
         <translation>Download complete</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="491"/>
+        <location filename="../main.cpp" line="524"/>
         <source>Đồng bộ thất bại: </source>
         <translation>Sync failed: </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="493"/>
+        <location filename="../main.cpp" line="526"/>
         <source>Tải lên thất bại: </source>
         <translation>Upload failed: </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="495"/>
+        <location filename="../main.cpp" line="528"/>
         <source>Tải xuống thất bại: </source>
         <translation>Download failed: </translation>
     </message>
@@ -3961,6 +4003,1136 @@ Any QML can go here.</translation>
     </message>
 </context>
 <context>
+    <name>VaultIntroPage</name>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="47"/>
+        <source>Vault — mã hóa đầu-cuối</source>
+        <translation>Vault — end-to-end encryption</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="56"/>
+        <source>File của bạn được mã hóa ngay trên máy trước khi rời khỏi thiết bị.</source>
+        <translation>Your files are encrypted on your device before they ever leave it.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="66"/>
+        <source>Cách hoạt động</source>
+        <translation>How it works</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="75"/>
+        <source>1. Đặt passphrase</source>
+        <translation>1. Set a passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="75"/>
+        <source>Tạo Vault và đặt passphrase của riêng bạn.</source>
+        <translation>Create a Vault and set your own passphrase.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="76"/>
+        <source>2. Mã hóa trên máy</source>
+        <translation>2. Encrypt on your device</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="76"/>
+        <source>Thêm file → FsNext mã hóa ngay trên máy của bạn.</source>
+        <translation>Add files → FsNext encrypts them right on your device.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="77"/>
+        <source>3. Tải lên an toàn</source>
+        <translation>3. Upload securely</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="77"/>
+        <source>File mã hóa được tải lên Fshare — server không đọc được nội dung.</source>
+        <translation>Encrypted files are uploaded to Fshare — the server cannot read their contents.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="78"/>
+        <source>4. Mở khi cần</source>
+        <translation>4. Open when you need to</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="78"/>
+        <source>Mở khóa bằng passphrase để xem lại bất cứ lúc nào.</source>
+        <translation>Unlock with your passphrase to view them anytime.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="132"/>
+        <source>Lưu ý quan trọng</source>
+        <translation>Important notes</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="133"/>
+        <source>Toàn bộ quá trình mã hóa diễn ra ngay trên máy của bạn. FsNext không lưu giữ passphrase hay khóa, nên không thể truy cập hay khôi phục nội dung trong Vault. Mã hóa giúp bảo vệ quyền riêng tư, nhưng không thay thế cho việc sao lưu — hãy luôn giữ thêm một bản sao lưu các file quan trọng ở nơi an toàn khác.</source>
+        <translation>All encryption happens right on your device. FsNext does not store your passphrase or keys, so it cannot access or recover the contents of your Vault. Encryption protects your privacy, but it is not a substitute for backups — always keep an extra backup of important files somewhere safe.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="139"/>
+        <source>Đến trang Vault</source>
+        <translation>Go to Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultIntroPage.qml" line="139"/>
+        <source>Tạo Vault</source>
+        <translation>Create Vault</translation>
+    </message>
+</context>
+<context>
+    <name>VaultPage</name>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="37"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="180"/>
+        <source>Vault</source>
+        <translation>Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="37"/>
+        <source>Khôi phục</source>
+        <translation>Recovery</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="37"/>
+        <source>Tệp khóa</source>
+        <translation>Key file</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="60"/>
+        <source>Mở khóa thất bại. Hãy kiểm tra lại passphrase.</source>
+        <translation>Unlock failed. Please check your passphrase.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="62"/>
+        <source>Vault đã tồn tại tại vị trí này.</source>
+        <translation>A Vault already exists at this location.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="63"/>
+        <source>Đã xảy ra lỗi. Vui lòng thử lại.</source>
+        <translation>Something went wrong. Please try again.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="70"/>
+        <source>Đã đổi passphrase</source>
+        <translation>Passphrase changed</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="73"/>
+        <source>Passphrase hiện tại không đúng.</source>
+        <translation>The current passphrase is incorrect.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="77"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="906"/>
+        <source>Đã lưu tệp khóa khôi phục</source>
+        <translation>Recovery key file saved</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="82"/>
+        <source>Đã xóa cấu hình Vault khỏi máy này.</source>
+        <translation>Vault configuration removed from this computer.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="86"/>
+        <source>Đã nhập khóa</source>
+        <translation>Key imported</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="86"/>
+        <source>Tệp khóa không hợp lệ</source>
+        <translation>Invalid key file</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="102"/>
+        <source>Đã xóa bản giải mã tạm an toàn.</source>
+        <translation>Temporary decrypted copy securely deleted.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="105"/>
+        <source>Đang tải lên Fshare: </source>
+        <translation>Uploading to Fshare: </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="120"/>
+        <source>Đã mã hóa &amp; thêm vào Vault</source>
+        <translation>Encrypted &amp; added to Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="121"/>
+        <source>Một số file mã hóa thất bại</source>
+        <translation>Some files failed to encrypt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="123"/>
+        <source>Đã mở: </source>
+        <translation>Opened: </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="125"/>
+        <source>File có thể đã hỏng hoặc bị can thiệp.</source>
+        <translation>This file may be corrupted or tampered with.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="126"/>
+        <source>Giải mã thất bại.</source>
+        <translation>Decryption failed.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="151"/>
+        <source>Quay lại</source>
+        <translation>Back</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="177"/>
+        <source>Giới thiệu Vault</source>
+        <translation>About Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="178"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="536"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="728"/>
+        <source>Quản lý khóa</source>
+        <translation>Manage keys</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="179"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="731"/>
+        <source>Cài đặt Vault</source>
+        <translation>Vault settings</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="188"/>
+        <source>Đang khóa</source>
+        <translation>Locked</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="192"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="503"/>
+        <source>Đã mở</source>
+        <translation>Unlocked</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="197"/>
+        <source>Tự khóa sau </source>
+        <translation>Auto-lock in </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="209"/>
+        <source>Khóa ngay</source>
+        <translation>Lock now</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="214"/>
+        <source>Đang mã hóa…</source>
+        <translation>Encrypting…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="214"/>
+        <source>Thêm file</source>
+        <translation>Add files</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="221"/>
+        <source>Thêm thư mục</source>
+        <translation>Add folder</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="228"/>
+        <source>Trợ giúp</source>
+        <translation>Help</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="235"/>
+        <source>Thêm</source>
+        <translation>Add</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="281"/>
+        <source>Bảo vệ tài liệu nhạy cảm của bạn</source>
+        <translation>Protect your sensitive documents</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="291"/>
+        <source>Mã hóa ngay trên máy · Server không đọc được · Bạn giữ chìa khóa.</source>
+        <translation>Encrypted on your device · The server can't read it · You hold the key.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="300"/>
+        <source>Tạo Vault</source>
+        <translation>Create Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="305"/>
+        <source>Tìm hiểu về mã hóa</source>
+        <translation>Learn about encryption</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="318"/>
+        <source>Vault đang khóa</source>
+        <translation>Vault is locked</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="325"/>
+        <source>Mở khóa để xem và quản lý file đã mã hóa.</source>
+        <translation>Unlock to view and manage your encrypted files.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="332"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="695"/>
+        <source>Mở khóa</source>
+        <translation>Unlock</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="345"/>
+        <source>Vault trống</source>
+        <translation>Vault is empty</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="352"/>
+        <source>Kéo file vào đây hoặc bấm “Thêm file” để mã hóa.</source>
+        <translation>Drag files here or click “Add files” to encrypt them.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="385"/>
+        <source>Đã mã hóa</source>
+        <translation>Encrypted</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="391"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="536"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1177"/>
+        <source>Mở</source>
+        <translation>Open</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="416"/>
+        <source>Các khóa đã và đang dùng trên máy này.</source>
+        <translation>Keys used on this computer.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="419"/>
+        <source>Nhập khóa…</source>
+        <translation>Import key…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="423"/>
+        <source>Hãy giữ thêm một bản sao lưu khóa ở nơi an toàn, tách biệt với máy này (USB, két, trình quản lý mật khẩu). Mất khóa đồng nghĩa không mở được file đã mã hóa bằng khóa đó.</source>
+        <translation>Keep an extra backup of your key somewhere safe and separate from this computer (USB drive, safe, password manager). Losing a key means files encrypted with it can no longer be opened.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="429"/>
+        <source>Chưa có khóa nào.</source>
+        <translation>No keys yet.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="459"/>
+        <source>Đã sao lưu</source>
+        <translation>Backed up</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="460"/>
+        <source>Chưa sao lưu</source>
+        <translation>Not backed up</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="466"/>
+        <source>Sao chép vân tay</source>
+        <translation>Copy fingerprint</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="467"/>
+        <source>Đã sao chép vân tay</source>
+        <translation>Fingerprint copied</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="471"/>
+        <source>Xóa khóa</source>
+        <translation>Delete key</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="508"/>
+        <source>BẢO MẬT</source>
+        <translation>SECURITY</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="512"/>
+        <source>Tự khóa sau</source>
+        <translation>Auto-lock after</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="523"/>
+        <source>Cấp lưu khóa</source>
+        <translation>Key storage level</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="526"/>
+        <source>Cao</source>
+        <translation>High</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="527"/>
+        <source>Tiện lợi</source>
+        <translation>Convenient</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="527"/>
+        <source>Vừa</source>
+        <translation>Medium</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="534"/>
+        <source>QUẢN LÝ KHÓA</source>
+        <translation>KEY MANAGEMENT</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="537"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="729"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="824"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="865"/>
+        <source>Đổi passphrase</source>
+        <translation>Change passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="537"/>
+        <source>Đổi…</source>
+        <translation>Change…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="538"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="730"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="879"/>
+        <source>Xuất khóa khôi phục</source>
+        <translation>Export recovery key</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="538"/>
+        <source>Xuất…</source>
+        <translation>Export…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="539"/>
+        <source>Nhập khóa khôi phục</source>
+        <translation>Import recovery key</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="539"/>
+        <source>Chọn file…</source>
+        <translation>Choose file…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="543"/>
+        <source>MÃ HÓA</source>
+        <translation>ENCRYPTION</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="549"/>
+        <source>Tự động mã hóa file đến</source>
+        <translation>Automatically encrypt incoming files</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="552"/>
+        <source>Không giới hạn</source>
+        <translation>Unlimited</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="553"/>
+        <source>1 GB</source>
+        <translation>1 GB</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="554"/>
+        <source>5 GB</source>
+        <translation>5 GB</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="563"/>
+        <source>Khi file vượt ngưỡng</source>
+        <translation>When a file exceeds the limit</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="566"/>
+        <source>Hỏi mỗi lần</source>
+        <translation>Ask every time</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="567"/>
+        <source>Bỏ qua</source>
+        <translation>Skip</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="568"/>
+        <source>Thư mục thường</source>
+        <translation>Regular folder</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="579"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1073"/>
+        <source>Tự tải lên Fshare sau khi mã hóa</source>
+        <translation>Auto-upload to Fshare after encryption</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="581"/>
+        <source>File .fshenc sẽ được tải lên thư mục đích bên dưới.</source>
+        <translation>.fshenc files will be uploaded to the destination folder below.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="592"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1080"/>
+        <source>Thư mục đích trên Fshare</source>
+        <translation>Destination folder on Fshare</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="596"/>
+        <source>Nhấn Enter để lưu (vd: / hoặc /Vault)</source>
+        <translation>Press Enter to save (e.g. / or /Vault)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="602"/>
+        <source>NGUY HIỂM</source>
+        <translation>DANGER</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="604"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="733"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="932"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="961"/>
+        <source>Xóa Vault</source>
+        <translation>Delete Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="626"/>
+        <source>Thả vào đây để mã hóa &amp; thêm vào Vault</source>
+        <translation>Drop here to encrypt &amp; add to Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="640"/>
+        <source>Mở khóa Vault</source>
+        <translation>Unlock Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="657"/>
+        <source>Passphrase</source>
+        <translation>Passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="669"/>
+        <source>Đang xác thực…</source>
+        <translation>Verifying…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="674"/>
+        <source>Quên passphrase? Vault không thể khôi phục nếu không có khóa khôi phục.</source>
+        <translation>Forgot your passphrase? The Vault cannot be recovered without a recovery key.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="689"/>
+        <source>Huỷ</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="740"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="753"/>
+        <source>Tệp khóa (*.key)</source>
+        <translation>Key files (*.key)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="740"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="753"/>
+        <source>Tất cả (*)</source>
+        <translation>All files (*)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="773"/>
+        <source>Mở file</source>
+        <translation>Open file</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="791"/>
+        <source>Đang giải mã &amp; mở file…</source>
+        <translation>Decrypting &amp; opening file…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="797"/>
+        <source>Bản giải mã tạm sẽ được mở bằng ứng dụng mặc định.</source>
+        <translation>A temporary decrypted copy will open in your default app.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="802"/>
+        <source>Không thể mở an toàn</source>
+        <translation>Could not open securely</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="813"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="861"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="921"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="957"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1017"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1122"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1135"/>
+        <source>Hủy</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="813"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="921"/>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1147"/>
+        <source>Đóng</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="838"/>
+        <source>Passphrase hiện tại</source>
+        <translation>Current passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="841"/>
+        <source>Passphrase mới</source>
+        <translation>New passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="843"/>
+        <source>Tối thiểu 12 ký tự</source>
+        <translation>At least 12 characters</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="845"/>
+        <source>Nhập lại passphrase mới</source>
+        <translation>Re-enter new passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="848"/>
+        <source>Passphrase chưa khớp</source>
+        <translation>Passphrases don't match</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="850"/>
+        <source>File đã mã hóa vẫn dùng được bình thường, không cần mã hóa lại.</source>
+        <translation>Already-encrypted files keep working normally — no need to re-encrypt them.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="853"/>
+        <source>Đang đổi…</source>
+        <translation>Changing…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="894"/>
+        <source>Tạo một tệp .key giúp bạn mở Vault nếu quên passphrase.</source>
+        <translation>Create a .key file that lets you open the Vault if you forget your passphrase.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="896"/>
+        <source>Chọn nơi lưu &amp; xuất (.key)</source>
+        <translation>Choose where to save &amp; export (.key)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="910"/>
+        <source>Bất kỳ ai có tệp này đều mở được Vault. Hãy bảo quản như chìa khóa nhà.</source>
+        <translation>Anyone with this file can open your Vault. Guard it like your house key.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="945"/>
+        <source>Thao tác này xóa cấu hình Vault khỏi máy này. File đã tải lên cloud vẫn còn, nhưng sẽ không mở được nếu bạn không còn giữ khóa.</source>
+        <translation>This removes the Vault configuration from this computer. Files already uploaded to the cloud remain, but cannot be opened unless you still hold the key.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="947"/>
+        <source>Gõ tên Vault để xác nhận: </source>
+        <translation>Type the Vault name to confirm: </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="974"/>
+        <source>Mã hóa file lớn?</source>
+        <translation>Encrypt large file?</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="988"/>
+        <source>%n file lớn vượt ngưỡng mã hóa — bạn muốn xử lý thế nào? Lựa chọn áp dụng cho tất cả file lớn trong lượt này.</source>
+        <translation>
+            <numerusform>%n large file exceeds the encryption limit — how would you like to handle it? Your choice applies to all large files in this batch.</numerusform>
+            <numerusform>%n large files exceed the encryption limit — how would you like to handle them? Your choice applies to all large files in this batch.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1008"/>
+        <source>File lớn phải được giải mã toàn bộ trước khi xem (không xem trực tiếp) và cần thêm dung lượng đĩa tạm thời.</source>
+        <translation>Large files must be fully decrypted before viewing (no streaming) and need extra temporary disk space.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1019"/>
+        <source>Thêm không mã hóa</source>
+        <translation>Add without encrypting</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1021"/>
+        <source>Mã hóa &amp; thêm</source>
+        <translation>Encrypt &amp; add</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1032"/>
+        <source>Mã hóa thư mục</source>
+        <translation>Encrypt folder</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1069"/>
+        <source>Tất cả file trong thư mục (kể cả thư mục con) sẽ được mã hóa &amp; thêm vào Vault.</source>
+        <translation>All files in the folder (including subfolders) will be encrypted &amp; added to the Vault.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1096"/>
+        <source>Đang xử lý </source>
+        <translation>Processing </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1109"/>
+        <source>Hoàn tất: </source>
+        <translation>Done: </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1110"/>
+        <source> file thành công.</source>
+        <translation> files succeeded.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1125"/>
+        <source>Bắt đầu</source>
+        <translation>Start</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultPage.qml" line="1140"/>
+        <source>Thử lại file lỗi</source>
+        <translation>Retry failed files</translation>
+    </message>
+</context>
+<context>
+    <name>VaultWizard</name>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="38"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="58"/>
+        <source>Personal Vault</source>
+        <translation>Personal Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="103"/>
+        <source>Vault đã tồn tại tại vị trí này.</source>
+        <translation>A Vault already exists at this location.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="104"/>
+        <source>Không thể tạo Vault. Vui lòng thử lại.</source>
+        <translation>Could not create the Vault. Please try again.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="115"/>
+        <source>Tệp khóa (*.key)</source>
+        <translation>Key files (*.key)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="115"/>
+        <source>Tất cả (*)</source>
+        <translation>All files (*)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="158"/>
+        <source>Giới thiệu</source>
+        <translation>Intro</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="158"/>
+        <source>Bảo vệ</source>
+        <translation>Protection</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="158"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="276"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="335"/>
+        <source>Passphrase</source>
+        <translation>Passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="159"/>
+        <source>Lưu ý</source>
+        <translation>Notes</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="159"/>
+        <source>Khôi phục</source>
+        <translation>Recovery</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="159"/>
+        <source>Thiết lập</source>
+        <translation>Setup</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="159"/>
+        <source>Hoàn tất</source>
+        <translation>Complete</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="236"/>
+        <source>Tạo Vault mã hóa</source>
+        <translation>Create an encrypted Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="237"/>
+        <source>Một không gian riêng tư cho tài liệu nhạy cảm — mã hóa ngay trên máy bạn trước khi rời thiết bị.</source>
+        <translation>A private space for sensitive documents — encrypted on your device before it ever leaves.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="240"/>
+        <source>Mã hóa diễn ra ngay trên máy của bạn.</source>
+        <translation>Encryption happens right on your device.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="241"/>
+        <source>Server không đọc được nội dung file.</source>
+        <translation>The server cannot read your file contents.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="242"/>
+        <source>Chỉ bạn giữ chìa khóa để mở lại.</source>
+        <translation>Only you hold the key to open them.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="243"/>
+        <source>Dùng được cả khi đang ngoại tuyến.</source>
+        <translation>Works even when you're offline.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="272"/>
+        <source>Bạn muốn bảo vệ Vault bằng cách nào?</source>
+        <translation>How would you like to protect your Vault?</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="273"/>
+        <source>Passphrase là bắt buộc. Bạn có thể thêm tệp khóa khôi phục để phòng quên passphrase.</source>
+        <translation>A passphrase is required. You can add a recovery key file in case you forget it.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="277"/>
+        <source>Một câu mật khẩu chỉ bạn biết.</source>
+        <translation>A passphrase only you know.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="278"/>
+        <source>Passphrase + tệp khóa (2 lớp)</source>
+        <translation>Passphrase + key file (two layers)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="279"/>
+        <source>Thêm tệp khóa khôi phục để mở Vault nếu quên passphrase.</source>
+        <translation>Add a recovery key file to open the Vault if you forget your passphrase.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="305"/>
+        <source>Khuyến nghị</source>
+        <translation>Recommended</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="305"/>
+        <source>Nâng cao</source>
+        <translation>Advanced</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="331"/>
+        <source>Tạo passphrase của bạn</source>
+        <translation>Create your passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="332"/>
+        <source>Đây là chìa khóa mở Vault. Tự đặt một câu, hoặc để FsNext tạo giúp một passphrase mạnh.</source>
+        <translation>This is the key to your Vault. Set your own, or let FsNext generate a strong passphrase for you.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="337"/>
+        <source>Tạo lại</source>
+        <translation>Regenerate</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="337"/>
+        <source>Tạo tự động</source>
+        <translation>Generate</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="345"/>
+        <source>Nhập passphrase…</source>
+        <translation>Enter passphrase…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="354"/>
+        <source>Nhập lại passphrase</source>
+        <translation>Re-enter passphrase</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="359"/>
+        <source>Passphrase chưa khớp</source>
+        <translation>Passphrases don't match</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="364"/>
+        <source>FsNext không lưu passphrase ở đâu cả. Hãy ghi nhớ hoặc sao chép vào trình quản lý mật khẩu.</source>
+        <translation>FsNext does not store your passphrase anywhere. Remember it or copy it into a password manager.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="377"/>
+        <source>Đọc kỹ trước khi tiếp tục</source>
+        <translation>Read carefully before continuing</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="378"/>
+        <source>Passphrase do bạn tự đặt và chỉ mình bạn biết — FsNext không lưu lại. Nếu quên, chúng tôi không thể khôi phục giúp bạn, và file trong Vault sẽ không mở lại được. Đây cũng chính là điều làm nên sự riêng tư: không ai khác — kể cả Fshare — chạm được vào dữ liệu của bạn.</source>
+        <translation>Your passphrase is set by you and known only to you — FsNext does not keep it. If you forget it, we cannot recover it for you, and the files in your Vault can no longer be opened. This is exactly what keeps it private: no one else — not even Fshare — can reach your data.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="383"/>
+        <source>Mã hóa chạy trên máy bạn; FsNext không giữ khóa. Hãy luôn giữ thêm một bản sao lưu dữ liệu quan trọng ở nơi khác.</source>
+        <translation>Encryption runs on your device; FsNext does not hold the key. Always keep an extra backup of important data elsewhere.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="397"/>
+        <source>Tôi hiểu Fshare không thể khôi phục passphrase giúp tôi.</source>
+        <translation>I understand that Fshare cannot recover my passphrase for me.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="399"/>
+        <source>Tôi hiểu nếu mất passphrase, các file trong Vault sẽ không mở lại được.</source>
+        <translation>I understand that if I lose my passphrase, the files in my Vault cannot be opened again.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="401"/>
+        <source>Tôi đã lưu passphrase ở nơi an toàn (hoặc sẽ làm ngay).</source>
+        <translation>I have saved my passphrase somewhere safe (or will do so right away).</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="403"/>
+        <source>Tôi đã đọc và hiểu các lưu ý trên.</source>
+        <translation>I have read and understood the notes above.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="414"/>
+        <source>Tải tệp khóa khôi phục</source>
+        <translation>Download recovery key file</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="416"/>
+        <source>Phương thức 2 lớp cần tệp khóa khôi phục. Hãy chọn nơi lưu và cất thật cẩn thận.</source>
+        <translation>The two-layer method requires a recovery key file. Choose where to save it and store it carefully.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="417"/>
+        <source>Tệp này giúp bạn mở Vault nếu quên passphrase. Lưu ở USB hoặc nơi tách biệt máy tính.</source>
+        <translation>This file lets you open your Vault if you forget your passphrase. Save it to a USB drive or somewhere separate from this computer.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="430"/>
+        <source>Chọn nơi lưu tệp khóa (.key)</source>
+        <translation>Choose where to save the key file (.key)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="448"/>
+        <source>Sẽ tạo tệp khóa sau khi tạo Vault</source>
+        <translation>The key file will be created after the Vault is created</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="456"/>
+        <source>Đừng để chung với máy đang dùng. Cất ở USB hoặc nơi tách biệt.</source>
+        <translation>Don't keep it on this computer. Store it on a USB drive or somewhere separate.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="466"/>
+        <source>Đặt tên &amp; vị trí Vault</source>
+        <translation>Name &amp; location of your Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="467"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="567"/>
+        <source>Tên Vault</source>
+        <translation>Vault name</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="471"/>
+        <source>Thư mục Vault</source>
+        <translation>Vault folder</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="483"/>
+        <source>Đổi…</source>
+        <translation>Change…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="489"/>
+        <source>Cấp lưu khóa</source>
+        <translation>Key storage level</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="493"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="569"/>
+        <source>Cao</source>
+        <translation>High</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="493"/>
+        <source>Nhập passphrase mỗi lần mở app (an toàn nhất).</source>
+        <translation>Enter your passphrase each time you open the app (most secure).</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="494"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="569"/>
+        <source>Vừa</source>
+        <translation>Medium</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="494"/>
+        <source>Nhớ qua Windows (DPAPI), tự khóa khi đóng app.</source>
+        <translation>Remembered via Windows (DPAPI), auto-locks when the app closes.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="495"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="569"/>
+        <source>Tiện lợi</source>
+        <translation>Convenient</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="495"/>
+        <source>Không tự khóa.</source>
+        <translation>Never auto-locks.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="515"/>
+        <source>Mặc định</source>
+        <translation>Default</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="516"/>
+        <source>Cảnh báo</source>
+        <translation>Warning</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="524"/>
+        <source>Dù chọn mức này, hãy vẫn ghi nhớ/sao lưu passphrase — cần khi đổi hoặc cài lại máy.</source>
+        <translation>Even at this level, still remember and back up your passphrase — you'll need it when changing or reinstalling your computer.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="530"/>
+        <source>Phương pháp mã hóa (Nâng cao)</source>
+        <translation>Encryption method (Advanced)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="536"/>
+        <source>FsNext tự chọn cách mã hóa tối ưu theo kích thước file. Mặc định đã an toàn cho hầu hết mọi người.</source>
+        <translation>FsNext automatically picks the optimal encryption method based on file size. The default is secure for most people.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="537"/>
+        <source>Độ mạnh khóa</source>
+        <translation>Key strength</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="539"/>
+        <source>Cân bằng</source>
+        <translation>Balanced</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="540"/>
+        <source>Mạnh</source>
+        <translation>Strong</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="541"/>
+        <source>Tối đa</source>
+        <translation>Maximum</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="555"/>
+        <source>Vault đã sẵn sàng!</source>
+        <translation>Your Vault is ready!</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="556"/>
+        <source>Từ giờ bạn có thể thêm file vào Vault và mọi thứ sẽ được mã hóa ngay trên máy.</source>
+        <translation>From now on you can add files to your Vault, and everything will be encrypted right on your device.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="568"/>
+        <source>Vị trí</source>
+        <translation>Location</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="569"/>
+        <source>Cấp bảo mật</source>
+        <translation>Security level</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="570"/>
+        <source>Khóa khôi phục</source>
+        <translation>Recovery key</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="570"/>
+        <source>Có</source>
+        <translation>Yes</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="570"/>
+        <source>Chưa có</source>
+        <translation>None</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="604"/>
+        <source>Quay lại</source>
+        <translation>Back</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="606"/>
+        <source>Hủy</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="613"/>
+        <source>Hãy xác nhận cả 4 mục.</source>
+        <translation>Please confirm all four items.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="623"/>
+        <source>Bắt đầu</source>
+        <translation>Start</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="628"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="633"/>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="650"/>
+        <source>Tiếp tục</source>
+        <translation>Continue</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="639"/>
+        <source>Tôi hiểu, tiếp tục</source>
+        <translation>I understand, continue</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="645"/>
+        <source>Bỏ qua</source>
+        <translation>Skip</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="656"/>
+        <source>Đang tạo…</source>
+        <translation>Creating…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="656"/>
+        <source>Tạo Vault</source>
+        <translation>Create Vault</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/VaultWizard.qml" line="663"/>
+        <source>Đến trang Vault</source>
+        <translation>Go to Vault</translation>
+    </message>
+</context>
+<context>
     <name>WatchFolderSettingsDialog</name>
     <message>
         <location filename="../../qml/Fshare/Dialogs/WatchFolderSettingsDialog.qml" line="12"/>
@@ -4320,27 +5492,43 @@ Check the Google Cloud Console: redirect_uri must be &quot;http://localhost&quot
         <translation>Show window</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="201"/>
+        <location filename="../platform/SystemTray.cpp" line="199"/>
+        <location filename="../platform/SystemTray.cpp" line="235"/>
+        <source>Vault</source>
+        <translation>Vault</translation>
+    </message>
+    <message>
+        <location filename="../platform/SystemTray.cpp" line="206"/>
         <source>Hiện mini HUD</source>
         <translation>Show mini HUD</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="204"/>
+        <location filename="../platform/SystemTray.cpp" line="209"/>
         <source>Tạm dừng tất cả</source>
         <translation>Pause All</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="214"/>
+        <location filename="../platform/SystemTray.cpp" line="219"/>
         <source>Cài đặt thông báo…</source>
         <translation>Notification settings…</translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="219"/>
+        <location filename="../platform/SystemTray.cpp" line="224"/>
         <source>Thoát</source>
         <translation>Quit</translation>
     </message>
+    <message>
+        <location filename="../platform/SystemTray.cpp" line="233"/>
+        <source>Khóa Vault</source>
+        <translation>Lock Vault</translation>
+    </message>
+    <message>
+        <location filename="../platform/SystemTray.cpp" line="234"/>
+        <source>Mở khóa Vault</source>
+        <translation>Unlock Vault</translation>
+    </message>
     <message numerus="yes">
-        <location filename="../platform/SystemTray.cpp" line="289"/>
+        <location filename="../platform/SystemTray.cpp" line="312"/>
         <source>Đang chuyển %n mục</source>
         <translation>
             <numerusform>Transferring %n item</numerusform>
@@ -4348,7 +5536,7 @@ Check the Google Cloud Console: redirect_uri must be &quot;http://localhost&quot
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../platform/SystemTray.cpp" line="290"/>
+        <location filename="../platform/SystemTray.cpp" line="313"/>
         <source>%n mục đang chờ</source>
         <translation>
             <numerusform>%n item queued</numerusform>
@@ -4356,7 +5544,7 @@ Check the Google Cloud Console: redirect_uri must be &quot;http://localhost&quot
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../platform/SystemTray.cpp" line="291"/>
+        <location filename="../platform/SystemTray.cpp" line="314"/>
         <source>%n mục lỗi</source>
         <translation>
             <numerusform>%n item failed</numerusform>
@@ -4364,7 +5552,7 @@ Check the Google Cloud Console: redirect_uri must be &quot;http://localhost&quot
         </translation>
     </message>
     <message>
-        <location filename="../platform/SystemTray.cpp" line="294"/>
+        <location filename="../platform/SystemTray.cpp" line="317"/>
         <source>Sẵn sàng</source>
         <translation>Ready</translation>
     </message>
@@ -4413,6 +5601,19 @@ Check the Google Cloud Console: redirect_uri must be &quot;http://localhost&quot
         <location filename="../viewmodels/UserInfoViewModel.cpp" line="66"/>
         <source>Vĩnh viễn</source>
         <translation>Lifetime</translation>
+    </message>
+</context>
+<context>
+    <name>fsnext::VaultViewModel</name>
+    <message>
+        <location filename="../viewmodels/VaultViewModel.cpp" line="662"/>
+        <source>Vault</source>
+        <translation>Vault</translation>
+    </message>
+    <message>
+        <location filename="../viewmodels/VaultViewModel.cpp" line="670"/>
+        <source>Khóa khôi phục</source>
+        <translation>Recovery key</translation>
     </message>
 </context>
 </TS>

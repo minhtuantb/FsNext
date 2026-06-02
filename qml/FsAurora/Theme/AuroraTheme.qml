@@ -51,6 +51,8 @@ QtObject {
     // footer per the Aurora Glow spec. Mode-adaptive (cream in light,
     // tinted-dark in dark).
     readonly property color bgWarm:       _p.bgWarm
+    // Flat sunk fill behind nested controls / segmented tracks (Vault module).
+    readonly property color sunk:         _p.sunk
     readonly property color sidebar:      _p.sidebar          // always dark
     readonly property color border:       _p.border
     readonly property color borderStrong: _p.borderStrong

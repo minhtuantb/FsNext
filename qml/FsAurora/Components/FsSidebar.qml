@@ -251,6 +251,28 @@ Rectangle {
             delegate: NavRow {}
         }
 
+        // ── Separator before the Security section ──
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            Layout.topMargin: 6
+            Layout.bottomMargin: 6
+            Layout.leftMargin: 10
+            Layout.rightMargin: 10
+            color: AuroraTheme.sidebarLine
+            opacity: 0.6
+        }
+
+        // ══════════════════════════════════════════════
+        //  NAV — Security (Vault / E2EE)
+        // ══════════════════════════════════════════════
+        Repeater {
+            model: [
+                { label: qsTr("Vault"), icon: "shield-key", index: Pages.vault, sub: "" }
+            ]
+            delegate: NavRow {}
+        }
+
         // (Showcase route removed — it's a design-system demo page, not a
         // user destination. Devs can still reach it via the command palette
         // /go.showcase if they wire it up; sidebar real-estate is better

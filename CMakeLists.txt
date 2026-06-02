@@ -48,6 +48,12 @@ endif()
 find_package(CURL REQUIRED)
 find_package(OpenSSL REQUIRED)
 
+# libsodium — crypto primitives for the encryption/vault module.
+# vcpkg ships an UNKNOWN IMPORTED target but does NOT define SODIUM_STATIC on
+# the static triplet, so headers default to __declspec(dllimport). We add the
+# define per-target (FsNext + tests) wherever <sodium.h> is compiled.
+find_package(unofficial-sodium CONFIG REQUIRED)
+
 # ── Version from git ──────────────────────────────────────
 execute_process(
     COMMAND git rev-list --count HEAD
@@ -104,9 +110,19 @@ set(FSNEXT_SOURCES
     src/core/services/SettingsService.cpp
     src/core/services/SyncService.cpp
     src/core/services/SyncScanner.cpp
+    src/core/services/VaultManager.cpp
 
     # Core - Net (OAuth loopback server for RFC 8252 flow)
     src/core/net/LoopbackServer.cpp
+
+    # Core - Crypto (encryption / vault module)
+    src/core/crypto/Crypto.cpp
+    src/core/crypto/SecureBytes.cpp
+    src/core/crypto/Key.cpp
+    src/core/crypto/FencFormat.cpp
+    src/core/crypto/EncryptionEngine.cpp
+    src/core/crypto/VaultMetadata.cpp
+    src/core/crypto/KeyRegistry.cpp
 
     # Core - Util
     src/core/util/Pkce.cpp
@@ -150,6 +166,7 @@ set(FSNEXT_SOURCES
     src/viewmodels/TransferBudgetViewModel.cpp
     src/viewmodels/HomeSearchViewModel.cpp
     src/viewmodels/RemoteShareViewModel.cpp
+    src/viewmodels/VaultViewModel.cpp
     src/viewmodels/TransferHudViewModel.cpp
 
     # Platform
@@ -195,9 +212,21 @@ set(FSNEXT_HEADERS
     src/core/services/SettingsService.h
     src/core/services/SyncService.h
     src/core/services/SyncScanner.h
+    src/core/services/VaultManager.h
 
     # Core - Net
     src/core/net/LoopbackServer.h
+
+    # Core - Crypto (encryption / vault module)
+    src/core/crypto/Crypto.h
+    src/core/crypto/SecureBytes.h
+    src/core/crypto/CryptoError.h
+    src/core/crypto/KdfParams.h
+    src/core/crypto/Key.h
+    src/core/crypto/FencFormat.h
+    src/core/crypto/EncryptionEngine.h
+    src/core/crypto/VaultMetadata.h
+    src/core/crypto/KeyRegistry.h
 
     # Core - Util
     src/core/util/Pkce.h
@@ -242,6 +271,7 @@ set(FSNEXT_HEADERS
     src/viewmodels/TransferBudgetViewModel.h
     src/viewmodels/HomeSearchViewModel.h
     src/viewmodels/RemoteShareViewModel.h
+    src/viewmodels/VaultViewModel.h
     src/viewmodels/TransferHudViewModel.h
 
     # Platform
@@ -343,7 +373,13 @@ target_link_libraries(FsNext PRIVATE
     OpenSSL::SSL
     OpenSSL::Crypto
     jsoncpp
+    unofficial-sodium::sodium
 )
+
+# Static libsodium on Windows/MSVC: define SODIUM_STATIC so <sodium.h> does
+# not decorate symbols with __declspec(dllimport) (which would break linking
+# against the static .lib).
+target_compile_definitions(FsNext PRIVATE SODIUM_STATIC)
 
 # ── Platform libraries (Windows) ──────────────────────────
 if(WIN32)

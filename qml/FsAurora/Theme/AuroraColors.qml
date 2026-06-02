@@ -94,6 +94,9 @@ QtObject {
         readonly property color ink2:          "#2A2A32"   // secondary
         readonly property color ink3:          "#5C5C66"   // tertiary
         readonly property color ink4:          "#8A8A94"   // placeholder / caption
+        // Flat sunk fill behind nested controls / code samples / segmented
+        // tracks (Vault module). Cream a hair deeper than bg on white panels.
+        readonly property color sunk:          "#F1EFEA"
         readonly property color textOnAccent:      "#FFFFFF"
         readonly property color textOnSidebar:     "#F5F4F1"
     }
@@ -120,6 +123,7 @@ QtObject {
         // was borderline for the 11px caption / placeholder uses that consume
         // this token across the app. New value ≈7:1 → pass AAA for small text.
         readonly property color ink4:          "#8A8A98"
+        readonly property color sunk:          Qt.rgba(1, 1, 1, 0.04)
         readonly property color textOnAccent:      "#FFFFFF"
         readonly property color textOnSidebar:     "#F5F4F1"
     }

@@ -26,3 +26,5 @@ FsSelect 1.0 FsSelect.qml
 FsSpinner 1.0 FsSpinner.qml
 FsBreadcrumb 1.0 FsBreadcrumb.qml
 FsCommandPalette 1.0 FsCommandPalette.qml
+FsCallout 1.0 FsCallout.qml
+FsStrengthMeter 1.0 FsStrengthMeter.qml

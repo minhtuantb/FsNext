@@ -99,3 +99,6 @@ src/core/api/OAuthSecrets.h
 # ── Deployment / release ───────────────────────────────────────────────────
 *.exe.installer
 FsNext-Setup-*.exe
+
+# UI design drop (reference only, not source)
+.uidrop/

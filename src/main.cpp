@@ -1,6 +1,7 @@
 #include "app/Application.h"
 #include "app/AppContext.h"
 #include "core/api/HttpClient.h"
+#include "core/crypto/Crypto.h"
 #include "core/services/AuthService.h"
 #include "core/services/SettingsService.h"
 #include "core/services/TransferService.h"
@@ -9,6 +10,7 @@
 #include "platform/TaskbarProgress.h"
 #include "viewmodels/LanguageViewModel.h"
 #include "viewmodels/TransferHudViewModel.h"
+#include "viewmodels/VaultViewModel.h"
 
 #include <QApplication>          // QSystemTrayIcon needs QApplication, not QGuiApplication
 #include <QMessageBox>           // friendly "init failed" dialog (CRASH_AUDIT H11)
@@ -229,6 +231,18 @@ int main(int argc, char *argv[])
     installCrashHandlers();
     qInfo() << "=== FsNext startup ===" << QDateTime::currentDateTime().toString(Qt::ISODate);
 
+    // Initialize libsodium before any crypto/vault code runs. Must succeed —
+    // the guarded allocator and RNG depend on it.
+    if (!fsnext::crypto::init()) {
+        qCritical() << "libsodium initialization failed — crypto features unavailable";
+        QMessageBox::critical(nullptr, QStringLiteral("FsNext"),
+                              QObject::tr("Không thể khởi tạo thư viện mã hóa. Ứng dụng sẽ thoát."));
+        fsnext::Application::cleanupCurl();
+        return 1;
+    }
+    qInfo() << "libsodium initialized; AES-256-GCM hardware support:"
+            << fsnext::crypto::aes256GcmAvailable();
+
     // Set QML style
     QQuickStyle::setStyle(QStringLiteral("Basic"));
 
@@ -401,6 +415,25 @@ int main(int argc, char *argv[])
 
         QObject::connect(&tray, &fsnext::SystemTray::quitRequested,
                          &app, &QApplication::quit);
+
+        // ── Vault ↔ tray wiring ──────────────────────────────────────────
+        // Tray menu shows a lock/unlock entry mirroring the vault state.
+        // Clicking it locks an unlocked vault, or opens the Vault page.
+        if (auto *vaultVM = context.vaultViewModel()) {
+            auto syncVault = [&tray, vaultVM]() { tray.setVaultState(vaultVM->lockState()); };
+            QObject::connect(vaultVM, &fsnext::VaultViewModel::lockStateChanged, &app, syncVault);
+            syncVault();  // initial paint
+            QObject::connect(&tray, &fsnext::SystemTray::vaultActionRequested,
+                             &app, [&engine, vaultVM]() {
+                if (vaultVM->isUnlocked()) { vaultVM->lock(); return; }
+                const auto roots = engine.rootObjects();
+                if (roots.isEmpty()) return;
+                if (auto *w = qobject_cast<QQuickWindow*>(roots.first())) {
+                    w->show(); w->raise(); w->requestActivate();
+                }
+                QMetaObject::invokeMethod(roots.first(), "navigateToVault");
+            });
+        }
 
         // ── HUD ↔ tray wiring ────────────────────────────────────────────
         // Tray icon colour + tooltip follow HUD VM counters.  countersChanged

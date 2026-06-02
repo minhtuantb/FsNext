@@ -114,6 +114,23 @@ struct AppSettings {
     // button while transfers run (via ITaskbarList3).  Zero-intrusion
     // status that complements the Mini HUD.  No-op on macOS/Linux.
     bool showTaskbarProgress = true;
+
+    // --- Vault / E2EE ---
+    // Auto-encrypt files up to this size, in MB.  0 = no cap (default): every
+    // file is encrypted regardless of size (keeps the E2EE promise), and only
+    // files over the natural 1 GiB boundary trigger the DLG-LARGEFILE prompt.
+    // When > 0, files larger than this cap are routed by vaultOverLimitBehavior.
+    int vaultMaxEncryptMb = 0;
+    // What to do with a file that exceeds the cap (or the 1 GiB boundary when
+    // no cap is set):
+    //   0 = ask each time (default, shows DLG-LARGEFILE)
+    //   1 = skip — do not add to the Vault
+    //   2 = add to a plain (unencrypted) folder outside the Vault
+    int vaultOverLimitBehavior = 0;
+    // Default: auto-upload the produced .fshenc to Fshare after encrypting.
+    bool vaultAutoUpload = false;
+    // Cloud destination folder (path, "/" = root) for auto-uploaded .fshenc.
+    QString vaultUploadFolder = QStringLiteral("/");
 };
 
 } // namespace fsnext

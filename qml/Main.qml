@@ -740,6 +740,11 @@ ApplicationWindow {
                         active: currentPage === Pages.home
                         sourceComponent: active ? homePageComp : null
                     }
+                    Loader {
+                        anchors.fill: parent
+                        active: currentPage === Pages.vault
+                        sourceComponent: active ? vaultPageComp : null
+                    }
                 }
             }
         }
@@ -826,6 +831,15 @@ ApplicationWindow {
     Component { id: favoritesPageComp;      FavoritesPage {} }
     Component { id: userInfoPageComp;       UserInfoPage {} }
     Component { id: settingsPageComp;       SettingsPage {} }
+    Component {
+        id: vaultPageComp
+        VaultPage {
+            onNotify: (title, isError) => toastHost.show({
+                title:   title,
+                variant: isError ? "error" : "success"
+            })
+        }
+    }
     Component { id: auroraShowcasePageComp; AuroraPages.ShowcasePage {} }
     Component {
         id: homePageComp
@@ -1090,6 +1104,12 @@ ApplicationWindow {
     // before this fires.
     function navigateToSettings() {
         root.currentPage = Pages.settings;
+    }
+
+    // main.cpp invokes this on tray menu → "Mở khóa Vault" (when locked / no
+    // vault) to surface the Vault page.
+    function navigateToVault() {
+        root.currentPage = Pages.vault;
     }
 
     // main.cpp invokes this via QMetaObject::invokeMethod on tray single-

@@ -1019,3 +1019,134 @@ if(WIN32)
     )
 endif()
 add_test(NAME UserInfoViewModel COMMAND test_userinfo_viewmodel)
+
+# ── test_crypto_securebytes (Phase C1 / E0) ───────────────
+# SecureBytes guarded-heap wrapper over libsodium. Links only the crypto core
+# + libsodium — no Qt Quick / network. SODIUM_STATIC mirrors the main target.
+qt_add_executable(test_crypto_securebytes
+    test_crypto_securebytes.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.cpp
+)
+target_include_directories(test_crypto_securebytes PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_crypto_securebytes PRIVATE
+    Qt6::Core
+    Qt6::Test
+    unofficial-sodium::sodium
+)
+target_compile_definitions(test_crypto_securebytes PRIVATE SODIUM_STATIC)
+add_test(NAME CryptoSecureBytes COMMAND test_crypto_securebytes)
+
+# ── test_encryption_engine (Phase C2 / E1) ────────────────
+# Full crypto core: format + AES single-shot + XChaCha streaming + KDF.
+qt_add_executable(test_encryption_engine
+    test_encryption_engine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/CryptoError.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/KdfParams.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.cpp
+)
+target_include_directories(test_encryption_engine PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_encryption_engine PRIVATE
+    Qt6::Core
+    Qt6::Test
+    unofficial-sodium::sodium
+)
+target_compile_definitions(test_encryption_engine PRIVATE SODIUM_STATIC)
+add_test(NAME EncryptionEngine COMMAND test_encryption_engine)
+
+# ── test_vault_manager (Phase C4 / E3) ────────────────────
+# Vault lifecycle: create/unlock/lock, change passphrase, recovery keyfile,
+# DPAPI auto-unlock, auto-lock timer. Pulls in VaultManager (QObject) +
+# VaultMetadata (jsoncpp) + SecureStore (DPAPI) + the crypto core.
+qt_add_executable(test_vault_manager
+    test_vault_manager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/CryptoError.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/KdfParams.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/VaultMetadata.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/VaultMetadata.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/VaultManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/VaultManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.cpp
+)
+target_include_directories(test_vault_manager PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_vault_manager PRIVATE
+    Qt6::Core
+    Qt6::Test
+    unofficial-sodium::sodium
+    jsoncpp
+)
+target_compile_definitions(test_vault_manager PRIVATE SODIUM_STATIC)
+if(WIN32)
+    target_link_libraries(test_vault_manager PRIVATE crypt32)
+endif()
+add_test(NAME VaultManager COMMAND test_vault_manager)
+
+# ── test_vault_viewmodel (Phase U1) ───────────────────────
+# Async VaultViewModel bridge (QtConcurrent off-main + auto-lock + busy gate).
+qt_add_executable(test_vault_viewmodel
+    test_vault_viewmodel.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Crypto.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/SecureBytes.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/CryptoError.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/KdfParams.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/Key.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/FencFormat.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/EncryptionEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/VaultMetadata.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/VaultMetadata.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/KeyRegistry.h
+    ${CMAKE_SOURCE_DIR}/src/core/crypto/KeyRegistry.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/VaultManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/VaultManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/VaultViewModel.h
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/VaultViewModel.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.cpp
+    # VaultViewModel now proxies size-cap prefs through SettingsService (the
+    # upload sink is a std::function, so no transfer stack is dragged in).
+    ${CMAKE_SOURCE_DIR}/src/core/services/SettingsService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SettingsService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.cpp
+)
+target_include_directories(test_vault_viewmodel PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_vault_viewmodel PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Concurrent
+    Qt6::Test
+    unofficial-sodium::sodium
+    jsoncpp
+)
+target_compile_definitions(test_vault_viewmodel PRIVATE SODIUM_STATIC)
+if(WIN32)
+    target_link_libraries(test_vault_viewmodel PRIVATE crypt32)
+endif()
+add_test(NAME VaultViewModel COMMAND test_vault_viewmodel)

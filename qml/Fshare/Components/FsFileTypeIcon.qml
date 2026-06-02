@@ -9,6 +9,8 @@ Rectangle {
     property string fileName: ""
     property bool   isFolder: false
     property int    sizePx: 40
+    // Vault: small lock badge overlaid at the bottom-right corner.
+    property bool   locked: false
 
     width: sizePx
     height: sizePx
@@ -117,4 +119,28 @@ Rectangle {
         font.weight: Font.Bold
         color: root.categoryColor(root.fileExtension(root.fileName))
     }
+
+    // Lock badge (Vault files) — accent circle with a white padlock, clipped
+    // just outside the bottom-right corner.
+    Rectangle {
+        visible: root.locked
+        width: Math.max(16, Math.round(root.sizePx * 0.42))
+        height: width
+        radius: width / 2
+        color: AuroraTheme.accent
+        border.width: 2
+        border.color: AuroraTheme.panel
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: -width * 0.18
+        anchors.bottomMargin: -width * 0.18
+
+        FsIcon {
+            anchors.centerIn: parent
+            name: "lock"
+            sizePx: Math.round(parent.width * 0.6)
+            color: "#FFFFFF"
+        }
+    }
 }
+

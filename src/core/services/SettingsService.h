@@ -45,6 +45,23 @@ public:
     QString uploadFolder() const;
     void setUploadFolder(const QString &path);
 
+    // --- Vault / E2EE ---
+    // Auto-encrypt cap in MB; 0 = no cap.  See AppSettings::vaultMaxEncryptMb.
+    int  vaultMaxEncryptMb() const;
+    void setVaultMaxEncryptMb(int value);
+
+    // Over-cap behavior: 0 = ask, 1 = skip, 2 = plain folder.
+    int  vaultOverLimitBehavior() const;
+    void setVaultOverLimitBehavior(int value);
+
+    // Auto-upload .fshenc to Fshare after encrypting (default).
+    bool vaultAutoUpload() const;
+    void setVaultAutoUpload(bool value);
+
+    // Cloud destination folder path for auto-uploaded .fshenc ("/" = root).
+    QString vaultUploadFolder() const;
+    void setVaultUploadFolder(const QString &path);
+
     // --- Transfer budget ---
     // Global cap across every TransferClass (DL+UL+Metadata).  0 disables.
     // AppContext pushes this value into TransferOrchestrator on change.

@@ -25,6 +25,7 @@ QtObject {
     readonly property int settings:  6
     readonly property int showcase:  7
     readonly property int home:      8
+    readonly property int vault:     9
 
     readonly property var titles: ({
         0: qsTr("Tải xuống"),
@@ -35,6 +36,7 @@ QtObject {
         5: qsTr("Tài khoản"),
         6: qsTr("Cài đặt"),
         7: qsTr("Showcase"),
-        8: qsTr("Trang chủ")
+        8: qsTr("Trang chủ"),
+        9: qsTr("Vault")
     })
 }

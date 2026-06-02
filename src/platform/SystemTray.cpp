@@ -195,6 +195,11 @@ void SystemTray::rebuildMenu()
     m_actShow = m_menu->addAction(tr("Hiện cửa sổ"));
     connect(m_actShow, &QAction::triggered, this, &SystemTray::showWindowRequested);
 
+    // Vault lock/unlock — visible only when a vault exists (state 1/2).
+    m_actVault = m_menu->addAction(tr("Vault"));
+    connect(m_actVault, &QAction::triggered, this, &SystemTray::vaultActionRequested);
+    updateVaultAction();
+
     // P3: explicit "show mini HUD" entry.  Useful when the main window
     // is open and the user wants the floating mini up as a stays-on-top
     // peek over another app, without going through hide-to-tray first.
@@ -218,6 +223,24 @@ void SystemTray::rebuildMenu()
 
     m_actQuit = m_menu->addAction(tr("Thoát"));
     connect(m_actQuit, &QAction::triggered, this, &SystemTray::quitRequested);
+}
+
+void SystemTray::updateVaultAction()
+{
+    if (!m_actVault)
+        return;
+    m_actVault->setVisible(m_vaultState != 0);
+    m_actVault->setText(m_vaultState == 2 ? tr("Khóa Vault")
+                       : m_vaultState == 1 ? tr("Mở khóa Vault")
+                       : tr("Vault"));
+}
+
+void SystemTray::setVaultState(int state)
+{
+    if (state == m_vaultState)
+        return;
+    m_vaultState = state;
+    updateVaultAction();
 }
 
 void SystemTray::showNotification(const QString &title, const QString &message,

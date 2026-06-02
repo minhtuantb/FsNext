@@ -1,5 +1,7 @@
 #include "AppContext.h"
 
+#include <QStandardPaths>
+
 #include "core/api/HttpClient.h"
 #include "core/api/FshareApi.h"
 #include "core/services/AuthService.h"
@@ -29,6 +31,7 @@
 #include "viewmodels/TransferBudgetViewModel.h"
 #include "viewmodels/HomeSearchViewModel.h"
 #include "viewmodels/RemoteShareViewModel.h"
+#include "viewmodels/VaultViewModel.h"
 #include "viewmodels/TransferHudViewModel.h"
 #include "core/util/BadWordFilter.h"
 #include "platform/PlatformUtils.h"
@@ -242,6 +245,27 @@ void AppContext::init()
     m_remoteShareVM = std::make_unique<RemoteShareViewModel>(m_api.get(),
                                                               m_downloadVM.get());
 
+    // Encryption vault VM — independent of the Fshare account/session. Points
+    // at the default vault location and, if a vault already lives there with
+    // DPAPI auto-unlock (L2), restores the master key silently at startup.
+    m_vaultVM = std::make_unique<VaultViewModel>();
+    // Inject size-cap policy (SettingsService) + an upload sink wired to
+    // UploadViewModel for the auto-upload / DLG-LARGEFILE / DLG-BATCH flows.
+    {
+        UploadViewModel *up = m_uploadVM.get();
+        m_vaultVM->setServices(m_settingsService.get(),
+            [up](const QStringList &files, const QString &folder) {
+                up->addUpload(files, folder, QString(), QString(), false, false);
+            });
+    }
+    {
+        const QString vaultDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+                                 + QStringLiteral("/Fshare/Vault");
+        m_vaultVM->setVaultDir(vaultDir);
+        if (m_vaultVM->vaultExists())
+            m_vaultVM->tryAutoUnlock();
+    }
+
     // HUD aggregate VM — must be created AFTER every other VM it references
     // (Upload/Download/Sync/Budget) plus TransferService for terminal-event
     // signals.  Drives SystemTray colour + balloon (wired in main.cpp) and
@@ -273,6 +297,7 @@ void AppContext::registerQml(QQmlApplicationEngine *engine)
     ctx->setContextProperty(QStringLiteral("transferBudgetViewModel"), m_budgetVM.get());
     ctx->setContextProperty(QStringLiteral("homeSearchViewModel"), m_homeSearchVM.get());
     ctx->setContextProperty(QStringLiteral("remoteShareViewModel"), m_remoteShareVM.get());
+    ctx->setContextProperty(QStringLiteral("vaultViewModel"), m_vaultVM.get());
     ctx->setContextProperty(QStringLiteral("transferHudViewModel"),  m_hudVM.get());
 
     qDebug() << "[FsNext] QML context properties registered";

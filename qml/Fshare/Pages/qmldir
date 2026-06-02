@@ -7,3 +7,6 @@ UserInfoPage 1.0 UserInfoPage.qml
 SettingsPage 1.0 SettingsPage.qml
 ShowcasePage 1.0 ShowcasePage.qml
 SyncPage 1.0 SyncPage.qml
+VaultPage 1.0 VaultPage.qml
+VaultIntroPage 1.0 VaultIntroPage.qml
+VaultWizard 1.0 VaultWizard.qml

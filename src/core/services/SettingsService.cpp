@@ -99,6 +99,46 @@ void SettingsService::setUploadFolder(const QString &path)
     emit settingsChanged();
 }
 
+// Vault / E2EE
+int SettingsService::vaultMaxEncryptMb() const     { return m_settings.vaultMaxEncryptMb; }
+void SettingsService::setVaultMaxEncryptMb(int value)
+{
+    if (value < 0) value = 0;
+    if (m_settings.vaultMaxEncryptMb == value) return;
+    m_settings.vaultMaxEncryptMb = value;
+    if (m_repo) m_repo->setInt(QStringLiteral("Vault/maxEncryptMb"), value);
+    emit settingsChanged();
+}
+
+int SettingsService::vaultOverLimitBehavior() const { return m_settings.vaultOverLimitBehavior; }
+void SettingsService::setVaultOverLimitBehavior(int value)
+{
+    if (value < 0 || value > 2) value = 0;
+    if (m_settings.vaultOverLimitBehavior == value) return;
+    m_settings.vaultOverLimitBehavior = value;
+    if (m_repo) m_repo->setInt(QStringLiteral("Vault/overLimitBehavior"), value);
+    emit settingsChanged();
+}
+
+bool SettingsService::vaultAutoUpload() const       { return m_settings.vaultAutoUpload; }
+void SettingsService::setVaultAutoUpload(bool value)
+{
+    if (m_settings.vaultAutoUpload == value) return;
+    m_settings.vaultAutoUpload = value;
+    if (m_repo) m_repo->setBool(QStringLiteral("Vault/autoUpload"), value);
+    emit settingsChanged();
+}
+
+QString SettingsService::vaultUploadFolder() const  { return m_settings.vaultUploadFolder; }
+void SettingsService::setVaultUploadFolder(const QString &path)
+{
+    const QString p = path.isEmpty() ? QStringLiteral("/") : path;
+    if (m_settings.vaultUploadFolder == p) return;
+    m_settings.vaultUploadFolder = p;
+    if (m_repo) m_repo->setString(QStringLiteral("Vault/uploadFolder"), p);
+    emit settingsChanged();
+}
+
 // Transfer budget
 int SettingsService::maxGlobalSlots() const        { return m_settings.maxGlobalSlots; }
 void SettingsService::setMaxGlobalSlots(int value)

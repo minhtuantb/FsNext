@@ -68,6 +68,12 @@ AppSettings SettingsRepository::load()
     s.miniWindowY          = getInt   (QStringLiteral("Hud/miniWindowY"),          -1);
     s.miniWindowScreen     = getString(QStringLiteral("Hud/miniWindowScreen"),     {});
 
+    // Vault / E2EE
+    s.vaultMaxEncryptMb     = getInt  (QStringLiteral("Vault/maxEncryptMb"),     0);
+    s.vaultOverLimitBehavior = getInt (QStringLiteral("Vault/overLimitBehavior"), 0);
+    s.vaultAutoUpload       = getBool (QStringLiteral("Vault/autoUpload"),       false);
+    s.vaultUploadFolder     = getString(QStringLiteral("Vault/uploadFolder"),   QStringLiteral("/"));
+
     return s;
 }
 
@@ -118,6 +124,12 @@ void SettingsRepository::save(const AppSettings &s)
     setInt   (QStringLiteral("Hud/miniWindowX"),          s.miniWindowX);
     setInt   (QStringLiteral("Hud/miniWindowY"),          s.miniWindowY);
     setString(QStringLiteral("Hud/miniWindowScreen"),     s.miniWindowScreen);
+
+    // Vault / E2EE
+    setInt   (QStringLiteral("Vault/maxEncryptMb"),       s.vaultMaxEncryptMb);
+    setInt   (QStringLiteral("Vault/overLimitBehavior"),  s.vaultOverLimitBehavior);
+    setBool  (QStringLiteral("Vault/autoUpload"),         s.vaultAutoUpload);
+    setString(QStringLiteral("Vault/uploadFolder"),       s.vaultUploadFolder);
 
     m_settings.sync();
 }

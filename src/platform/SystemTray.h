@@ -67,6 +67,10 @@ public:
     // resulting state equals the last applied one.
     void setHudHint(int active, int pending, int failed);
 
+    // Reflect the encryption-vault lock state in the tray menu.
+    //   0 = no vault (item hidden) · 1 = locked · 2 = unlocked
+    void setVaultState(int state);
+
     // Global screen-coordinate rect of the tray icon, if the platform
     // exposes it.  Used by main.cpp to anchor the Tray Popup window on
     // single-click.  Returns an empty QRect when the platform doesn't
@@ -109,8 +113,13 @@ signals:
     // toggle balloon / mini HUD prefs without hunting through nav.
     void openSettingsRequested();
 
+    // Emitted on tray menu → "Khóa/Mở khóa Vault".  main.cpp locks the vault
+    // when unlocked, or opens the main window on the Vault page otherwise.
+    void vaultActionRequested();
+
 private:
     void rebuildMenu();
+    void updateVaultAction();
 
     // Returns three QIcon families (one per IconState) built from the app
     // icon set by tinting silhouettes through QPainter.  Cached on first
@@ -129,6 +138,7 @@ private:
     QSystemTrayIcon       *m_tray   = nullptr;
     QMenu                 *m_menu   = nullptr;
     QAction               *m_actShow      = nullptr;
+    QAction               *m_actVault     = nullptr;
     QAction               *m_actMini      = nullptr;
     QAction               *m_actPause     = nullptr;
     QAction               *m_actSettings  = nullptr;
@@ -142,6 +152,9 @@ private:
     // menu's "Tạm dừng tất cả" can disable itself when there's nothing to
     // pause, without re-querying the VM on hover.
     int m_active = 0, m_pending = 0, m_failed = 0;
+
+    // Vault lock state for the tray menu item (0 none · 1 locked · 2 unlocked).
+    int m_vaultState = 0;
 
     // 250 ms guard: started on every QSystemTrayIcon::Trigger, fired by
     // QSystemTrayIcon::DoubleClick to cancel.  See togglePopupRequested.
