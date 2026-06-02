@@ -3,9 +3,34 @@
 
 #include <QDateTime>
 #include <QLocale>
+#include <atomic>
 #include <cmath>
 
 namespace fsnext::FormatUtil {
+
+// App-language-driven locale for date formatting. 0 = OS system locale,
+// 1 = Vietnamese, 2 = English. Stored as an atomic int (not a QLocale) so
+// reads/writes are lock-free even if a worker thread formats a date while the
+// main thread flips the language. EN uses en_GB to keep dd/MM ordering
+// consistent with the Vietnamese layout (just localized month/day names).
+static std::atomic<int> g_localeMode{0};
+
+void setLocaleLanguage(const QString &code)
+{
+    g_localeMode.store(code == QStringLiteral("vi") ? 1
+                       : code == QStringLiteral("en") ? 2
+                       : 0,
+                       std::memory_order_relaxed);
+}
+
+static QLocale currentLocale()
+{
+    switch (g_localeMode.load(std::memory_order_relaxed)) {
+        case 1:  return QLocale(QLocale::Vietnamese, QLocale::Vietnam);
+        case 2:  return QLocale(QLocale::English, QLocale::UnitedKingdom);
+        default: return QLocale::system();
+    }
+}
 
 QString humanBytes(qint64 bytes, bool emptyOnZero)
 {
@@ -55,7 +80,7 @@ static QString formatImpl(const QString &s, const QString &fallback, bool dateOn
     const qint64 secs = parseTimestamp(s);
     if (secs <= 0) return fallback;
     const QDateTime dt = QDateTime::fromSecsSinceEpoch(secs).toLocalTime();
-    const QLocale loc = QLocale::system();
+    const QLocale loc = currentLocale();
     return dateOnly ? loc.toString(dt.date(), QLocale::ShortFormat)
                     : loc.toString(dt, QStringLiteral("dd/MM/yyyy HH:mm"));
 }

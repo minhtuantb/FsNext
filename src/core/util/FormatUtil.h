@@ -15,6 +15,12 @@ QString humanBytes(qint64 bytes, bool emptyOnZero = false);
 // Human-readable bytes/sec: "1.5 MB/s". `bps` ≤ 0 yields "" (empty).
 QString humanSpeed(double bps);
 
+// Set the locale used by formatDate/formatDateTime, driven by the app's
+// language toggle ("vi" | "en"; anything else → system locale). Call from
+// LanguageViewModel on startup and on every language change so localized
+// dates follow the in-app language instead of the OS locale. Thread-safe.
+void setLocaleLanguage(const QString &code);
+
 // Parse Fshare API timestamp (either UNIX epoch seconds as string,
 // or ISO-8601). Returns 0 when unparseable/empty.
 qint64 parseTimestamp(const QString &s);

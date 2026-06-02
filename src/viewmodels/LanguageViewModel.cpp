@@ -1,5 +1,7 @@
 #include "LanguageViewModel.h"
 
+#include "core/util/FormatUtil.h"
+
 #include <QCoreApplication>
 #include <QSettings>
 #include <QVariantMap>
@@ -15,6 +17,9 @@ LanguageViewModel::LanguageViewModel(QObject *parent)
     // creating the QQmlApplicationEngine, so the translator is in place when
     // QML loads its first frame.
     loadTranslation(m_language);
+    // Localized C++ date formatting (FormatUtil) follows the app language too,
+    // not the OS locale.
+    FormatUtil::setLocaleLanguage(m_language);
 }
 
 void LanguageViewModel::setLanguage(const QString &lang)
@@ -22,6 +27,7 @@ void LanguageViewModel::setLanguage(const QString &lang)
     if (m_language == lang) return;
     m_language = lang;
     loadTranslation(lang);
+    FormatUtil::setLocaleLanguage(lang);
     persist(lang);
     emit languageChanged();
     // main.cpp connects this to engine.retranslate() so all qsTr() in QML re-fires

@@ -959,6 +959,9 @@ qt_add_executable(test_language_viewmodel
     test_language_viewmodel.cpp
     ${CMAKE_SOURCE_DIR}/src/viewmodels/LanguageViewModel.h
     ${CMAKE_SOURCE_DIR}/src/viewmodels/LanguageViewModel.cpp
+    # LanguageViewModel now drives FormatUtil's date locale on language change.
+    ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.cpp
 )
 target_include_directories(test_language_viewmodel PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(test_language_viewmodel PRIVATE

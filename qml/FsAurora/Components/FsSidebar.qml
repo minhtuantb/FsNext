@@ -725,10 +725,15 @@ Rectangle {
                 }
 
                 // Ngôn ngữ — expands inline to switch language right here,
-                // without navigating away. The hint shows the current choice.
+                // without navigating away. The label deliberately shows the
+                // OTHER language's word as a switch cue (VI → "Language",
+                // EN → "Ngôn ngữ"); it is intentionally NOT qsTr — it must
+                // always read as the language you'd switch TO, so the i18n
+                // sweep/skill should skip it. The hint shows the current choice.
                 PopItem {
                     icon: "globe"
-                    label: qsTr("Ngôn ngữ")
+                    label: (languageViewModel && languageViewModel.language === "en")
+                           ? "Ngôn ngữ" : "Language"
                     hint: languageViewModel ? languageViewModel.displayName : ""
                     onActivated: pivot.langExpanded = !pivot.langExpanded
                 }
