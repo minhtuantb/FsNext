@@ -130,8 +130,8 @@ Item {
 
                         Text {
                             text: page.showHistory
-                                ? "━━ Lịch sử · " + page.historyCount + " file"
-                                : "━━ Đang tải · " + page.activeCount + " file"
+                                ? qsTr("━━ Lịch sử · ") + page.historyCount + qsTr(" file")
+                                : qsTr("━━ Đang tải · ") + page.activeCount + qsTr(" file")
                             color: AuroraTheme.ink4
                             font.family: AuroraTheme.fontMono
                             font.pixelSize: 11
@@ -196,13 +196,13 @@ Item {
                         Repeater {
                             model: [
                                 {
-                                    label: "Đang chạy",
+                                    label: qsTr("Đang chạy"),
                                     value: (transferBudgetViewModel
                                         ? transferBudgetViewModel.activeDownloads + "/" + transferBudgetViewModel.maxDownloads
                                         : "—")
                                 },
                                 {
-                                    label: "Hàng đợi",
+                                    label: qsTr("Hàng đợi"),
                                     value: (transferBudgetViewModel
                                         ? String(transferBudgetViewModel.pendingDownloads)
                                         : "—")
@@ -214,7 +214,7 @@ Item {
                                     // matches the kicker line above and is
                                     // also visually narrower → buys a few
                                     // more px of room for the action buttons.
-                                    label: "Tổng file",
+                                    label: qsTr("Tổng file"),
                                     value: String(page.activeCount)
                                 }
                             ]

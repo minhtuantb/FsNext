@@ -30,9 +30,9 @@ Item {
 
     // Derived display name — first word of userName, defaults to "bạn".
     readonly property string _displayName: {
-        if (!authVm || !authVm.userName) return "bạn";
+        if (!authVm || !authVm.userName) return qsTr("bạn");
         const parts = authVm.userName.trim().split(/\s+/);
-        return parts[parts.length - 1] || "bạn";
+        return parts[parts.length - 1] || qsTr("bạn");
     }
 
     // ═════════════════════════════════════════════════════════
@@ -209,9 +209,9 @@ Item {
 
                 Repeater {
                     model: [
-                        { label: "File đang lưu",  value: "287 GB" },
-                        { label: "Tốc độ VIP",     value: "Không giới hạn" },
-                        { label: "Hết hạn",        value: "243 ngày" }
+                        { label: qsTr("File đang lưu"),  value: "287 GB" },
+                        { label: qsTr("Tốc độ VIP"),     value: qsTr("Không giới hạn") },
+                        { label: qsTr("Hết hạn"),        value: qsTr("243 ngày") }
                     ]
                     delegate: ColumnLayout {
                         spacing: 3

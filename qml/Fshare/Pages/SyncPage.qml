@@ -303,7 +303,7 @@ Item {
                         Layout.alignment: Qt.AlignVCenter
 
                         Text {
-                            text: "━━ Đồng bộ · " + page.folderCount + "/" + page.maxFolders + " folder"
+                            text: qsTr("━━ Đồng bộ · ") + page.folderCount + "/" + page.maxFolders + qsTr(" folder")
                             color: AuroraTheme.ink4
                             font.family: AuroraTheme.fontMono
                             font.pixelSize: 11
@@ -346,15 +346,15 @@ Item {
                         Repeater {
                             model: [
                                 {
-                                    label: "Đã sao lưu",
+                                    label: qsTr("Đã sao lưu"),
                                     value: page.totalSynced + "/" + page.totalFiles
                                 },
                                 {
-                                    label: "Lỗi",
+                                    label: qsTr("Lỗi"),
                                     value: String(page.totalFailed)
                                 },
                                 {
-                                    label: "Giới hạn",
+                                    label: qsTr("Giới hạn"),
                                     value: (page.hasVM ? (syncViewModel.speedLimitKBps / 1024).toFixed(0) : "5") + " MB/s"
                                 }
                             ]
@@ -473,7 +473,7 @@ Item {
 
             Text {
                 Layout.leftMargin: AuroraTheme.sp2
-                text: "━ Cặp thư mục · " + page.folderCount
+                text: qsTr("━ Cặp thư mục · ") + page.folderCount
                 color: AuroraTheme.ink4
                 font.family: AuroraTheme.fontMono
                 font.pixelSize: 11

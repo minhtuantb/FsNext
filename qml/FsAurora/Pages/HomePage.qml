@@ -138,9 +138,9 @@ Item {
     }
 
     readonly property string _firstName: {
-        if (!authViewModel) return "bạn";
+        if (!authViewModel) return qsTr("bạn");
         const n = (authViewModel.userName || "").trim();
-        if (n.length === 0) return "bạn";
+        if (n.length === 0) return qsTr("bạn");
         const parts = n.split(/\s+/);
         return parts[parts.length - 1];   // last token — Vietnamese given name
     }
@@ -148,14 +148,14 @@ Item {
     readonly property string _greetingKicker: {
         const d = new Date(page.nowMs);
         const h = d.getHours();
-        const days = ["CHỦ NHẬT","THỨ HAI","THỨ BA","THỨ TƯ","THỨ NĂM","THỨ SÁU","THỨ BẢY"];
+        const days = [qsTr("CHỦ NHẬT"),qsTr("THỨ HAI"),qsTr("THỨ BA"),qsTr("THỨ TƯ"),qsTr("THỨ NĂM"),qsTr("THỨ SÁU"),qsTr("THỨ BẢY")];
         const dow = days[d.getDay()];
         let part;
-        if      (h < 5)  part = "RẠNG SÁNG";
-        else if (h < 11) part = "SÁNG";
-        else if (h < 13) part = "TRƯA";
-        else if (h < 18) part = "CHIỀU";
-        else             part = "TỐI";
+        if      (h < 5)  part = qsTr("RẠNG SÁNG");
+        else if (h < 11) part = qsTr("SÁNG");
+        else if (h < 13) part = qsTr("TRƯA");
+        else if (h < 18) part = qsTr("CHIỀU");
+        else             part = qsTr("TỐI");
         const hh = ("0" + h).slice(-2);
         const mm = ("0" + d.getMinutes()).slice(-2);
         return part + " " + dow + " · " + hh + ":" + mm;
@@ -164,11 +164,11 @@ Item {
     function _relTime(tsMs) {
         if (!tsMs || tsMs <= 0) return "";
         const diffS = Math.max(0, (page.nowMs - tsMs) / 1000);
-        if (diffS < 60)        return "vừa xong";
-        if (diffS < 3600)      return Math.floor(diffS / 60) + " phút trước";
-        if (diffS < 86400)     return Math.floor(diffS / 3600) + " giờ trước";
-        if (diffS < 86400 * 2) return "hôm qua";
-        if (diffS < 86400 * 7) return Math.floor(diffS / 86400) + " ngày trước";
+        if (diffS < 60)        return qsTr("vừa xong");
+        if (diffS < 3600)      return Math.floor(diffS / 60) + qsTr(" phút trước");
+        if (diffS < 86400)     return Math.floor(diffS / 3600) + qsTr(" giờ trước");
+        if (diffS < 86400 * 2) return qsTr("hôm qua");
+        if (diffS < 86400 * 7) return Math.floor(diffS / 86400) + qsTr(" ngày trước");
         return Qt.formatDate(new Date(tsMs), "dd/MM/yyyy");
     }
 

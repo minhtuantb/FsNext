@@ -264,8 +264,8 @@ Item {
 
                         Text {
                             text: page.showHistory
-                                ? "━━ Lịch sử · " + page.historyCount + " file"
-                                : "━━ Tải lên · " + page.activeCount + " file"
+                                ? qsTr("━━ Lịch sử · ") + page.historyCount + qsTr(" file")
+                                : qsTr("━━ Tải lên · ") + page.activeCount + qsTr(" file")
                             color: AuroraTheme.ink4
                             font.family: AuroraTheme.fontMono
                             font.pixelSize: 11
@@ -327,19 +327,19 @@ Item {
                         Repeater {
                             model: [
                                 {
-                                    label: "Đang chạy",
+                                    label: qsTr("Đang chạy"),
                                     value: (transferBudgetViewModel
                                         ? transferBudgetViewModel.activeUploads + "/" + transferBudgetViewModel.maxUploads
                                         : "—")
                                 },
                                 {
-                                    label: "Hàng đợi",
+                                    label: qsTr("Hàng đợi"),
                                     value: (transferBudgetViewModel
                                         ? String(transferBudgetViewModel.pendingUploads)
                                         : "—")
                                 },
                                 {
-                                    label: "Tổng file",
+                                    label: qsTr("Tổng file"),
                                     value: String(page.activeCount)
                                 }
                             ]

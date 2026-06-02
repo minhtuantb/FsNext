@@ -161,6 +161,37 @@
         <translation>Pause All</translation>
     </message>
     <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="133"/>
+        <source>━━ Lịch sử · </source>
+        <translation>━━ History · </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="133"/>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="134"/>
+        <source> file</source>
+        <translation> files</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="134"/>
+        <source>━━ Đang tải · </source>
+        <translation>━━ Downloading · </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="199"/>
+        <source>Đang chạy</source>
+        <translation>Active</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="205"/>
+        <source>Hàng đợi</source>
+        <translation>Queued</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="217"/>
+        <source>Tổng file</source>
+        <translation>Total files</translation>
+    </message>
+    <message>
         <location filename="../../qml/Fshare/Pages/DownloadPage.qml" line="252"/>
         <source>Tiếp tục tất cả</source>
         <translation>Resume All</translation>
@@ -1638,6 +1669,97 @@ to view details</translation>
 <context>
     <name>HomePage</name>
     <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="141"/>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="143"/>
+        <source>bạn</source>
+        <translation>there</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>CHỦ NHẬT</source>
+        <translation>SUN</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>THỨ HAI</source>
+        <translation>MON</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>THỨ BA</source>
+        <translation>TUE</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>THỨ TƯ</source>
+        <translation>WED</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>THỨ NĂM</source>
+        <translation>THU</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>THỨ SÁU</source>
+        <translation>FRI</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="151"/>
+        <source>THỨ BẢY</source>
+        <translation>SAT</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="154"/>
+        <source>RẠNG SÁNG</source>
+        <translation>EARLY MORNING</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="155"/>
+        <source>SÁNG</source>
+        <translation>MORNING</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="156"/>
+        <source>TRƯA</source>
+        <translation>NOON</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="157"/>
+        <source>CHIỀU</source>
+        <translation>AFTERNOON</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="158"/>
+        <source>TỐI</source>
+        <translation>EVENING</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="167"/>
+        <source>vừa xong</source>
+        <translation>just now</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="168"/>
+        <source> phút trước</source>
+        <translation> min ago</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="169"/>
+        <source> giờ trước</source>
+        <translation> hours ago</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="170"/>
+        <source>hôm qua</source>
+        <translation>yesterday</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="171"/>
+        <source> ngày trước</source>
+        <translation> days ago</translation>
+    </message>
+    <message>
         <location filename="../../qml/FsAurora/Pages/HomePage.qml" line="301"/>
         <source>Tìm file, folder, hoặc dán link Fshare…</source>
         <translation>Search files, folders, or paste a Fshare link…</translation>
@@ -1855,6 +1977,12 @@ to view details</translation>
 <context>
     <name>LoginView</name>
     <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="33"/>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="35"/>
+        <source>bạn</source>
+        <translation>there</translation>
+    </message>
+    <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="153"/>
         <source>━━ Chào bạn trở lại</source>
         <translation>━━ Welcome back</translation>
@@ -1875,9 +2003,34 @@ to view details</translation>
         <translation>287 GB in storage, 7 files waiting to download, 14 active links — everything you have, one sign-in away.</translation>
     </message>
     <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="212"/>
+        <source>File đang lưu</source>
+        <translation>Files stored</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="213"/>
+        <source>Tốc độ VIP</source>
+        <translation>VIP speed</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="213"/>
+        <source>Không giới hạn</source>
+        <translation>Unlimited</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="214"/>
+        <source>Hết hạn</source>
+        <translation>Expires</translation>
+    </message>
+    <message>
+        <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="214"/>
+        <source>243 ngày</source>
+        <translation>243 days</translation>
+    </message>
+    <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="259"/>
         <source>Chưa có tài khoản?</source>
-        <translation>Don't have an account?</translation>
+        <translation>Don&apos;t have an account?</translation>
     </message>
     <message>
         <location filename="../../qml/FsAurora/Pages/LoginView.qml" line="265"/>
@@ -2215,12 +2368,12 @@ to view details</translation>
         <translation>Opening player…</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="259"/>
+        <location filename="../main.cpp" line="260"/>
         <source>FsNext — Khởi tạo thất bại</source>
         <translation>FsNext — Initialization failed</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="260"/>
+        <location filename="../main.cpp" line="261"/>
         <source>Không thể khởi tạo ứng dụng:
 
 %1</source>
@@ -2229,34 +2382,34 @@ to view details</translation>
 %1</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="480"/>
+        <location filename="../main.cpp" line="481"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="61"/>
         <location filename="../viewmodels/SyncViewModel.cpp" line="220"/>
         <source>Đã đồng bộ</source>
         <translation>Synced</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="482"/>
+        <location filename="../main.cpp" line="483"/>
         <source>Đã tải lên xong</source>
         <translation>Upload complete</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="484"/>
+        <location filename="../main.cpp" line="485"/>
         <source>Đã tải xuống xong</source>
         <translation>Download complete</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="490"/>
+        <location filename="../main.cpp" line="491"/>
         <source>Đồng bộ thất bại: </source>
         <translation>Sync failed: </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="492"/>
+        <location filename="../main.cpp" line="493"/>
         <source>Tải lên thất bại: </source>
         <translation>Upload failed: </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="494"/>
+        <location filename="../main.cpp" line="495"/>
         <source>Tải xuống thất bại: </source>
         <translation>Download failed: </translation>
     </message>
@@ -3084,9 +3237,34 @@ Any QML can go here.</translation>
         <translation>Unable to scan the folder</translation>
     </message>
     <message>
+        <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="306"/>
+        <source>━━ Đồng bộ · </source>
+        <translation>━━ Sync · </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="306"/>
+        <source> folder</source>
+        <translation> folders</translation>
+    </message>
+    <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="330"/>
         <source>folder đang sync.</source>
         <translation>folder(s) syncing.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="349"/>
+        <source>Đã sao lưu</source>
+        <translation>Backed up</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="353"/>
+        <source>Lỗi</source>
+        <translation>Errors</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="357"/>
+        <source>Giới hạn</source>
+        <translation>Limit</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="421"/>
@@ -3117,6 +3295,11 @@ Any QML can go here.</translation>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="462"/>
         <source>Thêm thư mục đầu tiên</source>
         <translation>Add your first folder</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="476"/>
+        <source>━ Cặp thư mục · </source>
+        <translation>━ Folder pairs · </translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/SyncPage.qml" line="578"/>
@@ -3420,6 +3603,37 @@ Any QML can go here.</translation>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="184"/>
         <source>Huỷ</source>
         <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="267"/>
+        <source>━━ Lịch sử · </source>
+        <translation>━━ History · </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="267"/>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="268"/>
+        <source> file</source>
+        <translation> files</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="268"/>
+        <source>━━ Tải lên · </source>
+        <translation>━━ Uploading · </translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="330"/>
+        <source>Đang chạy</source>
+        <translation>Active</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="336"/>
+        <source>Hàng đợi</source>
+        <translation>Queued</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="342"/>
+        <source>Tổng file</source>
+        <translation>Total files</translation>
     </message>
     <message>
         <location filename="../../qml/Fshare/Pages/UploadPage.qml" line="388"/>
