@@ -4,8 +4,10 @@
 #include <QByteArray>
 #include <QMap>
 #include <QMutex>
+#include <array>
 #include <functional>
 #include <memory>
+#include <mutex>
 
 struct curl_slist;
 typedef void CURL;
@@ -95,10 +97,19 @@ private:
     // for the second+ call to the same host drops from ~200 ms to ~20 ms
     // (resumed session) on Windows.  See ADR 003 D8.
     //
-    // Owned for the lifetime of HttpClient.  Locking callbacks are no-ops
-    // because we only ever call CURL from threads that have their own easy
-    // handle; the share itself is touched on connection completion.
+    // Owned for the lifetime of HttpClient.
     CURLSH *m_share = nullptr;
+
+    // Per-curl_lock_data mutexes backing the share handle's lock callbacks.
+    // libcurl REQUIRES lock/unlock callbacks whenever a CURLSH is used from more
+    // than one thread — and ours is: metadata crawl (FileSyncWorker), search,
+    // download-url and upload-session calls all run on the QtConcurrent pool and
+    // share this one handle.  Without the callbacks, concurrent mutation of the
+    // shared DNS / connection / cookie / TLS-session caches corrupts the heap
+    // (Windows STATUS_HEAP_CORRUPTION 0xc0000374).  Index = curl_lock_data
+    // value; size 16 comfortably exceeds curl_lock_data's range.  Used only by
+    // the static lock callbacks via CURLSHOPT_USERDATA → &m_shareLocks.
+    std::array<std::mutex, 16> m_shareLocks;
 };
 
 } // namespace fsnext

@@ -26,6 +26,29 @@ static int abortOnShutdown(void * /*clientp*/,
     return g_httpShutdown.load(std::memory_order_relaxed) ? 1 : 0;
 }
 
+// ── CURLSH lock callbacks ────────────────────────────────────────────────
+// libcurl mandates these whenever a share handle is used from >1 thread.
+// userptr is &HttpClient::m_shareLocks (an array of mutexes indexed by
+// curl_lock_data). We treat every access as exclusive — coarser than the
+// SHARED/EXCLUSIVE hint but always correct, and libcurl never re-locks the
+// same data type on one thread so a non-recursive std::mutex is safe.
+static void shareLockCb(CURL * /*handle*/, curl_lock_data data,
+                        curl_lock_access /*access*/, void *userptr)
+{
+    auto *locks = static_cast<std::array<std::mutex, 16> *>(userptr);
+    const size_t i = static_cast<size_t>(data);
+    if (locks && i < locks->size())
+        (*locks)[i].lock();
+}
+
+static void shareUnlockCb(CURL * /*handle*/, curl_lock_data data, void *userptr)
+{
+    auto *locks = static_cast<std::array<std::mutex, 16> *>(userptr);
+    const size_t i = static_cast<size_t>(data);
+    if (locks && i < locks->size())
+        (*locks)[i].unlock();
+}
+
 void HttpClient::requestGlobalShutdown()
 {
     g_httpShutdown.store(true, std::memory_order_relaxed);
@@ -83,6 +106,12 @@ HttpClient::HttpClient()
     // re-resolving DNS and re-doing the full TLS dance).
     m_share = curl_share_init();
     if (m_share) {
+        // Lock callbacks MUST be installed before sharing any data type — the
+        // share is used concurrently from the QtConcurrent pool, so unguarded
+        // access to these caches corrupts the heap (0xc0000374).
+        curl_share_setopt(m_share, CURLSHOPT_LOCKFUNC, shareLockCb);
+        curl_share_setopt(m_share, CURLSHOPT_UNLOCKFUNC, shareUnlockCb);
+        curl_share_setopt(m_share, CURLSHOPT_USERDATA, &m_shareLocks);
         curl_share_setopt(m_share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
         curl_share_setopt(m_share, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
         curl_share_setopt(m_share, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
