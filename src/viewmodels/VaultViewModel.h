@@ -79,7 +79,9 @@ public:
     bool    aesAvailable() const { return aesAvailable_; }
     bool    busy() const { return busy_; }
     QString vaultDir() const { return vaultDir_; }
-    void    setVaultDir(const QString &dir);
+    // Q_INVOKABLE so QML (VaultWizard) can call vm.setVaultDir(path) directly,
+    // not only via the vaultDir property-write binding.
+    Q_INVOKABLE void setVaultDir(const QString &dir);
 
     /// For sibling VMs that need the master key (e.g. file encrypt/decrypt).
     /// Valid only while unlocked.
