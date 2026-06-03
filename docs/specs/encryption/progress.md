@@ -8,8 +8,8 @@
 ## 1. Tài liệu liên quan (đọc trước)
 | File | Nội dung |
 |---|---|
-| `docs/specs/encryption-plan.md` | **Spec kỹ thuật để code**: thuật toán (AES single-shot ≤1MiB / XChaCha20 streaming), format `.fshenc`, key hierarchy, lộ trình E0–E6, §13 quyết định đã chốt. |
-| `docs/specs/encryption-ui-brief.md` | **Brief UI/UX** gửi thiết kế: 19 màn, microcopy VI, flow, checklist. |
+| `docs/specs/encryption/plan.md` | **Spec kỹ thuật để code**: thuật toán (AES single-shot ≤1MiB / XChaCha20 streaming), format `.fshenc`, key hierarchy, lộ trình E0–E6, §13 quyết định đã chốt. |
+| `docs/specs/encryption/ui-brief.md` | **Brief UI/UX** gửi thiết kế: 19 màn, microcopy VI, flow, checklist. |
 | `.uidrop/fshare4/src/vault-*.jsx` | Prototype React (tham chiếu, **gitignored** qua `.uidrop/`). KeyManager/Batch/Settings ở `vault-pages.jsx`. |
 | `CLAUDE.md`, skill `fsnext-i18n`, `fsnext-run` | Quy ước build/i18n/run. |
 

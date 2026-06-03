@@ -178,4 +178,4 @@ Khi Fshare đổi URL slug:
 | `qml/Fshare/Utils/qmldir` | ✏ +1 dòng singleton registration |
 | `qml/FsAurora/Pages/LoginView.qml` | ✏ Wire signup + forgotPassword + import Fshare.Utils |
 | `qml/Fshare/Pages/UserInfoPage.qml` | ✏ Thêm section "Quản lý tài khoản" — 4 nút redirect /account/profile |
-| `docs/account_external_links.md` | 🆕 Tài liệu này |
+| `docs/reference/account-external-links.md` | 🆕 Tài liệu này |

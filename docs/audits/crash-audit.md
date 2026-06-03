@@ -4,7 +4,7 @@
 >
 > Toàn bộ finding đã được verify lại với code hiện tại (sau các đợt WIP v6.x). **Kết luận: không còn
 > crash bug nghiêm trọng nào chưa được mitigate.** Các mục robustness/UX/perf còn lại đã chuyển sang
-> [BACKLOG.md](BACKLOG.md). Phần điều tra gốc bên dưới giữ nguyên làm tham chiếu.
+> [backlog.md](../project/backlog.md). Phần điều tra gốc bên dưới giữ nguyên làm tham chiếu.
 >
 > **HIGH:**
 > | ID | Trạng thái | Ghi chú |
@@ -331,7 +331,7 @@ Không phải crash; là perf. Với 10k task, mỗi enqueue scan 4 deque → t�
 **Khắc phục:** Hash set `m_allIds` song song.
 
 ### M18. ✅ FIXED `SyncService::scanFolderInternal` blocking I/O
-[SyncService.cpp](src/core/services/SyncService.cpp) · [SyncScanner.cpp](src/core/services/SyncScanner.cpp) · plan: [m18-async-scan-plan.md](m18-async-scan-plan.md)
+[SyncService.cpp](src/core/services/SyncService.cpp) · [SyncScanner.cpp](src/core/services/SyncScanner.cpp) · plan: [async-scan.md](../specs/async-scan.md)
 
 Vòng BFS walk cây thư mục (`QDir::entryInfoList` + `QFileInfo` stat) chạy trên main thread → block 1–30s khi
 sync folder ở network mount (SMB/NFS/ổ ngủ) → UI freeze, spinner đứng, click không phản hồi.
@@ -470,7 +470,7 @@ Default dtor đủ vì timer là member; nhưng explicit `m_timer.stop()` rõ ý
 1. **Static analysis**: thêm `clang-tidy` với checks `bugprone-*`, `cert-*`, `cppcoreguidelines-pro-type-cstyle-cast` vào CI.
 2. **Runtime sanitizer**: build debug với `-fsanitize=thread` để bắt race (cần Linux build hoặc clang trên Windows).
 3. **Crash reporter**: tích hợp Sentry/Crashpad — `terminateHandler` hiện chỉ log file local. Khi user crash thực tế, không có cơ chế tự động báo về.
-4. **QObject lifetime policy**: ban hành quy ước nội bộ: "Mọi QtConcurrent::run capture phải dùng QPointer cho TẤT CẢ QObject pointer, không chỉ `this`." Thêm vào CLAUDE.md / docs/ARCHITECTURE.md.
+4. **QObject lifetime policy**: ban hành quy ước nội bộ: "Mọi QtConcurrent::run capture phải dùng QPointer cho TẤT CẢ QObject pointer, không chỉ `this`." Thêm vào CLAUDE.md / docs/architecture/overview.md.
 5. **Test concurrency**: bổ sung test bằng `QSignalSpy` + `QTest::qWait` mô phỏng cancel-while-running, logout-during-fetch, app-quit-during-upload.
 6. **Memory tools**: chạy `Dr.Memory` hoặc `Application Verifier` trên build dev định kỳ.
 

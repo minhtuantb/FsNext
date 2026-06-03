@@ -2,10 +2,10 @@
 
 > Legend: ✅ done · 🔶 partial · ⬜ open. Cập nhật 2026-05-29.
 
-## Active backlog (đợt review 2026-05-29 — xem `docs/ASSESSMENT.md`)
+## Active backlog (đợt review 2026-05-29 — xem `docs/architecture/assessment.md`)
 
 ### P1
-- ✅ **Hợp nhất 2 design-system QML** — `Fshare.Components` chuẩn (xem [design-system.md](design-system.md)).
+- ✅ **Hợp nhất 2 design-system QML** — `Fshare.Components` chuẩn (xem [design-system.md](../architecture/design-system.md)).
   - ✅ Stage 1 + 2 (2026-05-29): **cả 7 atom** (FsIcon/FsTextField/FsCard/FsButton/FsBadge/FsSwitch/FsProgressBar)
     đã về Fshare (gộp visual Aurora + a11y Fshare, repoint hết, build+runtime verified). FsAurora.Components còn lại
     chỉ shell/HUD/utility.
@@ -13,7 +13,7 @@
     `FsAurora.Components` (phụ thuộc ngược đã cắt — chỉ còn phụ thuộc `FsAurora.Theme`).
   - ✅ Cleanup #1 (2026-05-29): gỡ import `FsAurora.Components as Aurora` thừa ở 16 Pages/Dialogs; chuyển design
     handoff sang `design/handoff/`, xóa rác (uploads) + bản trùng (src/, root html/jsx). `qml/FsAurora/` chỉ còn QML.
-- ⬜ **Đóng crash audit**: đối chiếu từng finding trong `docs/CRASH_AUDIT.md` + `docs/FILE_MANAGER_CRASH_AUDIT.md`
+- ⬜ **Đóng crash audit**: đối chiếu từng finding trong `docs/audits/crash-audit.md` + `docs/audits/file-manager-crash-audit.md`
   với code hiện tại, đánh dấu Fixed/Won't-fix/Open. Ưu tiên race click-nhanh + `FolderTreeModel` đệ quy không cap depth.
 
 ### P2
@@ -29,7 +29,7 @@
   - ✅ `RefreshTokenCoordinator` **single-flight + hard/soft classification** (2026-05-29): virtual hóa
     `HttpClient::post/setCookie` → `FakeHttpClient` (canned response + semaphore gate). Test: success rotate token,
     hard-fail wipe session, soft-fail keep token, single-flight collapse 7 caller đồng thời → đúng 1 network call.
-- 🔄 **i18n** (audit xong 2026-05-29 — xem [i18n-audit.md](i18n-audit.md)): đã chạy `lupdate` (819 source text,
+- 🔄 **i18n** (audit xong 2026-05-29 — xem [i18n-audit.md](../audits/i18n-audit.md)): đã chạy `lupdate` (819 source text,
   +44 mới), wrap đã phủ tốt (728 qsTr + 140 tr). **Phát hiện: bản EN ~91% chưa dịch** → app thực tế hiển thị VI dù
   chọn EN. **Quyết định sản phẩm còn lại**: (a) giao translator điền 748 entry + wrap nốt số ít production, HOẶC
   (b) tạm ẩn lựa chọn English. Quy ước: chạy lupdate trước release + code-review chặn chuỗi mới thiếu qsTr.
@@ -38,12 +38,12 @@
 - ⬜ **SecureStore non-Windows** (Keychain/libsecret) khi port macOS/Linux.
 - ⬜ **Quy ước tài liệu sống vs snapshot** để tránh drift tái diễn (xem ASSESSMENT §7).
 
-### Crash-audit residual (không crash — từ đợt close 2026-05-29, xem docs/CRASH_AUDIT.md + FILE_MANAGER_CRASH_AUDIT.md)
+### Crash-audit residual (không crash — từ đợt close 2026-05-29, xem docs/audits/crash-audit.md + file-manager-crash-audit.md)
 > Mọi finding crash nghiêm trọng đã FIXED/mitigated. Đây là các mục robustness/UX/perf còn lại:
 - ✅ **H11** (2026-05-29): `context.init()` đã bọc try-catch + QMessageBox "Khởi tạo thất bại".
 - ✅ **M4** (2026-05-29): thêm `Q_ASSERT` thread-affinity ở `pauseFolder/resumeFolder` (không có race thật — SyncService main-thread-only; assert tài liệu hóa invariant).
 - ✅ **FM-M5** (verified NOT-A-BUG 2026-05-29): FileService settings-op luôn emit complete/failed → `m_settingsInFlight` luôn cân bằng.
-- ✅ **M18** (2026-05-29 — theo plan **[m18-async-scan-plan.md](m18-async-scan-plan.md)**): tách vòng walk filesystem
+- ✅ **M18** (2026-05-29 — theo plan **[async-scan.md](../specs/async-scan.md)**): tách vòng walk filesystem
   ra `SyncScanner::scanFilesystem()` (TU riêng, Qt6::Core-only) chạy off-main qua `QtConcurrent::run`; `applyScanResult()`
   làm diff/persist/enqueue ở main; guard reentrancy per-folder (`m_scanInFlight`/`m_scanDirty`) coalesce watcher/timer
   storms. `scanFolderInternal` giữ chữ ký → callers không đổi. Unit test `test_sync_scan` (QTemporaryDir) + full ctest xanh.
@@ -97,7 +97,7 @@ and the original 2025-04-15 reproduction was against the stale tuple.
 Dev bypass that was added as a workaround **has been removed** from
 `AuthService.cpp`.
 
-Emergency runbook for future recurrence kept at `docs/runbook_login_400.md`.
+Emergency runbook for future recurrence kept at `docs/runbooks/login-400.md`.
 
 ---
 

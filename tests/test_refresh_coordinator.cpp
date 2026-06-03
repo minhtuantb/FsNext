@@ -14,7 +14,7 @@
 //   • isPersistedSessionWithinWindow() honours the 7-day hard window
 //
 // The single-flight concurrency + hard/soft classification paths require a
-// mockable HttpClient (see docs/BACKLOG.md "IFshareApi interface") and are not
+// mockable HttpClient (see docs/project/backlog.md "IFshareApi interface") and are not
 // covered here.
 
 #include <QtTest>

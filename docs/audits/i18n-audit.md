@@ -1,6 +1,6 @@
 # FsNext — i18n Audit (2026-05-29)
 
-Kết quả rà soát quốc tế hóa (P2 trong `docs/ASSESSMENT.md`). Ngôn ngữ nguồn = **tiếng Việt** (chuỗi nguồn hiển
+Kết quả rà soát quốc tế hóa (P2 trong `docs/architecture/assessment.md`). Ngôn ngữ nguồn = **tiếng Việt** (chuỗi nguồn hiển
 thị trực tiếp); ngôn ngữ đích duy nhất hiện có = **English** (`src/i18n/fshare_en.ts` → `output/translations/fshare_en.qm`).
 
 ## Số liệu

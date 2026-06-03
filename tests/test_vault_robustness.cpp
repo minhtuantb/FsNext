@@ -7,7 +7,7 @@
 // kill-mid-op simulation, edge filenames/sizes, and VaultManager state
 // corruption.
 //
-// See docs/specs/vault-test-cases.md (VLT-### ids referenced in comments).
+// See qa/testcases/vault/seed.md (VLT-### ids referenced in comments).
 
 #include <QtTest>
 #include <QTemporaryDir>

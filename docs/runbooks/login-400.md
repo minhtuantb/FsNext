@@ -15,7 +15,7 @@ Server Fshare trả `HTTP 400 Bad Request` (HTML từ nginx, không phải JSON)
 
 ## 2. Trạng thái thực tế ngày hôm nay (≠ BACKLOG)
 
-`docs/BACKLOG.md` ghi blocker 2026-04-15 với app_key cũ:
+`docs/project/backlog.md` ghi blocker 2026-04-15 với app_key cũ:
 > Payload: `{"app_key":"CtnLXisyQaf4mQwfx6aP58ZMQUomck14R7mI7KCe", ...}`
 
 Nhưng `src/core/api/FshareApi.cpp:17-31` hiện dùng **app_key đã rotation**:
@@ -171,7 +171,7 @@ ADR D9 đã quy định: dev bypass phải gated **đồng thời** bởi:
 
 Khi 400 xảy ra trong dev build với env set, AuthService trả về một `Session` mock với `email = "taikhoantestfshare@gmail.com"`, `token = "DEV_BYPASS_<rand>"`. Mọi API gọi sau đó vẫn fail thật, nhưng UI/QML có thể được iterate. **TUYỆT ĐỐI không** ship binary có FSNEXT_DEV_BUILD=1.
 
-Xem skeleton ở `docs/decisions/003_upgrade_decisions.md § D2` — thêm vào AuthService.cpp khoảng 30 dòng. (Có ý đồ giữ ngoài cho tới khi backend xác nhận lần cuối.)
+Xem skeleton ở `docs/decisions/0003-upgrade-decisions.md § D2` — thêm vào AuthService.cpp khoảng 30 dòng. (Có ý đồ giữ ngoài cho tới khi backend xác nhận lần cuối.)
 
 ### M3 — Web-session login fallback
 Legacy fshareclient v5 hỗ trợ login qua **session cookie từ browser**: user paste `PHPSESSID=xxx` thủ công, app dùng làm session. Hiện FsNext không expose. Wire path này trong `LoginView.qml` mục "Đăng nhập nâng cao" cho power user — không ảnh hưởng UX chính.

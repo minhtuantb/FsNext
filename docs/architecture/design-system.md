@@ -1,6 +1,6 @@
 # FsNext — Design System & QML Module Convention
 
-> Quyết định kiến trúc cho lớp QML, để chấm dứt tình trạng 2 bộ component song song (xem `docs/ASSESSMENT.md` P1).
+> Quyết định kiến trúc cho lớp QML, để chấm dứt tình trạng 2 bộ component song song (xem `docs/architecture/assessment.md` P1).
 > Cập nhật 2026-05-29.
 
 ## Quyết định

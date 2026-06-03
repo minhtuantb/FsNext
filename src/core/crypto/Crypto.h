@@ -14,7 +14,7 @@ bool init();
 /// True when the CPU exposes hardware AES (AES-NI) and libsodium's
 /// AES-256-GCM implementation is usable on this machine. This decides whether
 /// small files are encrypted with AES-256-GCM (ALGO 0x02) or fall back to
-/// XChaCha20-Poly1305 (0x01). See docs/specs/encryption-plan.md §2.
+/// XChaCha20-Poly1305 (0x01). See docs/specs/encryption/plan.md §2.
 bool aes256GcmAvailable();
 
 } // namespace fsnext::crypto

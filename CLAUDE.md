@@ -1,7 +1,7 @@
 # CLAUDE.md — FsNext
 
 Hướng dẫn cho Claude Code khi làm việc trong repo này. Ngắn gọn, vận hành. Kiến trúc chi tiết:
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Đánh giá & khuyến nghị: [docs/ASSESSMENT.md](docs/ASSESSMENT.md).
+[docs/architecture/overview.md](docs/architecture/overview.md). Đánh giá & khuyến nghị: [docs/architecture/assessment.md](docs/architecture/assessment.md).
 
 > Ngôn ngữ trao đổi mặc định: **tiếng Việt**.
 
@@ -86,7 +86,7 @@ qmllint.exe -I qml qml/Fshare/Pages/<Page>.qml
 ## Gotchas (đọc trước khi sửa)
 
 - **Design-system QML**: atom tái sử dụng → `Fshare.Components` (chuẩn); `FsAurora.Theme` = token; `FsAurora` =
-  shell/HUD/trang khung. Quy tắc import + bảng ánh xạ atom: [docs/design-system.md](docs/design-system.md). Đang
+  shell/HUD/trang khung. Quy tắc import + bảng ánh xạ atom: [docs/architecture/design-system.md](docs/architecture/design-system.md). Đang
   hợp nhất dần (Stage 1 xong: FsIcon/FsTextField/FsCard; Stage 2: FsButton/FsBadge/FsSwitch/FsProgressBar). Trong
   file FsAurora cần atom Fshare → `import Fshare.Components 1.0 as Fsh` (tránh ambiguous type).
 - **libcurl bỏ qua `QNetworkProxy`** → proxy phải set thủ công lên `HttpClient` và đọc lại trong engine

@@ -11,7 +11,7 @@
 namespace fsnext::crypto {
 
 // ── .fshenc on-disk format constants ──────────────────────────────────────
-// Full byte layout in docs/specs/encryption-plan.md §7.
+// Full byte layout in docs/specs/encryption/plan.md §7.
 namespace fenc {
 
 inline constexpr char    Magic[4] = {'F', 'E', 'N', 'C'};

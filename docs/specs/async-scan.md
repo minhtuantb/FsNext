@@ -1,14 +1,14 @@
 # M18 — Đưa quét thư mục sync ra background thread (kế hoạch thực thi)
 
 > Tài liệu bàn giao cho một session làm việc khác. Mục tiêu: bỏ chặn UI khi `SyncService` quét folder nằm trên
-> network mount, **không** viết lại lõi sync. Nguồn gốc: `docs/CRASH_AUDIT.md` M18 (đã hoãn ở đợt P2 2026-05-29).
+> network mount, **không** viết lại lõi sync. Nguồn gốc: `docs/audits/crash-audit.md` M18 (đã hoãn ở đợt P2 2026-05-29).
 > Mức ưu tiên: **P2 (perf/robustness)**. Ước lượng: **0.5–1 ngày** + test.
 
 ---
 
 ## 1. Vấn đề & tác động
 
-`SyncService::scanFolderInternal()` ([src/core/services/SyncService.cpp:598](../src/core/services/SyncService.cpp))
+`SyncService::scanFolderInternal()` ([src/core/services/SyncService.cpp:598](../../src/core/services/SyncService.cpp))
 chạy **trên main thread** và thực hiện một vòng BFS duyệt cây thư mục cục bộ bằng API filesystem **blocking**:
 `QDir::entryInfoList`, `QFileInfo::canonicalFilePath/isDir/lastModified/size`.
 
@@ -27,11 +27,11 @@ fire, timer rescan 5 phút, login, retry. Mỗi lần đều block main nếu l�
 ## 2. Vì sao đã hoãn (bối cảnh quyết định)
 
 Audit gốc mô tả M18 như "chuyển scan async = refactor lõi sync rủi ro". **Sau khi đọc kỹ, phạm vi hẹp hơn nhiều**:
-- **Phần mạng ĐÃ async rồi**: `ensureSubdirsThenEnqueue()` ([SyncService.cpp:770](../src/core/services/SyncService.cpp))
+- **Phần mạng ĐÃ async rồi**: `ensureSubdirsThenEnqueue()` ([SyncService.cpp:770](../../src/core/services/SyncService.cpp))
   đã chạy `createFolderInPath` trên `QtConcurrent::run` và marshal kết quả về main thread bằng
   `QMetaObject::invokeMethod` để enqueue upload. ⇒ **không phải đụng phần đó.**
 - **Chỉ duy nhất vòng walk filesystem** (dòng 627–726) là blocking-on-main cần tách ra.
-- Đã có **tiền lệ walk thuần**: `previewScan()` ([SyncService.cpp:398](../src/core/services/SyncService.cpp)) là
+- Đã có **tiền lệ walk thuần**: `previewScan()` ([SyncService.cpp:398](../../src/core/services/SyncService.cpp)) là
   một hàm `const` duyệt y hệt (cùng skip-rule + cycle-guard `canonicalFilePath`) và trả về `PreviewResult` — chứng
   minh vòng walk **tách rời được** khỏi state.
 
@@ -135,7 +135,7 @@ void SyncService::scanFolderInternal(const SyncFolder &folder, TransferPriority 
    (mất thay đổi) cũng đừng chồng N scan.
 2. **Folder bị remove / user logout / autoSync tắt giữa lúc walk chạy**: `applyScanResult` re-check
    `findFolderConst(folderId)` + `m_userId` + `m_autoSyncEnabled` (giống guard đã có ở
-   [SyncService.cpp:835](../src/core/services/SyncService.cpp)). Nếu fail → drop kết quả, clear guard.
+   [SyncService.cpp:835](../../src/core/services/SyncService.cpp)). Nếu fail → drop kết quả, clear guard.
 3. **Folder bị sửa config (watchSubfolders/ignorePatterns/speedLimit) giữa lúc walk**: vì snapshot lúc bắt đầu,
    kết quả phản ánh config CŨ; lần scan kế (config setter đều gọi scanFolderInternal) sẽ áp config mới. Chấp nhận
    được (giống value-snapshot của TransferTask). Ghi rõ trong comment.
@@ -218,4 +218,4 @@ clear ở applyScanResult) → không cần mutex.
 - [x] `test_sync_scan` xanh + full ctest xanh (12/12).
 - [~] Manual: chưa verify trên network mount thật (môi trường này chưa đăng nhập + không có ổ mạng). Smoke local:
       app khởi động/thoát sạch, log không lỗi. Walk-correctness phủ bởi unit test + giữ nguyên logic diff.
-- [x] Cập nhật `docs/CRASH_AUDIT.md` (M18 → ✅) + `docs/BACKLOG.md`.
+- [x] Cập nhật `docs/audits/crash-audit.md` (M18 → ✅) + `docs/project/backlog.md`.

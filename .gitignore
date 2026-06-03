@@ -102,3 +102,8 @@ FsNext-Setup-*.exe
 
 # UI design drop (reference only, not source)
 .uidrop/
+
+# ── Ad-hoc QA scratch (use qa/automation/ui-driver + qa/runs instead) ───────
+/.ui.png
+/.uihelper.ps1
+/.vaulttest/

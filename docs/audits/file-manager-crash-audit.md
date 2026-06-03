@@ -8,7 +8,7 @@
 > | FM-H2 | ✅ FIXED | `FileCacheService` nhánh SingleShot đã dùng `QPointer guard` + `if (!guard) return` |
 > | FM-H3 | ✅ FIXED | `FolderTreeModel::rebuildVisible` đã có `visited` set + `kMaxDepth` + cảnh báo cycle |
 > | FM-M1/M2/M3, L1/L2 | ✅ NOT-A-BUG | Đã xác nhận lại đúng như mục 5 bên dưới |
-> | FM-M4 | ⬜ OPEN | Context menu `mapToGlobal` vs `mapToItem` lệch tọa độ (UX, không crash) → [BACKLOG.md](BACKLOG.md) |
+> | FM-M4 | ⬜ OPEN | Context menu `mapToGlobal` vs `mapToItem` lệch tọa độ (UX, không crash) → [backlog.md](../project/backlog.md) |
 > | FM-M5 | ✅ NOT-A-BUG (verified 2026-05-29) | `FileService` settings-op chạy `api->X()` (Result đồng bộ) và LUÔN emit operationComplete HOẶC operationFailed — kể cả timeout (→ error Result). `m_settingsInFlight` luôn cân bằng; không có path không-emit |
 >
 > **Toàn bộ 3 finding HIGH (crash) đã được fix.** Phần điều tra gốc bên dưới giữ nguyên làm tham chiếu.
@@ -16,7 +16,7 @@
 **Ngày:** 2026-05-28
 **Phạm vi:** Hành vi crash app khi click vào file/folder trong trang File Manager (My Files).
 **Phương pháp:** Đọc trực tiếp các file `.cpp/.h/.qml` liên quan + verify từng claim bằng Grep/Read, KHÔNG dựa thuần vào sub-agent (đã bị false positive cao trong audit trước).
-**Tham chiếu:** Báo cáo tổng thể đã có ở [CRASH_AUDIT.md](CRASH_AUDIT.md) (47 findings, 2026-05-26). File này chỉ tập trung vào path **click file/folder** và **không lặp lại** các finding đã ghi ở đó.
+**Tham chiếu:** Báo cáo tổng thể đã có ở [crash-audit.md](crash-audit.md) (47 findings, 2026-05-26). File này chỉ tập trung vào path **click file/folder** và **không lặp lại** các finding đã ghi ở đó.
 
 ---
 
@@ -357,7 +357,7 @@ if (!m_items.isEmpty())
 4. **Crash reporter** (đã đề trong CRASH_AUDIT.md mục 8) — ưu tiên cao. Hiện `terminateHandler` chỉ ghi log local; user crash không có cơ chế tự gửi report về dev.
 
 5. **Tham chiếu thêm**:
-   - [CRASH_AUDIT.md](CRASH_AUDIT.md) — 47 findings tổng thể, đặc biệt H1 (QtConcurrent + QPointer), H9 (đệ quy FolderExpander), M22 (waitForDone trong aboutToQuit).
+   - [crash-audit.md](crash-audit.md) — 47 findings tổng thể, đặc biệt H1 (QtConcurrent + QPointer), H9 (đệ quy FolderExpander), M22 (waitForDone trong aboutToQuit).
    - [FileManagerViewModel.cpp:550-563](src/viewmodels/FileManagerViewModel.cpp#L550) (`reloadCurrentFolder`) — chain logic cốt lõi.
    - [FileCacheService.cpp:275-306](src/core/services/FileCacheService.cpp#L275) (`listFiles`) — choke point.
 

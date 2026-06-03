@@ -4,7 +4,7 @@
 namespace fsnext::crypto {
 
 /// Result codes for the encryption engine and key management. Mapped to the
-/// FSE-1xx user-facing error codes in docs/specs/encryption-plan.md §D.
+/// FSE-1xx user-facing error codes in docs/specs/encryption/plan.md §D.
 enum class CryptoError {
     Ok = 0,
     InvalidFormat,       // not a .fshenc / bad magic / short or malformed header

@@ -6,7 +6,7 @@
 | Nền tảng | Windows x86_64, C++17, Qt6, vcpkg |
 | Crypto lib | **libsodium** (thêm mới) |
 | Đuôi file mã hóa | **`.fshenc`** (magic nội bộ: `FENC`) |
-| Tài liệu UI kèm theo | `docs/specs/encryption-ui-brief.md` |
+| Tài liệu UI kèm theo | `docs/specs/encryption/ui-brief.md` |
 | Trạng thái | Draft để code & review |
 
 > Tài liệu này là spec để **code**. Tài liệu UI/UX riêng ở `encryption-ui-brief.md`. Hai tài liệu phải đồng bộ.
@@ -186,7 +186,7 @@ Master Key ──wrap──► DEK(32B random / file) ──AEAD──► cipher
 | `KeyRegistry.h/.cpp` | **danh sách khóa đã dùng** (cho trang Quản lý khóa): nhãn, fingerprint, loại, ngày tạo/dùng cuối, trạng thái sao lưu. **Lưu mã hóa**; reveal/copy khóa thật yêu cầu vault unlocked. |
 
 ### 6.4 Mở rộng `SecureStore` (sẵn có)
-Hiện hardcode mô tả `"FsNext OAuth refresh token"` ([SecureStore.cpp:19](../../src/core/util/SecureStore.cpp)). Thêm overload nhận description/entropy riêng để blob master-key và blob token tách biệt. Tương thích ngược.
+Hiện hardcode mô tả `"FsNext OAuth refresh token"` ([SecureStore.cpp:19](../../../src/core/util/SecureStore.cpp)). Thêm overload nhận description/entropy riêng để blob master-key và blob token tách biệt. Tương thích ngược.
 
 ---
 
@@ -237,7 +237,7 @@ Target CMake riêng, link crypto core + libsodium + CLI11 (KHÔNG Qt). Dùng ver
 ## 10. BUILD
 - `vcpkg install libsodium` (triplet `x64-windows-static-md` + `x64-mingw-dynamic`).
 - CMake: `find_package(unofficial-sodium CONFIG REQUIRED)` → link `unofficial-sodium::sodium`.
-- Thêm nhóm `src/core/crypto/*` vào `FSNEXT_SOURCES`/`FSNEXT_HEADERS` ([CMakeLists.txt:81-252](../../CMakeLists.txt)).
+- Thêm nhóm `src/core/crypto/*` vào `FSNEXT_SOURCES`/`FSNEXT_HEADERS` ([CMakeLists.txt:81-252](../../../CMakeLists.txt)).
 - Giữ C++17, QtTest, jsoncpp, Qt-logging. Chỉ thêm libsodium (+CLI11 nếu làm CLI).
 
 ---
@@ -254,7 +254,7 @@ Target CMake riêng, link crypto core + libsodium + CLI11 (KHÔNG Qt). Dùng ver
 - File AES (0x02) + giả lập máy không AES-NI → báo lỗi rõ ràng, KHÔNG crash, KHÔNG partial output.
 - Vault: create/unlock/wrong-pass/changePass/auto-lock/import-export/recovery.
 - KeyRegistry: thêm/xóa/đối chiếu fingerprint; copy key auto-clear clipboard.
-- Target mới: `test_encryption_engine`, `test_aead_cipher`, `test_vault_manager`, `test_key_registry` vào [tests/CMakeLists.txt](../../tests/CMakeLists.txt).
+- Target mới: `test_encryption_engine`, `test_aead_cipher`, `test_vault_manager`, `test_key_registry` vào [tests/CMakeLists.txt](../../../tests/CMakeLists.txt).
 
 ---
 

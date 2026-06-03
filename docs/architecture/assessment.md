@@ -31,7 +31,7 @@ phải lỗi thiết kế nền tảng.
 ### P1 — Nên xử lý sớm
 
 **1. Hai design-system QML song song (`FsAurora` + `Fshare`).** ✅ PHẦN LỚN ĐÃ XỬ LÝ
-Đã chốt + tài liệu hóa ([docs/design-system.md](design-system.md)): **`Fshare.Components` là bộ atom chuẩn**,
+Đã chốt + tài liệu hóa ([design-system.md](design-system.md)): **`Fshare.Components` là bộ atom chuẩn**,
 `FsAurora.Theme` = token, `FsAurora` = shell/HUD.
 - ✅ **Stage 1 + 2 (2026-05-29)**: **cả 7 atom trùng tên** (`FsIcon`, `FsTextField`, `FsCard`, `FsButton`,
   `FsBadge`, `FsSwitch`, `FsProgressBar`) đã hợp nhất về `Fshare.Components` (gộp visual Aurora + a11y Fshare,
@@ -40,7 +40,7 @@ phải lỗi thiết kế nền tảng.
   artifact thiết kế (`qml/FsAurora/*.html`, `design-canvas.jsx`, `handoff/`, `uploads/`) khỏi cây source.
 
 **2. Hai crash-audit chưa đóng.**
-[docs/CRASH_AUDIT.md](CRASH_AUDIT.md) (47 findings) và [docs/FILE_MANAGER_CRASH_AUDIT.md](FILE_MANAGER_CRASH_AUDIT.md)
+[crash-audit.md](../audits/crash-audit.md) (47 findings) và [file-manager-crash-audit.md](../audits/file-manager-crash-audit.md)
 mô tả nhiều rủi ro nghiêm trọng (QML gọi method không tồn tại, race khi click nhanh, `FolderTreeModel` đệ quy không
 cap depth) nhưng chưa được đánh dấu fixed/verified với code hiện tại.
 → *Khuyến nghị*: Một vòng review chuyên dụng (có thể dùng `/code-review` hoặc workflow verify) đối chiếu từng finding
@@ -84,7 +84,7 @@ docs/README.md là điểm vào duy nhất.
 - Gỡ `smartTV_deleted/` (221MB, 242 file) khỏi working tree (giữ trong git history).
 - Xóa ~18 tài liệu lỗi thời (legacy v5.3.0, thiết kế migration tháng 4, report một-lần) + ~39 file rác ở root;
   bổ sung `.gitignore` chặn tái phát.
-- Tạo tài liệu chuẩn: `CLAUDE.md`, `docs/ARCHITECTURE.md`, `docs/ASSESSMENT.md` (file này), `docs/README.md`.
+- Tạo tài liệu chuẩn: `CLAUDE.md`, `docs/architecture/overview.md`, `docs/architecture/assessment.md` (file này), `docs/README.md`.
 - Tạo project skill `.claude/skills/fsnext-run` (build & run & verify).
 
-Các mục P1–P3 ở trên **chưa** thực hiện (ngoài phạm vi đợt dọn tài liệu); đề xuất đưa vào `docs/BACKLOG.md`.
+Các mục P1–P3 ở trên **chưa** thực hiện (ngoài phạm vi đợt dọn tài liệu); đề xuất đưa vào `docs/project/backlog.md`.

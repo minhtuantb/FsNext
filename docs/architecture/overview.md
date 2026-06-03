@@ -146,7 +146,7 @@ Khác: `SyncViewModel`, `HomeSearchViewModel` (phân loại URL/keyword + bad-wo
 - **Transfer engines**: mỗi task spawn QThread riêng cho libcurl (blocking I/O cô lập).
 - **FileSyncWorker**: background metadata crawl.
 - Cross-thread đi qua signal/slot queued. `BudgetManager` lock-free đọc; `HttpClient` cookie/session bảo vệ bằng
-  mutex (vá tạm — xem `docs/ASSESSMENT.md`).
+  mutex (vá tạm — xem `docs/architecture/assessment.md`).
 
 ---
 
