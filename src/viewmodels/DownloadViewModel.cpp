@@ -67,6 +67,12 @@ DownloadViewModel::DownloadViewModel(TransferService *transferService,
 
     if (!m_service) return;
 
+    // Surface service-level enqueue rejections (e.g. disk too full) as the
+    // same downloadBlocked() channel the QML pages already listen on, so the
+    // user gets a truthful error toast instead of a false success one.
+    connect(m_service, &TransferService::downloadRejected, this,
+            [this](const QString &reason) { emit downloadBlocked(reason); });
+
     connect(m_service, &TransferService::taskAdded, this, [this](const TransferTask &task) {
         if (task.type != TransferType::Download) return;
         // Historical items replayed from disk are already Complete — route
@@ -204,11 +210,11 @@ QString DownloadViewModel::defaultSaveFolder() const
 // Folder URLs (fshare.vn/folder/...) are dispatched to addFolderDownload;
 // file URLs go to the regular single-file addDownload path.
 // ---------------------------------------------------------------------------
-void DownloadViewModel::addDownload(const QString &urls,
-                                    const QString &folder,
-                                    const QString &password)
+int DownloadViewModel::addDownload(const QString &urls,
+                                   const QString &folder,
+                                   const QString &password)
 {
-    if (!m_service) return;
+    if (!m_service) return 0;
 
     // Resolve target folder once for all URLs in this batch
     QString targetFolder = folder.trimmed();
@@ -226,7 +232,7 @@ void DownloadViewModel::addDownload(const QString &urls,
             tr("Cannot download to system folder: \"%1\".\n"
                "Please choose a different destination.")
             .arg(QDir::toNativeSeparators(targetFolder)));
-        return;
+        return 0;
     }
 
     // Ensure the base save directory exists
@@ -238,6 +244,7 @@ void DownloadViewModel::addDownload(const QString &urls,
 
     const QStringList urlList = urls.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
     QStringList invalid;
+    int enqueued = 0;
     for (const QString &rawUrl : urlList) {
         const QString trimmed = rawUrl.trimmed();
         if (trimmed.isEmpty()) continue;
@@ -254,10 +261,15 @@ void DownloadViewModel::addDownload(const QString &urls,
         // share-access ?token= required by the Fshare API for token-gated
         // folder listings and file session creation.
         const QString canonical = FshareUrl::canonicalUrl(trimmed);
-        if (parsed.kind == FshareUrl::Kind::Folder)
+        if (parsed.kind == FshareUrl::Kind::Folder) {
+            // Folder scan is asynchronous — the scan genuinely started, so
+            // count it as accepted; individual files arrive via taskAdded.
             m_service->addFolderDownload(canonical, password, targetFolder);
-        else
-            m_service->addDownload(canonical, password, targetFolder);
+            ++enqueued;
+        } else if (m_service->addDownload(canonical, password, targetFolder)) {
+            ++enqueued;  // service rejects (e.g. disk full) → not counted,
+                         // reason already surfaced via downloadRejected.
+        }
     }
 
     if (!invalid.isEmpty()) {
@@ -266,6 +278,8 @@ void DownloadViewModel::addDownload(const QString &urls,
             .arg(invalid.size())
             .arg(invalid.join(QLatin1Char('\n'))));
     }
+
+    return enqueued;
 }
 
 void DownloadViewModel::cancelFolderScan(const QString &groupId)

@@ -393,7 +393,9 @@ void RemoteShareViewModel::downloadCurrentFile(const QString &password)
 {
     if (m_mode != ModeFile || m_currentFileUrl.isEmpty() || !m_downloadVm) return;
     const QString folder = m_downloadVm->defaultSaveFolder();
-    m_downloadVm->addDownload(m_currentFileUrl, folder, password);
+    // Confirm only on a real enqueue — a rejected add (disk full, etc.) already
+    // surfaces its reason via DownloadViewModel::downloadBlocked.
+    if (m_downloadVm->addDownload(m_currentFileUrl, folder, password) <= 0) return;
     const QString name = m_currentFile.value(QStringLiteral("name")).toString();
     emit downloadQueued(name);
     emit operationMessage(tr("Đã thêm vào danh sách tải"), false);
@@ -463,7 +465,7 @@ void RemoteShareViewModel::downloadFolderItem(const QString &linkcode, bool isFo
     const QString url = isFolder ? tokenizedFolderUrl(linkcode)
                                   : tokenizedFileUrl(linkcode);
     const QString folder = m_downloadVm->defaultSaveFolder();
-    m_downloadVm->addDownload(url, folder, password);
+    if (m_downloadVm->addDownload(url, folder, password) <= 0) return;
     emit operationMessage(tr("Đã thêm vào danh sách tải"), false);
 }
 
@@ -520,9 +522,9 @@ void RemoteShareViewModel::downloadSelected(const QString &password)
     int queued = 0;
     for (const QString &lc : m_selected) {
         if (lc.isEmpty()) continue;
-        m_downloadVm->addDownload(tokenizedFileUrl(lc), folder, password);
-        ++queued;
+        queued += m_downloadVm->addDownload(tokenizedFileUrl(lc), folder, password);
     }
+    if (queued <= 0) return;  // every add rejected → reason already shown via downloadBlocked
     emit operationMessage(tr("Đã thêm %1 file vào danh sách tải").arg(queued), false);
     // Selection isn't auto-cleared so the user can keep working with the
     // same set (e.g. retry / copy links). QML "Bỏ chọn" button calls

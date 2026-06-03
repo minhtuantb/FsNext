@@ -114,8 +114,10 @@ Item {
                     if (!downloadViewModel) return;
                     const url = "https://www.fshare.vn/file/" + file.linkcode;
                     const folder = downloadViewModel.defaultSaveFolder || "";
-                    downloadViewModel.addDownload(url, folder, "");
-                    page.downloadEnqueued(file.name || file.linkcode);
+                    // Confirm only on a real enqueue; a rejected add surfaces its
+                    // reason via the downloadBlocked handler below.
+                    if (downloadViewModel.addDownload(url, folder, "") > 0)
+                        page.downloadEnqueued(file.name || file.linkcode);
                 }
             } : null,
             // "Open containing folder" — only for downloaded/uploaded files
@@ -1198,9 +1200,9 @@ Item {
                                     const url = "https://www.fshare.vn/file/"
                                               + page.selectedFileData.linkcode;
                                     const folder = downloadViewModel.defaultSaveFolder || "";
-                                    downloadViewModel.addDownload(url, folder, "");
-                                    page.downloadEnqueued(page.selectedFileData.name
-                                                          || page.selectedFileData.linkcode);
+                                    if (downloadViewModel.addDownload(url, folder, "") > 0)
+                                        page.downloadEnqueued(page.selectedFileData.name
+                                                              || page.selectedFileData.linkcode);
                                 }
                             }
 
@@ -1645,6 +1647,15 @@ Item {
             page._pendingStreamLinkcode = "";
             page._pendingStreamName     = "";
             page.showToast(qsTr("Không thể lấy stream link"), message, "error");
+        }
+    }
+
+    // Surface "Tải về" rejections (invalid link / system folder / disk full)
+    // so a blocked add no longer hides behind a false enqueue confirmation.
+    Connections {
+        target: downloadViewModel
+        function onDownloadBlocked(reason) {
+            page.showToast(qsTr("Không thể tải về"), reason, "error");
         }
     }
 

@@ -376,7 +376,7 @@ TransferService::~TransferService()
     }
 }
 
-void TransferService::addDownload(const QString &url, const QString &password, const QString &savePath)
+bool TransferService::addDownload(const QString &url, const QString &password, const QString &savePath)
 {
     // Canonicalize scheme/host/casing. PRESERVES `?token=XXX` — required by
     // the Fshare API for token-gated share links. Other query params and the
@@ -393,13 +393,15 @@ void TransferService::addDownload(const QString &url, const QString &password, c
         const int64_t free = PlatformUtils::freeDiskSpace(savePath);
         constexpr int64_t kMinHeadroom = 50LL * 1024 * 1024;
         if (free >= 0 && free < kMinHeadroom) {
-            // Reuse the system-folder block channel — same UX semantics
-            // ("we did not enqueue, here's why").  AppContext routes this to
-            // a toast in DownloadPage.
             qWarning() << "[TransferService] Disk too full for download: free="
                        << free << "bytes at" << savePath;
-            // No taskAdded() — the user sees a toast and the queue stays unchanged.
-            return;
+            // No taskAdded() — surface the reason so callers show a truthful
+            // "blocked" toast instead of a false "added to downloads" one.
+            emit downloadRejected(
+                tr("Ổ đĩa đích không đủ dung lượng trống tại \"%1\". "
+                   "Hãy chọn thư mục lưu khác.")
+                .arg(QDir::toNativeSeparators(savePath)));
+            return false;
         }
     }
 
@@ -426,6 +428,7 @@ void TransferService::addDownload(const QString &url, const QString &password, c
     m_priorities[task.id] = TransferPriority::Interactive;
     emit taskAdded(task);
     if (m_orch) m_orch->enqueue(task.id, TransferClass::Download, TransferPriority::Interactive);
+    return true;
 }
 
 void TransferService::addFolderDownload(const QString &folderUrl,

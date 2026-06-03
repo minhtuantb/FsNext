@@ -53,9 +53,13 @@ public:
     QString scanFolderName() const { return m_scanFolderName; }
     QString scanGroupId()    const { return m_scanGroupId; }
 
-    Q_INVOKABLE void addDownload(const QString &url,
-                                 const QString &folder,
-                                 const QString &password = QString{});
+    // Enqueue one or more newline-separated URLs. Returns the number of tasks
+    // actually enqueued: callers use it to show a truthful "added" toast only
+    // when work was really queued. Rejected URLs (invalid, system folder, disk
+    // too full) emit downloadBlocked() with the reason and are NOT counted.
+    Q_INVOKABLE int addDownload(const QString &url,
+                                const QString &folder,
+                                const QString &password = QString{});
     Q_INVOKABLE void cancelFolderScan(const QString &groupId);
 
     // Returns the system clipboard's current plain-text content, so QML can

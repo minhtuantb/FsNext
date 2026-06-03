@@ -49,8 +49,11 @@ public:
     // chip's visibility (hide when the model already holds all rows).
     int historyCount(TransferType type) const;
 
-    // Single-file download
-    void addDownload(const QString &url, const QString &password, const QString &savePath);
+    // Single-file download. Returns true when the task was actually enqueued,
+    // false when it was rejected (e.g. insufficient disk space) — in which case
+    // a downloadRejected() signal carries the user-facing reason. Lets callers
+    // show a truthful "added"/"blocked" toast instead of an optimistic one.
+    bool addDownload(const QString &url, const QString &password, const QString &savePath);
 
     // Folder download — crawls the tree asynchronously, then enqueues all files.
     void addFolderDownload(const QString &folderUrl, const QString &password,
@@ -107,6 +110,13 @@ signals:
     void taskStateChanged(const QString &id, TransferState state);
     void taskCompleted(const QString &id);
     void taskFailed(const QString &id, const QString &error);
+
+    // Emitted when a download could not be enqueued for a non-fatal reason the
+    // user should know about (e.g. destination disk too full). Carries a ready-
+    // to-display message; view-models re-emit it as downloadBlocked() so every
+    // "Tải về" entry point can surface a truthful error toast instead of a
+    // false "added to downloads" confirmation.
+    void downloadRejected(const QString &reason);
 
     // Folder scan lifecycle signals
     void folderScanStarted(const QString &groupId, const QString &folderName);

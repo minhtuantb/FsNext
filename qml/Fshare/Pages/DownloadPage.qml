@@ -541,7 +541,7 @@ Item {
     Connections {
         target: downloadViewModel
         function onDownloadBlocked(reason) {
-            blockToast.title = qsTr("Không thể tải vào thư mục hệ thống")
+            blockToast.title = qsTr("Không thể tải về")
             blockToast.desc  = reason
             blockToast.visible = true
             blockToast.show()

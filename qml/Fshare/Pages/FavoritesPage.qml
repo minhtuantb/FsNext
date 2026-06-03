@@ -63,8 +63,11 @@ Item {
         const url = _fshareUrlFor(file);
         if (url.length === 0) return;
         const folder = downloadViewModel.defaultSaveFolder || "";
-        downloadViewModel.addDownload(url, folder, "");
-        page.showToast(qsTr("Đã thêm vào tải về"), file.name || "", "success");
+        // Only confirm success when a task was actually enqueued — a rejected
+        // add (invalid link / system folder / disk full) reports its own reason
+        // via the downloadBlocked handler below.
+        if (downloadViewModel.addDownload(url, folder, "") > 0)
+            page.showToast(qsTr("Đã thêm vào tải về"), file.name || "", "success");
     }
 
     function _playMediaFile(file) {
@@ -1150,8 +1153,8 @@ Item {
                                             const obj = model ? model.getItemAsVariant(page.selectedFiles[i]) : null;
                                             if (!obj) continue;
                                             const url = page._fshareUrlFor(obj);
-                                            if (url.length > 0) {
-                                                downloadViewModel.addDownload(url, folder, "");
+                                            if (url.length > 0 &&
+                                                downloadViewModel.addDownload(url, folder, "") > 0) {
                                                 ++queued;
                                             }
                                         }
@@ -1393,6 +1396,15 @@ Item {
             page._pendingStreamLinkcode = "";
             page._pendingStreamName     = "";
             showToast(qsTr("Lỗi"), message, "error");
+        }
+    }
+
+    // Surface "Tải về" rejections (invalid link / system folder / disk full)
+    // so a blocked add no longer hides behind a false success toast.
+    Connections {
+        target: downloadViewModel
+        function onDownloadBlocked(reason) {
+            showToast(qsTr("Không thể tải về"), reason, "error");
         }
     }
 }
