@@ -14,7 +14,7 @@
 | VLT-BUG-0006 | CRITICAL | CLOSED | HttpClient | (sync crash, Event Log) | 0c4f14b | CURLSH thiếu lock callbacks → heap corruption (0xc0000374) khi sync |
 | VLT-BUG-0007 | MEDIUM | CLOSED | VaultWizard.qml:134 | monkey-chaos-r1 | fa2b01d | Binding loop "height" trong VaultWizard → spam WARN liên tục |
 | MYFILES-BUG-0001 | LOW | CLOSED | FsIcon callers | monkey-chaos-r1 | fa2b01d | Icon "+" không render — caller dùng name "+" nhưng asset là plus.svg |
-| DL-BUG-0001 | MEDIUM | FIXED | FavoritesVM/DownloadVM | monkey-chaos-r1 | | Toast "Đã thêm vào tải về" giả khi addDownload từ chối im lặng (disk-full không phát signal). Fix: toast bám kết quả enqueue thật + nổi lý do từ chối. Chờ QA re-test live → CLOSED |
+| DL-BUG-0001 | MEDIUM | FIXED | FavoritesVM/DownloadVM | monkey-chaos-r1 | c0be2df | Toast "Đã thêm vào tải về" giả khi addDownload từ chối im lặng (disk-full không phát signal). Fix: toast bám kết quả enqueue thật + nổi lý do từ chối. Chờ QA re-test live → CLOSED |
 
 ## Thống kê
 - Tổng: 9 · CLOSED: 8 · FIXED (chờ verify live): 1 · NEW/đang xử lý: 0

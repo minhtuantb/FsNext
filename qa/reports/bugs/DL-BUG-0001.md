@@ -7,8 +7,8 @@ area: FavoritesViewModel / DownloadViewModel (đường "Tải về")
 found_by: monkey-chaos-r1 (Chaos setup — kích download để kill giữa chừng)
 found_run: 2026-06-03-monkey-chaos-r1
 assignee: "Claude (QA-dev)"
-fix_commit: ""
-verified_run: ""
+fix_commit: "c0be2df"
+verified_run: "code-verified 2026-06-03 (build/lint/i18n/smoke/ctest); chờ re-test live"
 created: 2026-06-03
 updated: 2026-06-03
 ---
@@ -92,7 +92,7 @@ space at \"%1\". Please choose a different destination folder.") — lupdate/lre
 - Files: `src/core/services/TransferService.{h,cpp}`, `src/viewmodels/DownloadViewModel.{h,cpp}`,
   `src/viewmodels/RemoteShareViewModel.cpp`, `qml/Fshare/Pages/{FavoritesPage,FileManagerPage,DownloadPage}.qml`,
   `src/i18n/fshare_en.ts`.
-- Commit: (điền SHA sau khi commit)
+- Commit: `c0be2df` — fix(download): toast "Tải về" bám kết quả enqueue thật (DL-BUG-0001)
 
 ## Verify (2026-06-03)
 - ✅ **Build Release** (scripts/build.bat) PASS — exe relink 17:32:53 (xác nhận C++ mới compile + link).
