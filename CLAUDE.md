@@ -97,6 +97,24 @@ qmllint.exe -I qml qml/Fshare/Pages/<Page>.qml
 - **SystemTray dùng Qt Widgets** (lý do: Qt chỉ hỗ trợ tray qua Widgets) → app link cả QtWidgets dù UI là QML.
 - **SecureStore** chỉ mã hóa thật trên Windows (DPAPI); non-Windows trả plaintext (placeholder).
 - Single-instance: instance thứ 2 chuyển lệnh cho instance đầu rồi thoát; nhớ `taskkill` trước khi smoke test.
+- **Vault E2E (`.fshenc`)**: mã hóa đầu-cuối bằng **libsodium** (vcpkg `unofficial-sodium`). Crypto chạy off-thread →
+  mọi callback phải theo đúng pattern async-lambda + `QPointer` guard. Đừng log/persist key. Spec: `docs/specs/encryption/`.
+
+## Tooling Claude Code (.claude/)
+
+Repo có sẵn bộ công cụ Claude Code chuyên cho FsNext (lưu ý: `.claude/` đang bị `.gitignore` — xem ghi chú cuối mục):
+
+- **Skills** (`.claude/skills/`): `fsnext-run` (build/run/qmllint/test), `fsnext-i18n` (song ngữ vi/en),
+  `fsnext-qa` (QA qua UI + bug lifecycle). Gọi tự động theo ngữ cảnh hoặc gõ `/<tên>`.
+- **Subagents** (`.claude/agents/`): `cpp-qt-reviewer` (soi diff theo bug-class repo), `mvvm-wiring-checker`
+  (kiểm VM mới đã wire đủ qua AppContext), `concurrency-auditor` (audit sâu async/race/deadlock 1 subsystem —
+  bug-class #1), `vault-security-reviewer` (bảo mật Vault E2E: key/nonce/KDF/.fshenc).
+- **Commands** (`.claude/commands/`): `/new-vm` (scaffold ViewModel + wire), `/lint-qml-changed`
+  (qmllint file đang đổi), `/pre-commit` (cổng chất lượng), `/crash-triage` (đọc fsnext.log + event log,
+  chẩn đoán crash), `/cmake-sync` (kiểm source mới đã vào CMakeLists chưa).
+- **Settings**: `settings.json` = permission bền, portable (commit chung được); `settings.local.json` = path
+  tuyệt đối theo máy (Qt/VS/vcpkg/AppData), KHÔNG commit.
+- Muốn chia sẻ agents/commands/skills cho team → bỏ `.claude/` khỏi `.gitignore` (giữ riêng `settings.local.json`).
 
 ## Tài liệu
 

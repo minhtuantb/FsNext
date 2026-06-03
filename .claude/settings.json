@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(*)",
+      "Bash(cmd.exe /c \"scripts\\build.bat\")",
+      "Bash(cmd /c \"scripts\\build.bat\")",
+      "Bash(cmake --preset:*)",
+      "Bash(cmake --build:*)",
+      "Bash(ninja:*)",
+      "Bash(ctest:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(output/FsNext.exe)",
+      "Bash(./output/FsNext.exe)"
+    ]
+  }
+}

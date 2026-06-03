@@ -84,7 +84,10 @@ $RECYCLE.BIN/
 .DS_Store
 
 # ── Claude / tooling state ─────────────────────────────────────────────────
-.claude/
+# Chia sẻ cho team: settings.json, skills/, agents/, commands/.
+# Giữ riêng theo máy / ephemeral:
+.claude/settings.local.json
+.claude/worktrees/
 
 # ── User-specific config (keep templates, ignore filled copies) ────────────
 *.local
