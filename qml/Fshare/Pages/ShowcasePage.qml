@@ -231,7 +231,7 @@ ScrollView {
                 // With icons
                 RowLayout {
                     spacing: AuroraTheme.sp2
-                    FsButton { text: "Add";      icon: "+";  variant: "primary" }
+                    FsButton { text: "Add";      icon: "plus";  variant: "primary" }
                     FsButton { text: "Edit";     icon: "✎";  variant: "secondary" }
                     FsButton { text: "Cancel";   variant: "ghost" }
                     FsButton { text: "Disabled"; variant: "primary"; enabled: false }

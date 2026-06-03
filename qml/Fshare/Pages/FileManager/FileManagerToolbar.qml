@@ -82,7 +82,7 @@ RowLayout {
 
     FsButton {
         text: qsTr("New Folder")
-        icon: "+"
+        icon: "plus"
         variant: "secondary"
         size: "default"
         onClicked: root.newFolderRequested()

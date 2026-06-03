@@ -132,7 +132,7 @@ Item {
         anchors.centerIn: parent
         width: Math.min(720, parent.width - AuroraTheme.sp8)
         height: Math.min(implicitH, parent.height - AuroraTheme.sp8)
-        readonly property int implicitH: stepperBox.height + bodyFlick.contentH + footer.height + 2
+        readonly property int implicitH: stepperBox.Layout.preferredHeight + bodyFlick.contentH + footer.Layout.preferredHeight + 2
         radius: 18
         color: AuroraTheme.panel
         border.width: 1

@@ -525,7 +525,7 @@ ApplicationWindow {
             { id: "go.fav",      label: qsTr("Yêu thích"),     hint: qsTr("Mở danh sách yêu thích"), icon: "★" },
             { id: "go.account",  label: qsTr("Tài khoản"),     hint: qsTr("Mở thông tin tài khoản"), icon: "◉" },
             { id: "go.settings", label: qsTr("Cài đặt"),       hint: qsTr("Mở trang cài đặt"),   icon: "⚙" },
-            { id: "act.add-dl",  label: qsTr("Thêm tải xuống"), hint: qsTr("Dán link Fshare để bắt đầu"), icon: "+" },
+            { id: "act.add-dl",  label: qsTr("Thêm tải xuống"), hint: qsTr("Dán link Fshare để bắt đầu"), icon: "plus" },
             { id: "act.logout",  label: qsTr("Đăng xuất"),     hint: qsTr("Đăng xuất khỏi Fshare"), icon: "⏻" }
         ]
         onTriggered: (id) => {
