@@ -12,10 +12,14 @@
 | VLT-BUG-0004 | MEDIUM | CLOSED | VaultViewModel | VLT-CHAOS-032 | e971fed | Trùng basename ghi đè im lặng khi mã hóa thư mục |
 | VLT-BUG-0005 | HIGH | CLOSED | VaultViewModel | VLT-SC-002 (UI) | fcfc78b | `setVaultDir` không Q_INVOKABLE → wizard kẹt "Đang tạo…" |
 | VLT-BUG-0006 | CRITICAL | CLOSED | HttpClient | (sync crash, Event Log) | 0c4f14b | CURLSH thiếu lock callbacks → heap corruption (0xc0000374) khi sync |
+| VLT-BUG-0007 | MEDIUM | CLOSED | VaultWizard.qml:134 | monkey-chaos-r1 | fa2b01d | Binding loop "height" trong VaultWizard → spam WARN liên tục |
+| MYFILES-BUG-0001 | LOW | CLOSED | FsIcon callers | monkey-chaos-r1 | fa2b01d | Icon "+" không render — caller dùng name "+" nhưng asset là plus.svg |
+| DL-BUG-0001 | MEDIUM | NEW⚠️ | FavoritesVM/DownloadVM | monkey-chaos-r1 | | "Tải về" từ Yêu thích: toast OK nhưng task không vào Tải xuống (đã loại trừ auto-download; cần khoanh secure/Favorites-scope) |
 
 ## Thống kê
-- Tổng: 6 · CLOSED: 6 · NEW/đang xử lý: 0
-- Theo severity: CRITICAL 1 · HIGH 2 · MEDIUM 3 · LOW 0
+- Tổng: 9 · CLOSED: 8 · NEW/đang xử lý: 1
+- Theo severity: CRITICAL 1 · HIGH 2 · MEDIUM 5 · LOW 1
+- NEW còn lại: **DL-BUG-0001** (MEDIUM) — không crash/chặn release; cần fix-dev khoanh vùng (secure-file? Favorites-only?)
 
 ## Quy ước
 - **Status**: NEW → TRIAGED → FIXING → FIXED → VERIFYING → CLOSED (hoặc WONTFIX/REOPENED).
