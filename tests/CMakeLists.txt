@@ -110,6 +110,111 @@ target_include_directories(test_sync_scan PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(test_sync_scan PRIVATE Qt6::Core Qt6::Test)
 add_test(NAME SyncScan COMMAND test_sync_scan)
 
+# ── test_sync_scan_robustness ─────────────────────────────
+# QA đợt 2: adversarial surface cho SyncScanner — mtime giây (sửa <1s cùng
+# size), thư mục tên phổ biến (build/out/bin/dist/target) bị skip thầm lặng,
+# cây sâu/nhiều file, unicode VN, seenRel loại file skip/zero. Cùng link set
+# tối thiểu như test_sync_scan (chỉ SyncScanner.cpp + Qt6::Core/Test).
+qt_add_executable(test_sync_scan_robustness
+    test_sync_scan_robustness.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncScanner.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncScanner.cpp
+)
+target_include_directories(test_sync_scan_robustness PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(test_sync_scan_robustness PRIVATE Qt6::Core Qt6::Test)
+add_test(NAME SyncScanRobustness COMMAND test_sync_scan_robustness)
+
+# ── test_sync_service ─────────────────────────────────────
+# Integration: SyncService against a REAL SyncRepository (hermetic QSettings)
+# with transfer=nullptr / api=nullptr — exercises the main-thread reconcile in
+# setUserId (SY-111 / BUG-SY-04: stale "Uploading" → "Pending" at the session
+# boundary). SyncService.cpp ODR-references TransferService + FshareApi, so the
+# full transfer graph (engines/orchestrator/repos/HttpClient + libcurl/OpenSSL/
+# jsoncpp) must link even though no test takes a network or upload path — same
+# proven closure as test_download_viewmodel, minus the VM, plus SyncService +
+# SyncScanner + SyncRepository. Folders are seeded enabled=false so setUserId's
+# trailing scan loop (the only thing that would touch transfer/api) is skipped.
+qt_add_executable(test_sync_service
+    test_sync_service.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncScanner.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SyncScanner.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SyncRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SyncRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/models/SyncFolder.h
+    # TransferState.h carries Q_NAMESPACE/Q_ENUM_NS — AUTOMOC must see it so the
+    # namespace-level fsnext::staticMetaObject is generated (TransferService.cpp
+    # references it via QMetaType for TransferState).
+    ${CMAKE_SOURCE_DIR}/src/core/models/TransferState.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/TransferService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/TransferService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/SettingsService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SettingsService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/FolderExpander.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/FolderExpander.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/DownloadEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/DownloadEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/UploadEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/UploadEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/SpeedMeter.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/SpeedMeter.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/HistoryRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/HistoryRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/TransferHistoryDb.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/TransferHistoryDb.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/api/FshareApi.h
+    ${CMAKE_SOURCE_DIR}/src/core/api/FshareApi.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.h
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/FileNameSanitizer.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FileNameSanitizer.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/FshareUrl.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FshareUrl.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.cpp
+    # TransferService.cpp calls PlatformUtils::freeDiskSpace / resolveProxyUrl;
+    # PlatformUtils uses QDesktopServices → drags Qt6::Gui (linked below).
+    ${CMAKE_SOURCE_DIR}/src/platform/PlatformUtils.h
+    ${CMAKE_SOURCE_DIR}/src/platform/PlatformUtils.cpp
+)
+target_include_directories(test_sync_service PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/lib/cppcodec
+)
+target_link_libraries(test_sync_service PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Network
+    Qt6::Concurrent
+    Qt6::Sql
+    Qt6::Test
+    CURL::libcurl
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    jsoncpp
+)
+if(WIN32)
+    target_link_libraries(test_sync_service PRIVATE
+        ws2_32 crypt32 wldap32 normaliz secur32 advapi32
+        user32 bcrypt iphlpapi shell32
+    )
+    target_compile_definitions(test_sync_service PRIVATE
+        CURL_STATICLIB WIN32_LEAN_AND_MEAN
+    )
+endif()
+add_test(NAME SyncService COMMAND test_sync_service)
+
 # ── test_budget_manager ───────────────────────────────────
 # Pure logic — slot caps, floor quotas, global cap.  No event loop.
 qt_add_executable(test_budget_manager
@@ -584,6 +689,112 @@ if(WIN32)
 endif()
 
 add_test(NAME DownloadViewModel COMMAND test_download_viewmodel)
+
+# ── test_home_search_viewmodel ────────────────────────────
+# QA Home module: HomeSearchViewModel's synchronous surface — the classify()
+# state machine (Idle/TooShort/Url*/Keyword/Blocked + quoted mode), submit()
+# routing signals, debounce-scheduling side effects, bad-word fail-closed, and
+# URL detection. Covers home/functional.md HOME-FN-001..018 + home/validation.md
+# HOME-VAL-001..020 (the API-response cases HOME-FN-019..027 are QSKIP-ped — they
+# need a fake FshareApi, which needs searchFiles() promoted into IFshareApi).
+#
+# Construction mirrors test_download_viewmodel: HomeSearchViewModel takes
+# (BadWordFilter*, DownloadViewModel*, FshareApi*). The DownloadViewModel is the
+# REAL VM (only its pure-regex extractFshareLinks is used) so we pull the full
+# TransferService + AuthService closure exactly as test_download_viewmodel does;
+# FshareApi is passed nullptr so no network runs. PLUS the three Home-specific
+# sources: HomeSearchViewModel.cpp, BadWordFilter.cpp, FileListModel.cpp
+# (FileItem.h / FileTypeHelper.h are header-only).
+qt_add_executable(test_home_search_viewmodel
+    test_home_search_viewmodel.cpp
+    # ── unit under test + its direct collaborators ──
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/HomeSearchViewModel.h
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/HomeSearchViewModel.cpp
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/FileListModel.h
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/FileListModel.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/BadWordFilter.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/BadWordFilter.cpp
+    # ── DownloadViewModel graph (for extractFshareLinks) ──
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/DownloadViewModel.h
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/DownloadViewModel.cpp
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/TransferListModel.h
+    ${CMAKE_SOURCE_DIR}/src/viewmodels/TransferListModel.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/models/TransferState.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/TransferService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/TransferService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/SettingsService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/SettingsService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/FolderExpander.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/FolderExpander.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/RefreshTokenCoordinator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/AuthService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/AuthService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/services/OAuthService.h
+    ${CMAKE_SOURCE_DIR}/src/core/services/OAuthService.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/net/LoopbackServer.h
+    ${CMAKE_SOURCE_DIR}/src/core/net/LoopbackServer.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/SecureStore.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/Pkce.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/Pkce.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/TransferOrchestrator.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/BudgetManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/PriorityScheduler.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/DownloadEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/DownloadEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/UploadEngine.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/UploadEngine.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/SpeedMeter.h
+    ${CMAKE_SOURCE_DIR}/src/core/transfer/SpeedMeter.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/SettingsRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/HistoryRepository.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/HistoryRepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/TransferHistoryDb.h
+    ${CMAKE_SOURCE_DIR}/src/core/repositories/TransferHistoryDb.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/api/FshareApi.h
+    ${CMAKE_SOURCE_DIR}/src/core/api/FshareApi.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.h
+    ${CMAKE_SOURCE_DIR}/src/core/api/HttpClient.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/FileNameSanitizer.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FileNameSanitizer.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/FshareUrl.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FshareUrl.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.h
+    ${CMAKE_SOURCE_DIR}/src/core/util/FormatUtil.cpp
+    ${CMAKE_SOURCE_DIR}/src/platform/PlatformUtils.h
+    ${CMAKE_SOURCE_DIR}/src/platform/PlatformUtils.cpp
+)
+target_include_directories(test_home_search_viewmodel PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/lib/cppcodec
+)
+target_link_libraries(test_home_search_viewmodel PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Network
+    Qt6::Concurrent
+    Qt6::Sql
+    Qt6::Test
+    CURL::libcurl
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    jsoncpp
+)
+if(WIN32)
+    target_link_libraries(test_home_search_viewmodel PRIVATE
+        ws2_32 crypt32 wldap32 normaliz secur32 advapi32
+        user32 bcrypt iphlpapi shell32
+    )
+    target_compile_definitions(test_home_search_viewmodel PRIVATE
+        CURL_STATICLIB WIN32_LEAN_AND_MEAN
+    )
+endif()
+add_test(NAME HomeSearchViewModel COMMAND test_home_search_viewmodel)
 
 # >>> Lô1: test_upload_viewmodel (covers ATM-0122, ATM-0123, ATM-0126, ATM-0127, ATM-0128, ATM-0129, ATM-0130, ATM-0131, ATM-0132) risk=Med — file content (ctor signature, getters, signals, TransferListModel::count) verified against real headers, but the broad link list (TransferService + AuthService transitive closure) is hand-derived from #include scans; an unlisted internal .cpp dependency could surface as a linker error on first build.
 # ── test_upload_viewmodel ─────────────────────────────────

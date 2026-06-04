@@ -60,6 +60,11 @@ public:
     {
         return ApiResponse<Session>::failure(AppError::auth(400, QStringLiteral("n/a")));
     }
+    // IFshareApi now exposes searchFiles (for HomeSearchViewModel) — never used here.
+    ApiResponse<QVector<fsnext::FileItem>> searchFiles(const QString &, int) override
+    {
+        return ApiResponse<QVector<fsnext::FileItem>>::failure(AppError::auth(405, QStringLiteral("n/a")));
+    }
     ApiResponse<void> logout() override { return ApiResponse<void>::success(); }
     ApiResponse<User> getUserInfo() override
     {

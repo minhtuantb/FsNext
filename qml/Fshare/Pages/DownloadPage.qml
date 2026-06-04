@@ -37,15 +37,22 @@ Item {
         addDialog.open();
         w.pendingDownloadLinks = "";   // consumed
     }
-    Component.onCompleted: _consumePendingDownloads()
+    // Blank add-dialog request from HomePage quick-action / command. Consumed on
+    // BOTH onCompleted (cold lazy-load) and on change (warm) so the request
+    // can't be lost to the Loader-instantiation race. (HOME-BUG-0002)
+    function _consumePendingDialog() {
+        const w = Window.window;
+        if (!w || !w.pendingOpenAddDialog) return;
+        addDialog.linksText = "";
+        addDialog.open();
+        w.pendingOpenAddDialog = false;   // consumed
+    }
+    Component.onCompleted: { _consumePendingDownloads(); _consumePendingDialog(); }
     Connections {
         target: Window.window
         ignoreUnknownSignals: true
         function onPendingDownloadLinksChanged() { _consumePendingDownloads(); }
-        function onOpenDownloadDialog() {
-            addDialog.linksText = "";
-            addDialog.open();
-        }
+        function onPendingOpenAddDialogChanged() { _consumePendingDialog(); }
     }
 
     property bool showHistory: false

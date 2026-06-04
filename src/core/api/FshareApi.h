@@ -47,7 +47,7 @@ public:
     ApiResponse<QVector<FileItem>>  listFiles(const QString &folderUrl, int page, int pageSize);
     ApiResponse<QVector<FileItem>>  listFolders(const QString &path);
     ApiResponse<FileItem>           getFileInfo(const QString &url);
-    ApiResponse<QVector<FileItem>>  searchFiles(const QString &keyword, int page);
+    ApiResponse<QVector<FileItem>>  searchFiles(const QString &keyword, int page) override;
 
     // File operations
     ApiResponse<void>               renameFile(const QString &linkcode, const QString &newName);

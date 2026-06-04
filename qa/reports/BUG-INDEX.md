@@ -15,12 +15,20 @@
 | VLT-BUG-0007 | MEDIUM | CLOSED | VaultWizard.qml:134 | monkey-chaos-r1 | fa2b01d | Binding loop "height" trong VaultWizard → spam WARN liên tục |
 | MYFILES-BUG-0001 | LOW | CLOSED | FsIcon callers | monkey-chaos-r1 | fa2b01d | Icon "+" không render — caller dùng name "+" nhưng asset là plus.svg |
 | DL-BUG-0001 | MEDIUM | FIXED | FavoritesVM/DownloadVM | monkey-chaos-r1 | c0be2df | Toast "Đã thêm vào tải về" giả khi addDownload từ chối im lặng (disk-full không phát signal). Fix: toast bám kết quả enqueue thật + nổi lý do từ chối. Chờ QA re-test live → CLOSED |
+| SYNC-BUG-0001 | LOW | NEW | SyncViewModel/SyncPage | SYNC-SC-017 | | File list folder active không tự refresh theo scan/upload nền (đứng yên tới khi scan-now/đổi folder); pill + activity vẫn cập nhật. UX freshness, không mất dữ liệu |
+| DL-BUG-0002 | MEDIUM | NEW | DownloadVM/effectiveDownloadFolder | EDL-011 | | Dialog "Thêm tải xuống" mặc định "Thư mục lưu" = C:\Windows (system dir, không ghi được) → tải mặc định fail/cần admin. Nghi fallback về CWD. Cần xác minh root cause |
+| AUTH-BUG-0001 | HIGH | NEW | AuthService/OAuth/RefreshTokenCoordinator/OAuthSecrets | edge-r1 (log) | | Silent refresh `/api/user/refreshToken` → **403 "Invalid app key!"** → session hết hạn/logout lặp lại ~30–40' khi đang dùng. Nghi app key refresh sai/không hợp lệ. Chặn tác vụ dài + QA tự động |
+| HOME-BUG-0001 | MEDIUM | CLOSED | HomeSearchOverlay.qml (activateHighlighted) | HOME-UI-009 | | Overlay search: `↑↓`+Enter mở dòng highlight không chạy (đọc sai role offset +1 → lấy IdRole thay LinkcodeRole). Fix +1→+2/+2→+3. Verified run 2026-06-04-home-r1 |
+| HOME-BUG-0002 | LOW | CLOSED | Main.qml ↔ DownloadPage (lazy Loader) | HOME-UI-011 | | Quick-action "Dán link & tải" không tự mở dialog Thêm URL (signal `openDownloadDialog` bị lỡ do Loader chưa instantiate). Fix: chuyển sang property-flag `pendingOpenAddDialog` (consume onCompleted+onChange). Verified run 2026-06-04-home-r1 |
 
 ## Thống kê
-- Tổng: 9 · CLOSED: 8 · FIXED (chờ verify live): 1 · NEW/đang xử lý: 0
-- Theo severity: CRITICAL 1 · HIGH 2 · MEDIUM 5 · LOW 1
+- Tổng: 14 · CLOSED: 10 · FIXED (chờ verify live): 1 · NEW/đang xử lý: 3
+- Theo severity: CRITICAL 1 · HIGH 3 · MEDIUM 7 · LOW 3
 - FIXED chờ re-test: **DL-BUG-0001** (MEDIUM) — code-verified (build/lint/i18n/smoke PASS); cần QA bấm "Tải về"
   với tài khoản thật để chuyển CLOSED.
+- NEW chưa pick: **AUTH-BUG-0001** (HIGH — refresh "Invalid app key!", chặn release/QA dài) · **DL-BUG-0002**
+  (MEDIUM, default save folder = C:\Windows) · **SYNC-BUG-0001** (LOW, freshness file-list).
+- ⚠️ Bug HIGH chưa CLOSED chặn release: AUTH-BUG-0001 (silent-refresh hỏng).
 
 ## Quy ước
 - **Status**: NEW → TRIAGED → FIXING → FIXED → VERIFYING → CLOSED (hoặc WONTFIX/REOPENED).

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Proprietary
 #include "HomeSearchViewModel.h"
 
-#include "core/api/FshareApi.h"
+#include "core/api/IFshareApi.h"
 #include "core/util/BadWordFilter.h"
 #include "viewmodels/DownloadViewModel.h"
 
@@ -13,7 +13,7 @@ namespace fsnext {
 
 HomeSearchViewModel::HomeSearchViewModel(BadWordFilter     *filter,
                                           DownloadViewModel *downloadVm,
-                                          FshareApi         *api,
+                                          IFshareApi        *api,
                                           QObject           *parent)
     : QObject(parent)
     , m_filter(filter)
@@ -211,7 +211,7 @@ void HomeSearchViewModel::fetchPage(const QString &keyword, int page, bool appen
     const quint64 mySeq = ++m_requestSeq;
     setSearching(true);
 
-    FshareApi *api = m_api;
+    IFshareApi *api = m_api;
     QPointer<HomeSearchViewModel> guard(this);
     QtConcurrent::run([api, keyword, page, append, guard, mySeq]() {
         if (!guard) return;

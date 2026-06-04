@@ -5,14 +5,17 @@
 // a fake (no HttpClient / network). Currently scoped to AuthService's needs;
 // widen it as other services gain test coverage (see docs/project/backlog.md).
 //
-// FshareApi derives from this and overrides the four methods below. Production
+// FshareApi derives from this and overrides the methods below. Production
 // callers keep holding FshareApi* and use its full concrete surface — only
-// AuthService takes an IFshareApi* so a FakeFshareApi can be injected in tests.
+// AuthService and HomeSearchViewModel take an IFshareApi* so a fake can be
+// injected in tests.
 
 #include "core/models/ApiResponse.h"
+#include "core/models/FileItem.h"
 #include "core/models/User.h"
 
 #include <QString>
+#include <QVector>
 
 namespace fsnext {
 
@@ -26,6 +29,10 @@ public:
                                             const QString &email) = 0;
     virtual ApiResponse<void>    logout() = 0;
     virtual ApiResponse<User>    getUserInfo() = 0;
+
+    // Keyword search — added so HomeSearchViewModel can be unit-tested against
+    // a fake (the homepage inline search runs entirely through this call).
+    virtual ApiResponse<QVector<FileItem>> searchFiles(const QString &keyword, int page) = 0;
 };
 
 } // namespace fsnext

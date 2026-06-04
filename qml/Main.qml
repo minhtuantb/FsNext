@@ -55,10 +55,8 @@ ApplicationWindow {
     // target folder / password / privacy before the upload starts.
     signal openUploadWithFiles(var fileUrls)
 
-    // Fired by the HomePage "Dán link & tải" quick-action. DownloadPage
-    // listens and opens its add-dialog with an empty links field so the
-    // user can paste manually.
-    signal openDownloadDialog()
+    // (HomePage "Dán link & tải" quick-action / command "act.add-dl" → opens the
+    // blank add-dialog via the pendingOpenAddDialog property flag — see above.)
 
     // Fired by the Ctrl+U shortcut. UploadPage listens and opens the OS
     // file picker directly — user picks files, then the upload options
@@ -79,6 +77,13 @@ ApplicationWindow {
     // drops while it's already in view.
     property var pendingUploadFiles: []
     property string pendingDownloadLinks: ""
+
+    // Race-proof "open the blank add-dialog" request (HOME-BUG-0002). A plain
+    // signal was lost when the lazy DownloadPage hadn't instantiated yet on the
+    // navigation frame; a property flag is consumed by DownloadPage BOTH on
+    // Component.onCompleted (cold load) and on change (warm), same pattern as
+    // pendingDownloadLinks.
+    property bool pendingOpenAddDialog: false
 
     // Companion sequence counter — bumped every time pendingUploadFiles is
     // written from routeDrop / onOpenUploadWithFiles. UploadPage listens to
@@ -525,7 +530,7 @@ ApplicationWindow {
             { id: "go.fav",      label: qsTr("Yêu thích"),     hint: qsTr("Mở danh sách yêu thích"), icon: "★" },
             { id: "go.account",  label: qsTr("Tài khoản"),     hint: qsTr("Mở thông tin tài khoản"), icon: "◉" },
             { id: "go.settings", label: qsTr("Cài đặt"),       hint: qsTr("Mở trang cài đặt"),   icon: "⚙" },
-            { id: "act.add-dl",  label: qsTr("Thêm tải xuống"), hint: qsTr("Dán link Fshare để bắt đầu"), icon: "plus" },
+            { id: "act.add-dl",  label: qsTr("Thêm tải xuống"), hint: qsTr("Dán link Fshare để bắt đầu"), icon: "+" },
             { id: "act.logout",  label: qsTr("Đăng xuất"),     hint: qsTr("Đăng xuất khỏi Fshare"), icon: "⏻" }
         ]
         onTriggered: (id) => {
@@ -538,7 +543,7 @@ ApplicationWindow {
             case "go.fav":      root.currentPage = Pages.favorites; break;
             case "go.account":  root.currentPage = Pages.account;   break;
             case "go.settings": root.currentPage = Pages.settings;  break;
-            case "act.add-dl":  root.currentPage = Pages.download;  root.openDownloadDialog(); break;
+            case "act.add-dl":  root.pendingOpenAddDialog = true; root.currentPage = Pages.download; break;  // flag consumed by DownloadPage (HOME-BUG-0002)
             case "act.logout":  if (authViewModel) authViewModel.logout(); break;
             }
         }
@@ -847,8 +852,8 @@ ApplicationWindow {
             onPageRequested: (idx) => root.currentPage = idx
             onAddDownloadRequested: (links) => {
                 if (links && links.length > 0) root.pendingDownloadLinks = links;
+                else                           root.pendingOpenAddDialog = true;   // HOME-BUG-0002
                 root.currentPage = Pages.download;
-                if (!links || links.length === 0) root.openDownloadDialog();
             }
             // A file/folder share URL pasted into the homepage search opens
             // the matching surface. Both VMs talk to `remoteShareViewModel`

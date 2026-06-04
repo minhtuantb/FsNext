@@ -56,8 +56,9 @@ Item {
     }
     function activateHighlighted() {
         if (highlightedIndex < 0 || highlightedIndex >= _count) return;
-        const item = vm.resultsModel.data(vm.resultsModel.index(highlightedIndex, 0), Qt.UserRole + 2);   // NameRole
-        const lc   = vm.resultsModel.data(vm.resultsModel.index(highlightedIndex, 0), Qt.UserRole + 1);   // LinkcodeRole
+        // FileListModel roles: IdRole=UserRole+1, LinkcodeRole=UserRole+2, NameRole=UserRole+3.
+        const item = vm.resultsModel.data(vm.resultsModel.index(highlightedIndex, 0), Qt.UserRole + 3);   // NameRole
+        const lc   = vm.resultsModel.data(vm.resultsModel.index(highlightedIndex, 0), Qt.UserRole + 2);   // LinkcodeRole
         if (lc && lc.length > 0) root.fileActivated(lc, item || "");
     }
 

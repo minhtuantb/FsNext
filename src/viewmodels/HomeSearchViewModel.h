@@ -11,7 +11,7 @@ namespace fsnext {
 
 class BadWordFilter;
 class DownloadViewModel;
-class FshareApi;
+class IFshareApi;
 
 // HomeSearchViewModel — stateful classifier for the homepage search input.
 //
@@ -58,7 +58,7 @@ public:
 
     explicit HomeSearchViewModel(BadWordFilter     *filter,
                                   DownloadViewModel *downloadVm,
-                                  FshareApi         *api,
+                                  IFshareApi        *api,
                                   QObject           *parent = nullptr);
 
     int     state()   const { return m_state; }
@@ -123,7 +123,7 @@ private:
 
     BadWordFilter     *m_filter      = nullptr;
     DownloadViewModel *m_downloadVm  = nullptr;
-    FshareApi         *m_api         = nullptr;
+    IFshareApi        *m_api         = nullptr;
     FileListModel     *m_resultsModel = nullptr;
 
     int     m_state   = Idle;
